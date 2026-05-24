@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: restock-db
+    environment:
+      POSTGRES_USER: ${DB_USER:-restock}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-restock123}
+      POSTGRES_DB: ${DB_NAME:-restock}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-restock}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - restock-network
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: ${NODE_ENV:-development}
+    container_name: restock-api
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      DATABASE_URL: postgresql://${DB_USER:-restock}:${DB_PASSWORD:-restock123}@postgres:5432/${DB_NAME:-restock}
+      JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
+      PORT: 3010
+    ports:
+      - "${API_PORT:-3010}:3010"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ${NODE_ENV:-development}:/app/apps/api/node_modules
+      - ./apps/api/src:/app/apps/api/src
+    networks:
+      - restock-network
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      target: ${NODE_ENV:-development}
+    container_name: restock-web
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3010}
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    depends_on:
+      - api
+    volumes:
+      - ${NODE_ENV:-development}:/app/apps/web/node_modules
+      - ./apps/web/app:/app/apps/web/app
+      - ./apps/web/public:/app/apps/web/public
+    networks:
+      - restock-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  development:
+
+networks:
+  restock-network:
+    driver: bridge

@@ -1,0 +1,161 @@
+# ReStock-SaaS
+
+Sistema inteligente de gestión de inventario para pequeños negocios.
+
+## Descripción
+
+Los establecimientos pequeños, como tiendas de abarrotes, farmacias, etc., tienen dificultad para llevar una gestión adecuada de sus inventarios, en especial en el reabastecimiento de productos. Suelen lidiar con problemas relacionados con fechas de caducidad y compras insuficientes, provocando pérdidas económicas significativas.
+
+ReStock-SaaS es una solución integral que resuelve estos problemas proporcionando:
+
+- Control de inventario por lotes
+- Gestión de fechas de caducidad
+- Análisis de patrones de consumo
+- Alertas preventivas de reabastecimiento
+- Recomendaciones automáticas de compra
+
+## Stack Tecnológico
+
+| Componente | Tecnología |
+|---|---|
+| Frontend | Next.js (React) |
+| Backend | Node.js |
+| Base de datos | PostgreSQL |
+| Autenticación | JWT |
+| Contenedorización | Docker & Docker Compose |
+
+## Instalación
+
+### Requisitos Previos
+
+- Docker y Docker Compose instalados
+- Git
+- Node.js 24+
+
+### Opción 1: Docker (Recomendado)
+
+1. Clona el repositorio:
+```bash
+git clone https://github.com/Arturocs160/ReStock-SaaS.git
+cd ReStock-SaaS
+```
+
+2. Configura `.env` con tus valores:
+```env
+DB_USER=ejemplo_usuario
+DB_PASSWORD=contraseña_segura
+DB_NAME=ejemplo_db
+DB_PORT=5432
+API_PORT=3010
+WEB_PORT=3000
+NODE_ENV=development
+JWT_SECRET=tu_clave_secreta
+NEXT_PUBLIC_API_URL=http://localhost:3010
+```
+
+4. Inicia los servicios:
+```bash
+docker-compose up --build
+```
+
+5. Accede a la aplicación:
+- Interfaz web: http://localhost:3000
+- API: http://localhost:3010
+
+### Opción 2: Instalación Local
+
+1. Instala dependencias del proyecto:
+```bash
+npm install
+```
+
+2. Instala dependencias de cada aplicación:
+```bash
+cd apps/api && npm install
+cd ../web && npm install
+```
+
+3. Configura PostgreSQL y crea la base de datos
+
+4. Inicia los servidores en desarrollo:
+```bash
+# Terminal 1 - Backend
+cd apps/api && npm run dev
+
+# Terminal 2 - Frontend
+cd apps/web && npm run dev
+```
+
+## Estructura del Proyecto
+
+```
+ReStock-SaaS/
+│
+├── apps/
+│   ├── api/
+│   │   ├── src/
+│   │   ├── Dockerfile
+│   │   └── package.json
+│   │
+│   └── web/
+│       ├── app/
+│       ├── public/
+│       ├── Dockerfile
+│       └── package.json
+│
+├── docker-compose.yml
+├── .env
+├── CONTRIBUTING.md
+└── README.md
+```
+
+### Descripción de Directorios
+
+**apps/api**
+- API REST en Node.js
+- Manejo de inventario, ventas y alertas
+- Integración con PostgreSQL
+
+**apps/web**
+- Interfaz de usuario con Next.js
+- Dashboard y gestión de inventario
+- Consumo de API REST
+
+## Configuración
+
+### Variables de Entorno
+
+| Variable | Descripción | Requerida |
+|---|---|---|
+| DB_USER | Usuario de PostgreSQL | Sí |
+| DB_PASSWORD | Contraseña de PostgreSQL | Sí |
+| DB_NAME | Nombre de la base de datos | Sí |
+| JWT_SECRET | Clave secreta para JWT | Sí |
+| NEXT_PUBLIC_API_URL | URL del API | Sí |
+| NODE_ENV | Ambiente (development/production) | No |
+
+## Desarrollo
+
+### Comandos Disponibles
+
+```bash
+# Backend
+cd apps/api
+npm run dev        # Inicia en modo desarrollo
+npm run build      # Compila para producción
+npm test           # Ejecuta pruebas
+
+# Frontend
+cd apps/web
+npm run dev        # Inicia en modo desarrollo
+npm run build      # Compila para producción
+npm test           # Ejecuta pruebas
+```
+
+## Contribución
+
+Por favor, lee [CONTRIBUTING.md](./CONTRIBUTING.md) para entender el proceso de contribución.
+
+## Licencia
+
+Este proyecto está bajo licencia MIT.
