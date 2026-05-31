@@ -24,7 +24,6 @@ export function CTA() {
     setFieldErrors({});
     setError(null);
 
-    // Validar con el esquema
     const result = interestSchema.safeParse(form);
     if (!result.success) {
       const errors: Record<string, string> = {};

@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import "dotenv/config";
+import routes from './routes';
 
 const PORT = process.env.PORT || 3010;
 
@@ -22,6 +23,8 @@ app.disable('x-powered-by');
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
+
+routes(app);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
