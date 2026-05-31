@@ -1,114 +1,137 @@
 'use client';
+import {
+  AlertTriangle,
+  Package,
+  BarChart3,
+  CalendarClock,
+  Bell,
+  TrendingUp,
+  ShieldCheck,
+  Check,
+} from "lucide-react";
 
 export function Features() {
+
+  const features = [
+    { icon: CalendarClock, title: "Control por lotes y caducidad", text: "Registra cada lote con su fecha. ReStock te avisa antes de que se vuelvan pérdida." },
+    { icon: Bell, title: "Alertas preventivas", text: "Notificaciones cuando un producto está por agotarse o por caducar." },
+    { icon: TrendingUp, title: "Análisis de patrones", text: "Detecta picos de venta y te sugiere cuándo y cuánto comprar." },
+    { icon: ShieldCheck, title: "Recomendaciones automáticas", text: "Listas de compra generadas con datos reales, no con intuición." },
+  ]
+
   const benefits = [
-    {
-      icon: '📊',
-      title: 'Control en Tiempo Real',
-      description: 'Visualiza tu inventario desde cualquier dispositivo instantáneamente'
-    },
-    {
-      icon: '⏰',
-      title: 'Alertas de Vencimiento',
-      description: 'Notificaciones automáticas de productos próximos a caducar'
-    },
-    {
-      icon: '📉',
-      title: 'Reducción de Pérdidas',
-      description: 'Minimiza productos obsoletos y mermas por manejo ineficiente'
-    },
-    {
-      icon: '⚡',
-      title: 'Operaciones Más Rápidas',
-      description: 'Automatiza procesos que antes hacías manualmente en hojas de cálculo'
-    },
-    {
-      icon: '💰',
-      title: 'Mayor Rentabilidad',
-      description: 'Optimiza costos y mejora márgenes con gestión eficiente'
-    },
-    {
-      icon: '🔒',
-      title: 'Datos Seguros',
-      description: 'Información centralizada y protegida en la nube'
-    }
-  ];
+    "Reduce hasta 80% las pérdidas por caducidad",
+    "Aumenta tus ventas evitando faltantes de productos clave",
+    "Ahorra horas semanales en conteo y planeación manual",
+    "Toma decisiones de compra basadas en datos reales",
+  ]
+
+  const stats = [
+    { n: "80%", l: "menos mermas" },
+    { n: "5h", l: "ahorradas/semana" },
+    { n: "+22%", l: "en ventas" },
+    { n: "24/7", l: "monitoreo activo" },
+  ]
 
   return (
-    <section className="py-16 md:py-24 bg-gradient-to-b from-gray-50 to-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-16 text-center">
-          <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">
-            El Problema que Enfrenta tu Negocio
-          </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Farmacias y tiendas pierden miles en ingresos por irregularidades en inventario y productos caducados
-          </p>
-        </div>
-
-        {/* Problem Definition */}
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
-          <div className="bg-red-50 p-8 rounded-lg border border-red-200">
-            <h3 className="text-xl font-bold text-red-900 mb-3">El Problema</h3>
-            <p className="text-red-800">
-              Irregularidades en la cantidad de productos y stock caducado que se vende o se pierde sin control.
+    <>
+      <section id="problema" className="py-24 px-6 bg-white">
+        <div className="mx-auto max-w-6xl">
+          <div className="max-w-2xl">
+            <p className="text-xs font-bold text-[#00a365] uppercase tracking-widest">El problema</p>
+            <h2 className="mt-3 text-3xl md:text-[42px] font-extrabold text-gray-950 leading-[1.15] tracking-tight">
+              Adivinar cuánto comprar te está costando dinero.
+            </h2>
+            <p className="mt-5 text-base md:text-lg text-gray-600 leading-relaxed">
+              Las tiendas de abarrotes, farmacias y mini-súpers pierden hasta el 15% de su inventario
+              por mala gestión. Revisar a ojo y a mano ya no alcanza.
             </p>
           </div>
 
-          <div className="bg-orange-50 p-8 rounded-lg border border-orange-200">
-            <h3 className="text-xl font-bold text-orange-900 mb-3">La Causa</h3>
-            <p className="text-orange-800">
-              Manejo ineficiente del inventario basado en hojas de cálculo manuales y procesos desorganizados.
+          <div className="mt-12 grid md:grid-cols-3 gap-6">
+            {[
+              { icon: AlertTriangle, title: "Productos caducados", text: "Lotes que vencen sin que nadie se entere hasta que ya no se pueden vender.", bgIcon: "bg-[#fff4ec]", textIcon: "text-[#f97316]" },
+              { icon: Package, title: "Faltantes constantes", text: "Compras insuficientes que dejan estantes vacíos y clientes insatisfechos.", bgIcon: "bg-[#f0fdf4]", textIcon: "text-[#00a365]" },
+              { icon: BarChart3, title: "Sin datos de venta", text: "Decisiones de compra basadas en intuición, no en patrones reales.", bgIcon: "bg-[#eff6ff]", textIcon: "text-[#3b82f6]" },
+            ].map((p) => (
+              <div key={p.title} className="p-8 rounded-2xl border border-gray-100 bg-white shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
+                <span className={`grid place-items-center w-12 h-12 rounded-xl ${p.bgIcon} ${p.textIcon}`}>
+                  <p.icon className="w-5 h-5" />
+                </span>
+                <h3 className="mt-5 font-bold text-lg text-gray-900">{p.title}</h3>
+                <p className="mt-2 text-gray-500 text-sm leading-relaxed">{p.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="solucion" className="py-24 px-6 bg-[#f4fbf7]">
+        <div className="mx-auto max-w-6xl">
+          <div className="text-center max-w-2xl mx-auto">
+            <p className="text-xs font-bold text-[#00a365] uppercase tracking-widest">La solución</p>
+            <h2 className="mt-3 text-3xl md:text-[42px] font-extrabold text-gray-950 leading-[1.15] tracking-tight">
+              Un sistema que piensa por tu inventario.
+            </h2>
+            <p className="mt-4 text-base md:text-lg text-gray-600 leading-relaxed">
+              ReStock combina control por lotes, alertas inteligentes y análisis de ventas en una
+              plataforma simple — pensada para negocios pequeños.
             </p>
           </div>
 
-          <div className="bg-green-50 p-8 rounded-lg border border-green-200">
-            <h3 className="text-xl font-bold text-green-900 mb-3">La Solución</h3>
-            <p className="text-green-800">
-              ReStock-SaaS: gestión inteligente de inventario que te recupera control y rentabilidad.
-            </p>
+          <div className="mt-14 grid md:grid-cols-2 gap-6">
+            {features.map((f) => (
+              <div
+                key={f.title}
+                className="p-7 rounded-2xl bg-white border border-gray-100/80 shadow-[0_4px_25px_rgba(0,0,0,0.02)] hover:shadow-[0_4px_25px_rgba(0,163,101,0.06)] transition-all duration-300"
+              >
+                <div className="flex items-start gap-4">
+                  <span className="grid place-items-center w-11 h-11 rounded-xl bg-[#00a365] text-white shrink-0 shadow-sm shadow-[#00a365]/20">
+                    <f.icon className="w-5 h-5" />
+                  </span>
+                  <div>
+                    <h3 className="font-bold text-lg text-gray-900">{f.title}</h3>
+                    <p className="mt-1.5 text-gray-500 text-sm leading-relaxed">{f.text}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
+      </section>
 
-        {/* Benefits Title */}
-        <div className="text-center mb-12">
-          <h3 className="text-2xl md:text-3xl font-bold text-gray-900">
-            Beneficios que Transforman tu Negocio
-          </h3>
-        </div>
+      <section id="beneficios" className="py-24 px-6 bg-white">
+        <div className="mx-auto max-w-6xl grid md:grid-cols-2 gap-16 items-center">
+          <div>
+            <p className="text-xs font-bold text-[#00a365] uppercase tracking-widest">Beneficios</p>
+            <h2 className="mt-3 text-3xl md:text-[42px] font-extrabold text-gray-950 leading-[1.15] tracking-tight">
+              Resultados que se notan desde la primera semana.
+            </h2>
+            <ul className="mt-8 space-y-4">
+              {benefits.map((b) => (
+                <li key={b} className="flex items-start gap-3 text-sm md:text-base text-gray-700 font-medium">
+                  <span className="grid place-items-center w-5 h-5 rounded-full bg-[#e6f6ee] text-[#00a365] mt-0.5 shrink-0">
+                    <Check className="w-3.5 h-3.5 stroke-3" />
+                  </span>
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-        {/* Benefits Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {benefits.map((benefit, index) => (
-            <div 
-              key={index}
-              className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-200"
-            >
-              <div className="text-4xl mb-3">{benefit.icon}</div>
-              <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                {benefit.title}
-              </h4>
-              <p className="text-gray-600">
-                {benefit.description}
-              </p>
-            </div>
-          ))}
+          <div className="grid grid-cols-2 gap-4">
+            {stats.map((s) => (
+              <div
+                key={s.l}
+                className="p-8 rounded-2xl bg-white border border-gray-100/90 text-center shadow-[0_4px_25px_rgba(0,0,0,0.02)]"
+              >
+                <p className="text-4xl md:text-5xl font-black text-[#00a365] tracking-tight">{s.n}</p>
+                <p className="mt-2 text-xs md:text-sm font-medium text-gray-500">{s.l}</p>
+              </div>
+            ))}
+          </div>
         </div>
-
-        {/* Call to Action */}
-        <div className="mt-16 bg-blue-600 rounded-lg p-8 md:p-12 text-center text-white">
-          <h3 className="text-2xl md:text-3xl font-bold mb-4">
-            ¿Cansado de las hojas de cálculo?
-          </h3>
-          <p className="text-blue-100 mb-6 text-lg">
-            ReStock-SaaS automatiza tu gestión de inventario. Mantén el control, evita pérdidas, aumenta ganancias.
-          </p>
-          <button className="bg-white text-blue-600 font-bold py-3 px-8 rounded-lg hover:bg-blue-50 transition">
-            Comenzar Prueba Gratuita
-          </button>
-        </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }

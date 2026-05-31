@@ -1,7 +1,0 @@
-{
-  "name": "restock-saas",
-  "version": "1.0.0",
-  "private": true,
-  "description": "ReStock SaaS Platform",
-  "packageManager": "pnpm@11.2.2"
-}
