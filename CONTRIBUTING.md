@@ -168,7 +168,7 @@ var result = cs - ad;
 
 ### Mensaje de Commit
 
-Usa mensajes descriptivos siguiendo esta estructura:
+Usa mensajes descriptivos siguiendo esta estructura. El hook `commit-msg` valida que el mensaje cumpla Conventional Commits:
 
 ```
 <tipo>: Descripción breve
@@ -182,6 +182,17 @@ Usa mensajes descriptivos siguiendo esta estructura:
 - `docs`: Cambios en documentación
 - `test`: Agregar o actualizar pruebas
 - `chore`: Cambios de dependencias, configuración, etc.
+
+Tipos permitidos por la configuración actual de Commitlint:
+
+- `feat`
+- `fix`
+- `chore`
+- `docs`
+- `refactor`
+- `test`
+
+El hook `pre-commit` ejecuta validaciones automáticas desde la raíz del repo. Si agregas nuevas validaciones, actualiza el script `check` en [package.json](./package.json) para que el hook las use.
 
 ### Ejemplos
 
