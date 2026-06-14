@@ -1,6 +1,6 @@
-import { Express } from 'express';
-import routerCTA from './cta';
+import { Express } from "express";
+import routerCTA from "./cta";
 
 export default function routes(app: Express) {
-    app.use('/cta', routerCTA);
+  app.use("/cta", routerCTA);
 }

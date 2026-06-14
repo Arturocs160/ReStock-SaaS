@@ -64,7 +64,7 @@ docker-compose up --build
 
 ### Opción 2: Instalación Local
 
-1. Instala dependencias del proyecto:
+1. Instala las dependencias raíz para activar Husky y la validación de commits:
 ```bash
 npm install
 ```
@@ -85,6 +85,20 @@ cd apps/api && npm run dev
 # Terminal 2 - Frontend
 cd apps/web && npm run dev
 ```
+
+## Husky y Conventional Commits
+
+Este repositorio usa Husky desde la raíz para centralizar validaciones antes de cada commit.
+
+- `pre-commit` ejecuta `npm run check`, que corre lint en `apps/web` y compila `apps/web` y `apps/api`.
+- `commit-msg` usa Commitlint para validar que el mensaje siga Conventional Commits.
+- Se permiten tipos como `feat`, `fix`, `chore`, `docs`, `refactor` y `test`.
+
+Para mantenerlo:
+
+- Si agregas nuevas validaciones, actualiza `check` en [package.json](./package.json).
+- Si necesitas nuevos tipos de commit, ajusta [commitlint.config.cjs](./commitlint.config.cjs).
+- Si los hooks dejan de ejecutarse, vuelve a correr `npm install` en la raíz para reactivar Husky.
 
 ## Estructura del Proyecto
 
