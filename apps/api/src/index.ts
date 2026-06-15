@@ -7,7 +7,7 @@ import logger from "./utils/logger";
 
 const PORT = process.env.PORT || 3010;
 
-const app = express();
+export const app = express();
 
 app.use(
   cors({
@@ -41,6 +41,8 @@ app.use((err: any, req: any, res: any, _next: any) => {
   res.status(500).json({ error: "Internal Server Error" });
 });
 
-app.listen(PORT, () => {
-  logger.info({ port: PORT }, "Server is running");
-});
+if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, () => {
+    logger.info({ port: PORT }, "Server is running");
+  });
+}

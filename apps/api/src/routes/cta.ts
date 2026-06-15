@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { createInterest } from "../controllers/ctaController";
+import { createInterestController } from "../controllers/ctaController";
 
 const routerCTA: Router = Router();
 
-routerCTA.post("/", createInterest);
+routerCTA.post("/", createInterestController);
 
 export default routerCTA;
