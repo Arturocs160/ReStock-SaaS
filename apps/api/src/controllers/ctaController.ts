@@ -1,13 +1,30 @@
 import { Request, Response } from "express";
-import { createInterestService } from "../services/ctaServices";
+import { createInterest } from "../services/ctaServices";
+import { ctaSchema } from "../schemas/ctaSchema";
 
-export async function createInterest(req: Request, res: Response) {
+export async function createInterestController(req: Request, res: Response) {
   try {
-    const { nombre, negocio, telefono } = req.body;
-    console.log(`Received interest from: ${nombre}, ${negocio}, ${telefono}`);
-    await createInterestService(nombre, negocio, telefono);
-    res.status(201).json({ message: "Registro exitoso" });
-  } catch (error) {
+    // Validate input data
+    const validatedData = ctaSchema.parse(req.body);
+
+    // Call the service with validated data
+    const result = await createInterest(validatedData);
+
+    res.status(201).json(result);
+  } catch (error: any) {
+    if (error.name === "ZodError") {
+      return res.status(400).json({
+        message: "Datos inválidos",
+        errors: error.errors,
+      });
+    }
+
+    if (error.message === "Email already registered") {
+      return res.status(409).json({
+        message: error.message,
+      });
+    }
+
     console.error("Error creating interest:", error);
     res.status(500).json({ message: "Internal server error" });
   }
