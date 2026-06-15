@@ -1,6 +1,8 @@
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { Rate, Trend } from 'k6/metrics';
+// Importación necesaria para que textSummary funcione nativamente
+import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.2/index.js';
 
 // Custom metrics
 const ctaErrors = new Rate('cta_errors');
@@ -55,11 +57,12 @@ export default function () {
 
 export function handleSummary(data) {
   return {
-    stdout: textSummary(data, { indent: ' ', enableColors: true }),
+    stdout: customTextSummary(data, { indent: ' ', enableColors: true }),
   };
 }
 
-function textSummary(data, options) {
+// Cambiado el nombre a customTextSummary para usar internamente la librería oficial de k6 sin colisiones
+function customTextSummary(data, options) {
   let summary = '\n=== CTA Endpoints Load Test Summary ===\n';
 
   summary += `\nHTTP Requests:\n`;
@@ -67,19 +70,25 @@ function textSummary(data, options) {
   summary += `  Failed: ${data.metrics.http_req_failed.value}\n`;
   summary += `  Success Rate: ${((1 - data.metrics.http_req_failed.value / data.metrics.http_reqs.value) * 100).toFixed(2)}%\n`;
 
+  // Extracción e interpolación segura de objetos (Reemplazo de ?.)
+  const durationValues = data.metrics.http_req_duration && data.metrics.http_req_duration.values;
   summary += `\nResponse Times (ms):\n`;
-  summary += `  Min: ${data.metrics.http_req_duration.values.min?.toFixed(2)}\n`;
-  summary += `  Max: ${data.metrics.http_req_duration.values.max?.toFixed(2)}\n`;
-  summary += `  Avg: ${data.metrics.http_req_duration.values.avg?.toFixed(2)}\n`;
-  summary += `  p95: ${data.metrics.http_req_duration.values['p(95)']?.toFixed(2)}\n`;
-  summary += `  p99: ${data.metrics.http_req_duration.values['p(99)']?.toFixed(2)}\n`;
+  summary += `  Min: ${durationValues && durationValues.min ? durationValues.min.toFixed(2) : 'N/A'}\n`;
+  summary += `  Max: ${durationValues && durationValues.max ? durationValues.max.toFixed(2) : 'N/A'}\n`;
+  summary += `  Avg: ${durationValues && durationValues.avg ? durationValues.avg.toFixed(2) : 'N/A'}\n`;
+  summary += `  p95: ${durationValues && durationValues['p(95)'] ? durationValues['p(95)'].toFixed(2) : 'N/A'}\n`;
+  summary += `  p99: ${durationValues && durationValues['p(99)'] ? durationValues['p(99)'].toFixed(2) : 'N/A'}\n`;
 
+  const latencyValues = data.metrics.cta_latency && data.metrics.cta_latency.values;
   summary += `\nCTA Metrics:\n`;
   summary += `  Error Rate: ${(data.metrics.cta_errors.value * 100).toFixed(2)}%\n`;
-  summary += `  Avg Latency: ${data.metrics.cta_latency.values.avg?.toFixed(2)}ms\n`;
-  summary += `  p95 Latency: ${data.metrics.cta_latency.values['p(95)']?.toFixed(2)}ms\n`;
+  summary += `  Avg Latency: ${latencyValues && latencyValues.avg ? latencyValues.avg.toFixed(2) : 'N/A'}ms\n`;
+  summary += `  p95 Latency: ${latencyValues && latencyValues['p(95)'] ? latencyValues['p(95)'].toFixed(2) : 'N/A'}ms\n`;
 
   summary += `\n=====================================\n`;
+
+  // Anexa también el reporte estándar detallado de k6 debajo del personalizado
+  summary += textSummary(data, options);
 
   return summary;
 }
