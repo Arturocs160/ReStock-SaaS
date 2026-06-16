@@ -1,148 +1,38 @@
-'use client';
+import { LoginForm } from "../components/loginForm";
+import { DemoPanel } from "../components/demoPanel";
+import { Logo } from "../components/logo";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useAuth } from '../context/AuthContext';
-import { loginSchema, type LoginFormData } from '../lib/validationsAuth';
-import { ZodError } from 'zod';
+export const metadata = {
+  title: "Inicio de Sesión - ReStock",
+  description: "Inicia sesión en ReStock para gestionar tu inventario de forma inteligente.",
+}
 
 export default function LoginPage() {
-  const router = useRouter();
-  const { login, isLoading, error: authError } = useAuth();
-  const [formData, setFormData] = useState<LoginFormData>({ email: '', password: '' });
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [error, setError] = useState('');
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    // Limpiar error del campo cuando el usuario escribe
-    if (errors[name]) {
-      setErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setErrors({});
-
-    try {
-      // Validar con Zod
-      loginSchema.parse(formData);
-
-      // Enviar login
-      await login(formData.email, formData.password);
-
-      // Si login es exitoso, redirigir a dashboard
-      router.push('/dashboard');
-    } catch (err) {
-      if (err instanceof ZodError) {
-        const newErrors: Record<string, string> = {};
-        err.errors.forEach(error => {
-          const path = error.path[0] as string;
-          newErrors[path] = error.message;
-        });
-        setErrors(newErrors);
-      } else if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('Error al iniciar sesión');
-      }
-    }
-  };
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8">
-        {/* Header */}
-        <div className="text-center">
-          <div className="inline-block p-3 bg-green-600 rounded-full mb-4">
-            <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a6 6 0 110-12 6 6 0 010 12z" />
-            </svg>
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <main className="mx-auto w-full px-4">
+        <div className="w-full max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center py-12 sm:py-20 justify-items-center">
+          <div className="col-span-full flex justify-center mb-6 md:mb-0">
+            <Logo />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">ReStock</h1>
-          <p className="mt-2 text-gray-600">Inicia sesión en tu cuenta</p>
-        </div>
+          <section className="w-full max-w-md bg-white/90 dark:bg-black/60 border border-gray-100 rounded-2xl p-8 shadow-sm">
+            <h1 className="text-2xl font-bold text-gray-900">Inicia sesión</h1>
+            <p className="mt-2 text-sm text-gray-500">Accede a tu cuenta para probar ReStock.</p>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="mt-8 space-y-6 bg-white p-8 rounded-lg shadow-md">
-          {(error || authError) && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-700">{error || authError}</p>
+            <div className="mt-6">
+              <LoginForm />
             </div>
-          )}
 
-          {/* Email */}
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Correo electrónico
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="tu@email.com"
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                errors.email ? 'border-red-500' : 'border-gray-300'
-              }`}
-            />
-            {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
-          </div>
+            <div className="mt-6 text-sm text-gray-600">
+              <p>¿No tienes cuenta? <a href="/register" className="text-[#00a365] font-medium hover:underline">Regístrate gratis</a></p>
+            </div>
+          </section>
 
-          {/* Password */}
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              Contraseña
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="••••••"
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                errors.password ? 'border-red-500' : 'border-gray-300'
-              }`}
-            />
-            {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
-          </div>
-
-          {/* Submit */}
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-green-600 text-white py-2 rounded-lg font-medium hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
-          </button>
-        </form>
-
-        {/* Footer */}
-        <div className="text-center space-y-3">
-          <p className="text-gray-600">
-            ¿No tienes cuenta?{' '}
-            <Link href="/register" className="text-green-600 hover:text-green-700 font-medium">
-              Regístrate gratis
-            </Link>
-          </p>
-          <p className="text-xs text-gray-500">
-            Al iniciar sesión aceptas nuestros{' '}
-            <Link href="#" className="text-green-600 hover:text-green-700">
-              términos de servicio
-            </Link>
-          </p>
+          <aside className="order-first md:order-last w-full max-w-md">
+            <DemoPanel />
+          </aside>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
