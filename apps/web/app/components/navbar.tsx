@@ -37,7 +37,13 @@ export function Navbar() {
           ))}
         </nav>
 
-        <div className="hidden md:flex items-center shrink-0">
+        <div className="hidden md:flex items-center gap-4 shrink-0">
+          <a 
+            href="/dashboard"
+            className="text-gray-600 hover:text-gray-900 font-medium text-sm px-4 py-2 transition"
+          >
+            Dashboard
+          </a>
           <a 
             href="#cta"
             className="bg-[#00a365] hover:bg-[#008c54] text-white font-medium text-sm px-5 py-2.5 rounded-full transition shadow-sm"
@@ -73,7 +79,14 @@ export function Navbar() {
               </a>
             ))}
           </nav>
-          <div className="pt-2 border-t border-gray-100">
+          <div className="pt-2 border-t border-gray-100 flex flex-col gap-2">
+            <a 
+              href="/dashboard"
+              className="block w-full border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium text-sm px-5 py-2.5 rounded-full transition text-center"
+              onClick={() => setIsOpen(false)}
+            >
+              Dashboard
+            </a>
             <a 
               href="#cta"
               className="block w-full bg-[#00a365] hover:bg-[#008c54] text-white font-medium text-sm px-5 py-2.5 rounded-full transition shadow-sm text-center"
