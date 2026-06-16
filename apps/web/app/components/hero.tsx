@@ -1,5 +1,6 @@
 'use client';
 import { Sparkles, ArrowRight, AlertTriangle, TrendingUp } from "lucide-react";
+import Image from "next/image";
 
 export function Hero() {
   return (
@@ -42,7 +43,7 @@ export function Hero() {
 
         <div className="relative flex justify-center items-center lg:p-6">
           <div className="relative w-full max-w-135">
-            <img
+            <Image
               src="/hero-image.jpg"
               alt="Dueña de tienda gestionando inventario con ReStock"
               width={1280}

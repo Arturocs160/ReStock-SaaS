@@ -50,39 +50,19 @@ export function Navbar() {
           </nav>
         )}
 
-        <div className="hidden md:flex items-center shrink-0 gap-4">
-          {isAuthenticated ? (
-            <>
-              <span className="text-sm text-gray-600">{user?.name}</span>
-              <Link
-                href="/dashboard"
-                className="text-gray-700 hover:text-gray-900 font-medium text-sm px-4 py-2 rounded-lg transition"
-              >
-                Dashboard
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="bg-red-600 hover:bg-red-700 text-white font-medium text-sm px-5 py-2.5 rounded-full transition shadow-sm"
-              >
-                Cerrar sesión
-              </button>
-            </>
-          ) : (
-            <>
-              <Link
-                href="/login"
-                className="text-gray-700 hover:text-gray-900 font-medium text-sm px-4 py-2 rounded-lg transition"
-              >
-                Inicia sesión
-              </Link>
-              <Link
-                href="/register"
-                className="bg-[#00a365] hover:bg-[#008c54] text-white font-medium text-sm px-5 py-2.5 rounded-full transition shadow-sm"
-              >
-                Pruébalo gratis
-              </Link>
-            </>
-          )}
+        <div className="hidden md:flex items-center gap-4 shrink-0">
+          <a 
+            href="/dashboard"
+            className="text-gray-600 hover:text-gray-900 font-medium text-sm px-4 py-2 transition"
+          >
+            Dashboard
+          </a>
+          <a 
+            href="#cta"
+            className="bg-[#00a365] hover:bg-[#008c54] text-white font-medium text-sm px-5 py-2.5 rounded-full transition shadow-sm"
+          >
+            Pruébalo gratis
+          </a>
         </div>
 
         <button
