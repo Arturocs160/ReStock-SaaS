@@ -1,8 +1,8 @@
-import { Sidebar } from "../dashboard-components/Sidebar";
-import { Topbar } from "../dashboard-components/Topbar";
-import { MetricsCards } from "../dashboard-components/MetricsCards";
-import { AlertsPanel } from "../dashboard-components/AlertsPanel";
-import { RecentSales } from "../dashboard-components/RecentSales";
+import { Sidebar } from "../components/dashboard/Sidebar";
+import { Topbar } from "../components/dashboard/Topbar";
+import { MetricsCards } from "../components/dashboard/MetricsCards";
+import { AlertsPanel } from "../components/dashboard/AlertsPanel";
+import { RecentSales } from "../components/dashboard/RecentSales";
 
 export default function DashboardPage() {
     return (

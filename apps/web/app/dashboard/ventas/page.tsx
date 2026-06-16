@@ -1,5 +1,5 @@
-import { Sidebar } from "../../dashboard-components/Sidebar";
-import { Topbar } from "../../dashboard-components/Topbar";
+import { Sidebar } from "../../components/dashboard/Sidebar";
+import { Topbar } from "../../components/dashboard/Topbar";
 
 export default function VentasPage() {
   return (
