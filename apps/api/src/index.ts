@@ -1,13 +1,19 @@
 import express from "express";
+import { Express } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import "dotenv/config";
 import routes from "./routes";
 import logger from "./utils/logger";
+import { toNodeHandler } from "better-auth/node";
+import { auth } from "./utils/auth";
 
-const PORT = process.env.PORT || 3010;
 
-export const app = express();
+const PORT = Number(process.env.PORT) || 3010;
+
+export const app: Express = express();
+
+app.all("/api/auth/*splat", toNodeHandler(auth));
 
 app.use(
   cors({
@@ -17,6 +23,7 @@ app.use(
     credentials: true,
   })
 );
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
@@ -43,6 +50,7 @@ app.use((err: any, req: any, res: any, _next: any) => {
 
 if (process.env.NODE_ENV !== "test") {
   app.listen(PORT, () => {
-    logger.info({ port: PORT }, "Server is running");
+    logger.info({ port: PORT }, "Server is running"); // restarted
   });
 }
+
