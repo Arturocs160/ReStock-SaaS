@@ -2,12 +2,12 @@
 import { useState } from 'react';
 import { Package, Menu, X } from "lucide-react";
 import Link from 'next/link';
-import { useAuth } from '../context/AuthContext';
+import { useAuthStore } from '../store/authStore';
 import { useRouter } from 'next/navigation';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, logout, isAuthenticated } = useAuth();
+  const { user, logout, isAuthenticated } = useAuthStore();
   const router = useRouter();
 
   const sections = [

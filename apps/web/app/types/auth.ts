@@ -4,7 +4,7 @@ export interface User {
   email: string;
   name: string;
   role?: string;
-  businessName?: string;
+  nombre?: string;
   createdAt?: string;
 }
 

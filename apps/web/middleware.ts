@@ -6,15 +6,12 @@ const PROTECTED_ROUTES = ['/dashboard'];
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Obtener la cookie de sesión (buscar múltiples nombres posibles)
-  const session = request.cookies.get('auth.session') || request.cookies.get('session') || request.cookies.get('__session');
+  const session = request.cookies.get('better-auth.session_token') || request.cookies.get('auth.session') || request.cookies.get('session') || request.cookies.get('__session');
 
-  // Si es ruta protegida y no hay sesión, redirigir a login
   if (PROTECTED_ROUTES.some(route => pathname.startsWith(route)) && !session) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  // Si es ruta pública (login/register) y hay sesión, redirigir a dashboard
   if ((pathname === '/login' || pathname === '/register') && session) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }

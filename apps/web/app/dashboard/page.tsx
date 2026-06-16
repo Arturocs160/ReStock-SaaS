@@ -1,12 +1,12 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../context/AuthContext';
+import { useAuthStore } from '../store/authStore';
 import { useEffect } from 'react';
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { user, logout, isLoading } = useAuth();
+  const { user, logout, isLoading } = useAuthStore();
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -71,10 +71,10 @@ export default function DashboardPage() {
                 <dt className="text-sm text-gray-600">Rol</dt>
                 <dd className="text-gray-900 font-medium">{user.role || 'Usuario'}</dd>
               </div>
-              {user.businessName && (
+              {user.nombre && (
                 <div>
                   <dt className="text-sm text-gray-600">Negocio</dt>
-                  <dd className="text-gray-900 font-medium">{user.businessName}</dd>
+                  <dd className="text-gray-900 font-medium">{user.nombre}</dd>
                 </div>
               )}
             </dl>
