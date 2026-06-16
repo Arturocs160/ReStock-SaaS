@@ -83,7 +83,7 @@ export async function deleteProductController(req: Request, res: Response) {
         }
 
         const product = await deleteProductService(id_producto, id_negocio);
-        res.status(200).json(product);
+        res.status(204).json(product);
     } catch (error: any) {
         logger.error("Error al eliminar el producto del negocio:" + error);
         res.status(500).json({ message: "Error interno del servidor" });

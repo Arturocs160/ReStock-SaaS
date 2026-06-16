@@ -71,7 +71,7 @@ export async function deleteLoteController(req: Request, res: Response) {
         }
 
         const result = await deleteLoteService(id_lote, id_negocio);
-        res.status(200).json(result);
+        res.status(204).json(result);
     } catch (error: any) {
         logger.error("Error al eliminar lote" + error);
         res.status(500).json({ error: error.message });
