@@ -50,7 +50,6 @@ describe('CTA Component', () => {
 
     it('should render submit button', () => {
       render(<CTA />);
-      const submitButton = screen.queryByRole('button', { name: /enviar/i });
       // If button text is different, just check that form exists
       const form = screen.getByRole('form', { hidden: true }) || document.querySelector('form');
       expect(form).toBeInTheDocument();
@@ -288,8 +287,6 @@ describe('CTA Component', () => {
       render(<CTA />);
       
       const nombreInput = screen.getByPlaceholderText('Tu nombre');
-      const negocioInput = screen.getByPlaceholderText('Abarrotes Don Pepe');
-      const telefonoInput = screen.getByPlaceholderText('+52 5551234567');
       
       // Submit with incomplete/invalid data
       const form = nombreInput.closest('form');
