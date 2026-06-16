@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   DollarSign,
   Layers3,
@@ -41,6 +42,7 @@ export function MetricsCards() {
       iconColor: "text-red-600",
       valueColor: "text-red-600",
       subtitleColor: "text-red-500",
+      href: "/dashboard/compras",
     },
     {
       title: "PRODUCTOS CADUCADOS",
@@ -51,6 +53,7 @@ export function MetricsCards() {
       iconColor: "text-red-600",
       valueColor: "text-red-600",
       subtitleColor: "text-red-500",
+      href: "/dashboard/vencimientos",
     },
   ];
 
@@ -58,6 +61,61 @@ export function MetricsCards() {
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
       {metrics.map((metric) => {
         const Icon = metric.icon;
+        const isClickable = !!metric.href;
+
+        const cardContent = (
+          <>
+            <div className="flex-1 min-w-0">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">
+                {metric.title}
+              </p>
+
+              <h3
+                className={`text-3xl md:text-[38px] font-bold leading-none mt-2 ${metric.valueColor}`}
+              >
+                {metric.value}
+              </h3>
+
+              <p
+                className={`text-[10px] md:text-[11px] mt-1 font-medium whitespace-nowrap ${metric.subtitleColor} ${isClickable ? "group-hover:underline" : ""
+                  }`}
+              >
+                {metric.subtitle}
+              </p>
+            </div>
+
+            <div
+              className={`
+                shrink-0
+                w-12
+                h-12
+                rounded-2xl
+                flex
+                items-center
+                justify-center
+                ml-3
+                ${metric.iconBg}
+              `}
+            >
+              <Icon
+                size={22}
+                className={metric.iconColor}
+              />
+            </div>
+          </>
+        );
+
+        if (isClickable && metric.href) {
+          return (
+            <Link
+              key={metric.title}
+              href={metric.href}
+              className="bg-white dark:bg-[#0f0f0f] border border-gray-100 dark:border-gray-900 rounded-2xl p-6 shadow-sm flex items-center justify-between hover:shadow-md transition cursor-pointer group"
+            >
+              {cardContent}
+            </Link>
+          );
+        }
 
         return (
           <div
@@ -76,42 +134,7 @@ export function MetricsCards() {
               min-h-[112px]
             "
           >
-            <div className="flex-1 min-w-0">
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">
-                {metric.title}
-              </p>
-
-              <h3
-                className={`text-3xl md:text-[38px] font-bold leading-none mt-2 ${metric.valueColor}`}
-              >
-                {metric.value}
-              </h3>
-
-              <p
-                className={`text-[10px] md:text-[11px] mt-1 font-medium whitespace-nowrap ${metric.subtitleColor}`}
-              >
-                {metric.subtitle}
-              </p>
-            </div>
-
-            <div
-              className={`
-                flex-shrink-0
-                w-12
-                h-12
-                rounded-2xl
-                flex
-                items-center
-                justify-center
-                ml-3
-                ${metric.iconBg}
-              `}
-            >
-              <Icon
-                size={22}
-                className={metric.iconColor}
-              />
-            </div>
+            {cardContent}
           </div>
         );
       })}

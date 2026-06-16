@@ -49,11 +49,10 @@ export function Sidebar() {
       <nav className="space-y-2">
         <Link
           href="/dashboard"
-          className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium ${
-            pathname === "/dashboard"
-              ? "bg-[#DFF9E6] text-[#07B474]"
-              : "text-gray-600 hover:bg-gray-50"
-          }`}
+          className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium ${pathname === "/dashboard"
+            ? "bg-[#DFF9E6] text-[#07B474]"
+            : "text-gray-600 hover:bg-gray-50"
+            }`}
         >
           <span className="flex items-center gap-2">
             <TrendingUp size={18} />
@@ -67,11 +66,10 @@ export function Sidebar() {
 
         <Link
           href="/dashboard/ventas"
-          className={`w-full flex items-center gap-2 px-4 py-3 rounded-xl ${
-            pathname === "/dashboard/ventas"
-              ? "bg-[#DFF9E6] text-[#07B474]"
-              : "text-gray-600 hover:bg-gray-50"
-          }`}
+          className={`w-full flex items-center gap-2 px-4 py-3 rounded-xl ${pathname === "/dashboard/ventas"
+            ? "bg-[#DFF9E6] text-[#07B474]"
+            : "text-gray-600 hover:bg-gray-50"
+            }`}
         >
           <ShoppingCart size={18} />
           Generar venta
@@ -79,11 +77,10 @@ export function Sidebar() {
 
         <Link
           href="/dashboard/inventario"
-          className={`w-full flex items-center gap-2 px-4 py-3 rounded-xl ${
-            pathname === "/dashboard/inventario"
-              ? "bg-[#DFF9E6] text-[#07B474]"
-              : "text-gray-600 hover:bg-gray-50"
-          }`}
+          className={`w-full flex items-center gap-2 px-4 py-3 rounded-xl ${pathname === "/dashboard/inventario"
+            ? "bg-[#DFF9E6] text-[#07B474]"
+            : "text-gray-600 hover:bg-gray-50"
+            }`}
         >
           <Layers size={18} />
           Inventario por lotes
@@ -91,11 +88,10 @@ export function Sidebar() {
 
         <Link
           href="/dashboard/vencimientos"
-          className={`w-full flex items-center justify-between px-4 py-3 rounded-xl ${
-            pathname === "/dashboard/vencimientos"
-              ? "bg-[#DFF9E6] text-[#07B474]"
-              : "text-gray-600 hover:bg-gray-50"
-          }`}
+          className={`w-full flex items-center justify-between px-4 py-3 rounded-xl ${pathname === "/dashboard/vencimientos"
+            ? "bg-[#DFF9E6] text-[#07B474]"
+            : "text-gray-600 hover:bg-gray-50"
+            }`}
         >
           <span className="flex items-center gap-2">
             <Clock size={18} />
@@ -109,11 +105,10 @@ export function Sidebar() {
 
         <Link
           href="/dashboard/compras"
-          className={`w-full flex items-center gap-2 px-4 py-3 rounded-xl ${
-            pathname === "/dashboard/compras"
-              ? "bg-orange-50 text-orange-500"
-              : "text-gray-600 hover:bg-gray-50"
-          }`}
+          className={`w-full flex items-center gap-2 px-4 py-3 rounded-xl ${pathname === "/dashboard/compras"
+            ? "bg-orange-50 text-orange-500"
+            : "text-gray-600 hover:bg-gray-50"
+            }`}
         >
           <TrendingUp size={18} />
           Planificación de compras
@@ -121,11 +116,10 @@ export function Sidebar() {
 
         <Link
           href="/dashboard/historial"
-          className={`w-full flex items-center gap-2 px-4 py-3 whitespace-nowrap rounded-xl ${
-            pathname === "/dashboard/historial"
-              ? "bg-[#DFF9E6] text-[#07B474]"
-              : "text-gray-600 hover:bg-gray-50"
-          }`}
+          className={`w-full flex items-center gap-2 px-4 py-3 whitespace-nowrap rounded-xl ${pathname === "/dashboard/historial"
+            ? "bg-[#DFF9E6] text-[#07B474]"
+            : "text-gray-600 hover:bg-gray-50"
+            }`}
         >
           <History size={18} />
           Historial de ventas
@@ -133,11 +127,10 @@ export function Sidebar() {
 
         <Link
           href="/dashboard/configuracion"
-          className={`w-full flex items-center gap-2 px-4 py-3 rounded-xl ${
-            pathname === "/dashboard/configuracion"
-              ? "bg-[#DFF9E6] text-[#07B474]"
-              : "text-gray-600 hover:bg-gray-50"
-          }`}
+          className={`w-full flex items-center gap-2 px-4 py-3 rounded-xl ${pathname === "/dashboard/configuracion"
+            ? "bg-[#DFF9E6] text-[#07B474]"
+            : "text-gray-600 hover:bg-gray-50"
+            }`}
         >
           <Store size={18} />
           Configuración
@@ -161,7 +154,7 @@ export function Sidebar() {
           </div>
         </div>
 
-        <button className="mt-4 flex items-center gap-2 text-gray-500">
+        <button className="mt-8 flex items-center gap-2 text-gray-500 cursor-pointer hover:text-red-500">
           <LogOut size={18} />
           Cerrar Sesión (Demo)
         </button>

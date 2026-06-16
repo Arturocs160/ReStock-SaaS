@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   AlertTriangle,
   TrendingUp,
@@ -40,9 +41,12 @@ export function AlertsPanel() {
               promoción de venta rápida.
             </p>
 
-            <button className="text-orange-600 text-xs font-semibold mt-2">
+            <Link
+              href="/dashboard/vencimientos"
+              className="text-orange-600 text-xs font-semibold mt-2 inline-block hover:underline"
+            >
               Ver lotes críticos →
-            </button>
+            </Link>
           </div>
         </div>
       </div>
@@ -69,9 +73,12 @@ export function AlertsPanel() {
               que necesitas comprar mercancía pronto.
             </p>
 
-            <button className="text-green-600 text-xs font-semibold mt-2">
+            <Link
+              href="/dashboard/compras"
+              className="text-green-600 text-xs font-semibold mt-2 inline-block hover:underline"
+            >
               Ver planeador de compras →
-            </button>
+            </Link>
           </div>
         </div>
       </div>

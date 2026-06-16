@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
 
 export function RecentSales() {
@@ -47,12 +48,15 @@ export function RecentSales() {
                         size={18}
                         className="text-green-600"
                     />
-                    Últimas Ventas (POS)
+                    Últimas Ventas
                 </h2>
 
-                <button className="text-green-600 text-sm font-semibold hover:text-green-700">
+                <Link
+                    href="/dashboard/ventas"
+                    className="text-green-600 text-sm font-semibold hover:text-green-700 hover:underline"
+                >
                     Vender
-                </button>
+                </Link>
             </div>
 
             {/* Lista de ventas */}
