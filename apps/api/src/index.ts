@@ -13,7 +13,6 @@ const PORT = Number(process.env.PORT) || 3010;
 
 export const app: Express = express();
 
-app.all("/api/auth/*splat", toNodeHandler(auth));
 
 app.use(
   cors({
@@ -23,6 +22,8 @@ app.use(
     credentials: true,
   })
 );
+
+app.all("/api/auth/*splat", toNodeHandler(auth));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

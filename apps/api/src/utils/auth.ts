@@ -48,8 +48,6 @@ export const auth = betterAuth({
 
                     const body = await context.request.json().catch(() => ({})) as { nombre?: string };
 
-                    console.log(body)
-
                     const nombreNegocio = body?.nombre || `Negocio de ${user.name}`;
 
                     const subdominio = nombreNegocio
