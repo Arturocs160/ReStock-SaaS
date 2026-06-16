@@ -37,6 +37,11 @@ export const auth = betterAuth({
                 type: "string",
                 required: false,
             },
+            id_negocio: {
+                type: "string",
+                required: false,
+                input: false
+            },
         },
     },
     databaseHooks: {
