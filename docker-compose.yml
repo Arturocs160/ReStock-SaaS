@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   postgres:
-    image: postgres:16-alpine
+    image: postgres:18.4-alpine3.23
     container_name: restock-db
     environment:
       POSTGRES_USER: ${DB_USER:-restock}
@@ -13,7 +13,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-restock}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-restock}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -64,9 +64,26 @@ services:
       - restock-network
     restart: unless-stopped
 
+  redis:
+    image: redis:8.8.0-alpine
+    container_name: restock-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: [ "CMD-SHELL", "redis-cli ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - restock-network
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   development:
+  redis_data:
 
 networks:
   restock-network:
