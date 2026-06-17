@@ -8,6 +8,7 @@ export const productoSchema = z.object({
     precio_actual: z.number().positive(),
     stock_minimo_sugerido: z.number().int().nonnegative().default(0),
     activo: z.boolean().default(true),
+    id_categoria: z.string().uuid().nullable().optional(),
 });
 
 export const loteInventarioSchema = z.object({
