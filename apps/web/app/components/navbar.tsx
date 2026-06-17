@@ -28,7 +28,7 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-100">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
-        
+
         <Link href={isAuthenticated ? "/dashboard" : "/"} className="flex items-center gap-2 sm:gap-3 font-semibold text-lg sm:text-xl text-gray-900 shrink-0">
           <span className="grid place-items-center w-10 h-10 rounded-full text-white bg-[#00a365]">
             <Package className="w-5 h-5" />
@@ -51,13 +51,13 @@ export function Navbar() {
         )}
 
         <div className="hidden md:flex items-center gap-4 shrink-0">
-          <a 
+          <a
             href="/dashboard"
             className="text-gray-600 hover:text-gray-900 font-medium text-sm px-4 py-2 transition"
           >
-            Dashboard
+            Iniciar sesion
           </a>
-          <a 
+          <a
             href="#cta"
             className="bg-[#00a365] hover:bg-[#008c54] text-white font-medium text-sm px-5 py-2.5 rounded-full transition shadow-sm"
           >
@@ -98,7 +98,7 @@ export function Navbar() {
             {isAuthenticated ? (
               <>
                 <div className="text-sm text-gray-600 py-2">{user?.name}</div>
-                <Link 
+                <Link
                   href="/dashboard"
                   className="block w-full text-gray-700 hover:text-gray-900 font-medium text-sm px-5 py-2.5 rounded-lg transition"
                   onClick={() => setIsOpen(false)}
@@ -114,7 +114,7 @@ export function Navbar() {
               </>
             ) : (
               <>
-                <Link 
+                <Link
                   href="/login"
                   className="block w-full text-gray-700 hover:text-gray-900 font-medium text-sm px-5 py-2.5 rounded-lg transition text-center mb-2"
                   onClick={() => setIsOpen(false)}
