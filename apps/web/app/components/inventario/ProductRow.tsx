@@ -1,7 +1,8 @@
 "use client";
 
 import { ChevronUp, ChevronDown, Plus, Edit3, Trash2 } from "lucide-react";
-import { ProductoConStock, LoteInventario, getExpirationStatus } from "../../dashboard/inventario/page";
+import { ProductoConStock, LoteInventario } from "../../types/inventario";
+import { getExpirationStatus } from "../../dashboard/inventario/page";
 
 interface ProductRowProps {
     producto: ProductoConStock;
@@ -116,8 +117,8 @@ export function ProductRow({
                                                 return (
                                                     <tr key={l.id_lote} className="hover:bg-gray-50/30 dark:hover:bg-gray-900/5 transition">
                                                         <td className="px-4 py-2.5 font-bold text-gray-700 dark:text-gray-300 whitespace-nowrap">{l.codigo_lote}</td>
-                                                        <td className="px-4 py-2.5 text-gray-500 whitespace-nowrap">{l.fecha_ingreso}</td>
-                                                        <td className="px-4 py-2.5 text-gray-500 whitespace-nowrap">{l.fecha_caducidad || "N/A"}</td>
+                                                        <td className="px-4 py-2.5 text-gray-500 whitespace-nowrap">{new Date(l.fecha_ingreso).toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: '2-digit' })}</td>
+                                                        <td className="px-4 py-2.5 text-gray-500 whitespace-nowrap">{new Date(l.fecha_caducidad!).toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: '2-digit' })}</td>
                                                         <td className="px-4 py-2.5 text-gray-500 whitespace-nowrap">{l.cantidad_inicial} uds.</td>
                                                         <td className="px-4 py-2.5 font-semibold text-gray-900 dark:text-white whitespace-nowrap">{l.cantidad_actual} uds.</td>
                                                         <td className="px-4 py-2.5 whitespace-nowrap">

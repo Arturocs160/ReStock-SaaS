@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
-import { ProductoConStock } from "../../dashboard/inventario/page";
+import { ProductoConStock } from "../../types/inventario";
 
 interface EditProductModalProps {
     onClose: () => void;
