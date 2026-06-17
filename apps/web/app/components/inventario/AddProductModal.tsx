@@ -2,22 +2,24 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
+import { Categoria } from "../../types/inventario";
 
 interface AddProductModalProps {
     onClose: () => void;
+    categories: Categoria[];
     onConfirm: (
         name: string,
         barcode: string,
-        category: string,
+        id_categoria: string | null,
         price: number,
         minStock: number
     ) => void;
 }
 
-export function AddProductModal({ onClose, onConfirm }: AddProductModalProps) {
+export function AddProductModal({ onClose, categories, onConfirm }: AddProductModalProps) {
     const [name, setName] = useState("");
     const [barcode, setBarcode] = useState("");
-    const [category, setCategory] = useState("Bebidas");
+    const [idCategoria, setIdCategoria] = useState("");
     const [price, setPrice] = useState("");
     const [minStock, setMinStock] = useState("");
 
@@ -26,7 +28,7 @@ export function AddProductModal({ onClose, onConfirm }: AddProductModalProps) {
         const priceNum = parseFloat(price);
         const minStockNum = parseInt(minStock);
 
-        onConfirm(name, barcode, category, priceNum, minStockNum);
+        onConfirm(name, barcode, idCategoria === "" ? null : idCategoria, priceNum, minStockNum);
     };
 
     return (
@@ -67,17 +69,16 @@ export function AddProductModal({ onClose, onConfirm }: AddProductModalProps) {
                         <div className="space-y-1">
                             <label className="text-xs font-bold text-gray-500 uppercase">Categoría</label>
                             <select
-                                value={category}
-                                onChange={(e) => setCategory(e.target.value)}
+                                value={idCategoria}
+                                onChange={(e) => setIdCategoria(e.target.value)}
                                 className="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white dark:text-white cursor-pointer"
                             >
-                                <option value="Bebidas">Bebidas</option>
-                                <option value="Lácteos">Lácteos</option>
-                                <option value="Panadería">Panadería</option>
-                                <option value="Abarrotes">Abarrotes</option>
-                                <option value="Limpieza">Limpieza</option>
-                                <option value="Enlatados">Enlatados</option>
-                                <option value="Snacks">Snacks</option>
+                                <option value="">Sin categoría</option>
+                                {categories.map((cat) => (
+                                    <option key={cat.id_categoria} value={cat.id_categoria}>
+                                        {cat.nombre}
+                                    </option>
+                                ))}
                             </select>
                         </div>
 

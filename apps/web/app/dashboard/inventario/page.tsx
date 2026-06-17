@@ -22,7 +22,7 @@ import { EditLoteModal } from "../../components/inventario/EditLoteModal";
 import { DeleteProductModal } from "../../components/inventario/DeleteProductModal";
 import { DeleteLoteModal } from "../../components/inventario/DeleteLoteModal";
 
-import { Producto, LoteInventario, ProductoConStock } from "../../types/inventario";
+import { Producto, LoteInventario, ProductoConStock, Categoria } from "../../types/inventario";
 
 export const SIMULATED_TODAY = new Date();
 
@@ -68,6 +68,7 @@ export const getExpirationStatus = (expiryDateStr: string | null) => {
 
 export default function LotesPage() {
     const [productos, setProductos] = useState<ProductoConStock[]>([]);
+    const [categories, setCategories] = useState<Categoria[]>([]);
     const [loading, setLoading] = useState(true);
     const [toast, setToast] = useState<{ message: string; type: "success" | "info" | "error" } | null>(null);
 
@@ -105,7 +106,12 @@ export default function LotesPage() {
     const fetchInventory = async () => {
         try {
             setLoading(true);
-            const prods = await productsApi.getAll();
+            const [prods, catsData] = await Promise.all([
+                productsApi.getAll(),
+                productsApi.getCategories()
+            ]);
+            setCategories(catsData);
+            
             const populated = await Promise.all(prods.map(async (p: any) => {
                 let lotes: LoteInventario[] = [];
                 try {
@@ -165,7 +171,7 @@ export default function LotesPage() {
     const handleAddProduct = async (
         name: string,
         barcode: string,
-        category: string,
+        id_categoria: string | null,
         priceNum: number,
         minStockNum: number
     ) => {
@@ -179,7 +185,8 @@ export default function LotesPage() {
                 codigo_barras: barcode || null,
                 nombre: name,
                 precio_actual: priceNum,
-                stock_minimo_sugerido: minStockNum
+                stock_minimo_sugerido: minStockNum,
+                id_categoria: id_categoria
             });
             setShowAddProductModal(false);
             showToastMsg("¡Producto registrado con éxito!", "success");
@@ -223,7 +230,7 @@ export default function LotesPage() {
     const handleEditProduct = async (
         name: string,
         barcode: string,
-        category: string,
+        id_categoria: string | null,
         priceNum: number,
         minStockNum: number
     ) => {
@@ -237,7 +244,8 @@ export default function LotesPage() {
                 codigo_barras: barcode || null,
                 nombre: name,
                 precio_actual: priceNum,
-                stock_minimo_sugerido: minStockNum
+                stock_minimo_sugerido: minStockNum,
+                id_categoria: id_categoria
             });
             setShowEditProductModal(false);
             showToastMsg("¡Producto actualizado con éxito!", "success");
@@ -418,6 +426,7 @@ export default function LotesPage() {
                     {showAddProductModal && (
                         <AddProductModal
                             onClose={() => setShowAddProductModal(false)}
+                            categories={categories}
                             onConfirm={handleAddProduct}
                         />
                     )}
@@ -436,6 +445,7 @@ export default function LotesPage() {
                         <EditProductModal
                             onClose={() => setShowEditProductModal(false)}
                             product={selectedProductForEdit}
+                            categories={categories}
                             onConfirm={handleEditProduct}
                         />
                     )}
