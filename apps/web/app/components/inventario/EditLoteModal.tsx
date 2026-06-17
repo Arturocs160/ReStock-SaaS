@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
-import { LoteInventario } from "../../dashboard/inventario/page";
+import { LoteInventario } from "../../types/inventario";
 
 interface EditLoteModalProps {
     onClose: () => void;

@@ -7,6 +7,7 @@ export const productoDbSchema = z.object({
     nombre: z.string().min(1, { message: "El nombre es obligatorio" }),
     precio_actual: z.number().positive({ message: "El precio debe ser un número positivo" }),
     stock_minimo_sugerido: z.number().int().nonnegative({ message: "El stock mínimo debe ser un entero mayor o igual a 0" }).default(0),
+    id_categoria: z.string().uuid({ message: "El ID de la categoría debe ser un UUID válido" }).nullable().optional(),
 });
 
 export type Producto = z.infer<typeof productoDbSchema>;

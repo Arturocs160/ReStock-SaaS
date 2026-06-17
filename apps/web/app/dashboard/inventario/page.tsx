@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
     Plus,
     CheckCircle2,
@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { Sidebar } from "../../components/dashboard/Sidebar";
 import { Topbar } from "../../components/dashboard/Topbar";
+import { productsApi, lotesApi } from "../../lib/api";
 
 // Import components
 import { Filters } from "../../components/inventario/Filters";
@@ -21,231 +22,10 @@ import { EditLoteModal } from "../../components/inventario/EditLoteModal";
 import { DeleteProductModal } from "../../components/inventario/DeleteProductModal";
 import { DeleteLoteModal } from "../../components/inventario/DeleteLoteModal";
 
-// interfaces
-export interface Producto {
-    id_producto: string; // UUID
-    id_negocio: string;
-    codigo_barras: string | null;
-    nombre: string;
-    precio_actual: number;
-    stock_minimo_sugerido: number;
-    categoria: string;
-}
+import { Producto, LoteInventario, ProductoConStock, Categoria } from "../../types/inventario";
 
-export interface LoteInventario {
-    id_lote: string; // UUID
-    id_producto: string;
-    codigo_lote: string;
-    fecha_ingreso: string; // YYYY-MM-DD
-    fecha_caducidad: string | null;
-    cantidad_inicial: number;
-    cantidad_actual: number; // Stock disponible en este lote
-}
+export const SIMULATED_TODAY = new Date();
 
-export interface ProductoConStock extends Producto {
-    stock_actual: number; // cantidad_actual sumada de todos sus lotes
-    lotes: LoteInventario[];
-}
-
-export const SIMULATED_TODAY = new Date("2026-06-14");
-
-export const INITIAL_PRODUCTS: ProductoConStock[] = [
-    {
-        id_producto: "p1",
-        id_negocio: "n1",
-        codigo_barras: "7501055300075",
-        nombre: "Coca-Cola Original 600ml",
-        precio_actual: 18.00,
-        stock_minimo_sugerido: 25,
-        categoria: "Bebidas",
-        stock_actual: 30,
-        lotes: [
-            {
-                id_lote: "l1",
-                id_producto: "p1",
-                codigo_lote: "L-COKE-01",
-                fecha_ingreso: "2026-05-10",
-                fecha_caducidad: "2026-10-15",
-                cantidad_inicial: 25,
-                cantidad_actual: 25
-            },
-            {
-                id_lote: "l2",
-                id_producto: "p1",
-                codigo_lote: "L-COKE-02",
-                fecha_ingreso: "2026-06-01",
-                fecha_caducidad: "2026-06-18",
-                cantidad_inicial: 10,
-                cantidad_actual: 5
-            }
-        ]
-    },
-    {
-        id_producto: "p2",
-        id_negocio: "n1",
-        codigo_barras: "7501020513103",
-        nombre: "Leche Entera Lala 1L",
-        precio_actual: 26.50,
-        stock_minimo_sugerido: 15,
-        categoria: "Lácteos",
-        stock_actual: 15,
-        lotes: [
-            {
-                id_lote: "l3",
-                id_producto: "p2",
-                codigo_lote: "L-LALA-01",
-                fecha_ingreso: "2026-06-01",
-                fecha_caducidad: "2026-06-12",
-                cantidad_inicial: 10,
-                cantidad_actual: 3
-            },
-            {
-                id_lote: "l4",
-                id_producto: "p2",
-                codigo_lote: "L-LALA-02",
-                fecha_ingreso: "2026-06-10",
-                fecha_caducidad: "2026-07-01",
-                cantidad_inicial: 15,
-                cantidad_actual: 12
-            }
-        ]
-    },
-    {
-        id_producto: "p3",
-        id_negocio: "n1",
-        codigo_barras: "7501000111206",
-        nombre: "Pan Blanco Bimbo Grande",
-        precio_actual: 45.00,
-        stock_minimo_sugerido: 12,
-        categoria: "Panadería",
-        stock_actual: 8,
-        lotes: [
-            {
-                id_lote: "l5",
-                id_producto: "p3",
-                codigo_lote: "L-BIMBO-01",
-                fecha_ingreso: "2026-06-08",
-                fecha_caducidad: "2026-06-25",
-                cantidad_inicial: 10,
-                cantidad_actual: 8
-            }
-        ]
-    },
-    {
-        id_producto: "p4",
-        id_negocio: "n1",
-        codigo_barras: "7501032900014",
-        nombre: "Huevos San Juan 30 pzas",
-        precio_actual: 85.00,
-        stock_minimo_sugerido: 8,
-        categoria: "Abarrotes",
-        stock_actual: 6,
-        lotes: [
-            {
-                id_lote: "l6",
-                id_producto: "p4",
-                codigo_lote: "L-HUEV-01",
-                fecha_ingreso: "2026-06-05",
-                fecha_caducidad: "2026-07-10",
-                cantidad_inicial: 10,
-                cantidad_actual: 6
-            }
-        ]
-    },
-    {
-        id_producto: "p5",
-        id_negocio: "n1",
-        codigo_barras: "7501006579307",
-        nombre: "Detergente Líquido Ariel 1L",
-        precio_actual: 39.00,
-        stock_minimo_sugerido: 10,
-        categoria: "Limpieza",
-        stock_actual: 15,
-        lotes: [
-            {
-                id_lote: "l7",
-                id_producto: "p5",
-                codigo_lote: "L-ARIEL-01",
-                fecha_ingreso: "2026-05-15",
-                fecha_caducidad: "2027-12-30",
-                cantidad_inicial: 15,
-                cantidad_actual: 15
-            }
-        ]
-    },
-    {
-        id_producto: "p6",
-        id_negocio: "n1",
-        codigo_barras: "7501003301055",
-        nombre: "Atún Herdez en Agua 130g",
-        precio_actual: 21.00,
-        stock_minimo_sugerido: 20,
-        categoria: "Enlatados",
-        stock_actual: 34,
-        lotes: [
-            {
-                id_lote: "l8",
-                id_producto: "p6",
-                codigo_lote: "L-ATUN-01",
-                fecha_ingreso: "2026-04-10",
-                fecha_caducidad: "2026-05-01",
-                cantidad_inicial: 10,
-                cantidad_actual: 4
-            },
-            {
-                id_lote: "l9",
-                id_producto: "p6",
-                codigo_lote: "L-ATUN-02",
-                fecha_ingreso: "2026-06-02",
-                fecha_caducidad: "2028-03-15",
-                cantidad_inicial: 30,
-                cantidad_actual: 30
-            }
-        ]
-    },
-    {
-        id_producto: "p7",
-        id_negocio: "n1",
-        codigo_barras: "7501017004034",
-        nombre: "Jabón Zote Blanco 400g",
-        precio_actual: 24.50,
-        stock_minimo_sugerido: 15,
-        categoria: "Limpieza",
-        stock_actual: 18,
-        lotes: [
-            {
-                id_lote: "l10",
-                id_producto: "p7",
-                codigo_lote: "L-ZOTE-01",
-                fecha_ingreso: "2026-06-01",
-                fecha_caducidad: null,
-                cantidad_inicial: 20,
-                cantidad_actual: 18
-            }
-        ]
-    },
-    {
-        id_producto: "p8",
-        id_negocio: "n1",
-        codigo_barras: "7501011115637",
-        nombre: "Papitas Sabritas Sal 110g",
-        precio_actual: 19.50,
-        stock_minimo_sugerido: 25,
-        categoria: "Snacks",
-        stock_actual: 5,
-        lotes: [
-            {
-                id_lote: "l11",
-                id_producto: "p8",
-                codigo_lote: "L-SABR-01",
-                fecha_ingreso: "2026-06-05",
-                fecha_caducidad: "2026-08-20",
-                cantidad_inicial: 10,
-                cantidad_actual: 5
-            }
-        ]
-    }
-];
 
 export const getExpirationStatus = (expiryDateStr: string | null) => {
     if (!expiryDateStr) {
@@ -287,7 +67,9 @@ export const getExpirationStatus = (expiryDateStr: string | null) => {
 }
 
 export default function LotesPage() {
-    const [productos, setProductos] = useState<ProductoConStock[]>(INITIAL_PRODUCTS);
+    const [productos, setProductos] = useState<ProductoConStock[]>([]);
+    const [categories, setCategories] = useState<Categoria[]>([]);
+    const [loading, setLoading] = useState(true);
     const [toast, setToast] = useState<{ message: string; type: "success" | "info" | "error" } | null>(null);
 
     // --- Estados de Formularios y Modales ---
@@ -321,6 +103,49 @@ export default function LotesPage() {
         setTimeout(() => setToast(null), 3000);
     };
 
+    const fetchInventory = async () => {
+        try {
+            setLoading(true);
+            const [prods, catsData] = await Promise.all([
+                productsApi.getAll(),
+                productsApi.getCategories()
+            ]);
+            setCategories(catsData);
+            
+            const populated = await Promise.all(prods.map(async (p: any) => {
+                let lotes: LoteInventario[] = [];
+                try {
+                    const fetchedLotes = await lotesApi.getByProduct(p.id_producto);
+                    lotes = fetchedLotes.map((l: LoteInventario) => ({
+                        ...l,
+                        fecha_ingreso: l.fecha_ingreso ? l.fecha_ingreso.split("T")[0] : "",
+                        fecha_caducidad: l.fecha_caducidad ? l.fecha_caducidad.split("T")[0] : null,
+                        cantidad_actual: l.cantidad_actual !== undefined ? l.cantidad_actual : l.cantidad_inicial
+                    }));
+                } catch (err) {
+                    console.error(`Error loading lotes for product ${p.id_producto}:`, err);
+                }
+                const stock_actual = lotes.reduce((sum, l) => sum + l.cantidad_actual, 0);
+                return {
+                    ...p,
+                    categoria: p.categoria || "General",
+                    lotes,
+                    stock_actual
+                };
+            }));
+            setProductos(populated);
+        } catch (err) {
+            console.error("Error loading inventory:", err);
+            showToastMsg("Error al cargar el inventario de la base de datos.", "error");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchInventory();
+    }, []);
+
     const categorias = useMemo(() => {
         const cats = new Set(productos.map(p => p.categoria));
         return ["Todas", ...Array.from(cats)];
@@ -343,10 +168,10 @@ export default function LotesPage() {
     };
 
     // Agregar Producto Nuevo
-    const handleAddProduct = (
+    const handleAddProduct = async (
         name: string,
         barcode: string,
-        category: string,
+        id_categoria: string | null,
         priceNum: number,
         minStockNum: number
     ) => {
@@ -355,21 +180,21 @@ export default function LotesPage() {
             return;
         }
 
-        const newProd: ProductoConStock = {
-            id_producto: `p_${Date.now()}`,
-            id_negocio: "n1",
-            codigo_barras: barcode || null,
-            nombre: name,
-            precio_actual: priceNum,
-            stock_minimo_sugerido: minStockNum,
-            categoria: category,
-            stock_actual: 0,
-            lotes: []
-        };
-
-        setProductos(prev => [newProd, ...prev]);
-        setShowAddProductModal(false);
-        showToastMsg("¡Producto registrado con éxito!", "success");
+        try {
+            await productsApi.create({
+                codigo_barras: barcode || null,
+                nombre: name,
+                precio_actual: priceNum,
+                stock_minimo_sugerido: minStockNum,
+                id_categoria: id_categoria
+            });
+            setShowAddProductModal(false);
+            showToastMsg("¡Producto registrado con éxito!", "success");
+            await fetchInventory();
+        } catch (err) {
+            console.error(err);
+            showToastMsg(err instanceof Error ? err.message : "Error al registrar el producto.", "error");
+        }
     };
 
     // Eliminar Producto (Abre el modal de confirmación)
@@ -381,12 +206,18 @@ export default function LotesPage() {
         }
     };
 
-    const handleDeleteProductConfirm = () => {
+    const handleDeleteProductConfirm = async () => {
         if (selectedProduct) {
-            setProductos(prev => prev.filter(p => p.id_producto !== selectedProduct.id_producto));
-            showToastMsg("Producto eliminado permanentemente.", "info");
-            setActiveModal(null);
-            setSelectedProduct(null);
+            try {
+                await productsApi.delete(selectedProduct.id_producto);
+                showToastMsg("Producto eliminado permanentemente.", "info");
+                setActiveModal(null);
+                setSelectedProduct(null);
+                await fetchInventory();
+            } catch (err) {
+                console.error(err);
+                showToastMsg(err instanceof Error ? err.message : "Error al eliminar el producto.", "error");
+            }
         }
     };
 
@@ -396,10 +227,10 @@ export default function LotesPage() {
         setShowEditProductModal(true);
     };
 
-    const handleEditProduct = (
+    const handleEditProduct = async (
         name: string,
         barcode: string,
-        category: string,
+        id_categoria: string | null,
         priceNum: number,
         minStockNum: number
     ) => {
@@ -408,24 +239,21 @@ export default function LotesPage() {
             return;
         }
 
-        setProductos(prev => {
-            return prev.map(p => {
-                if (p.id_producto === selectedProductForEdit.id_producto) {
-                    return {
-                        ...p,
-                        nombre: name,
-                        codigo_barras: barcode || null,
-                        categoria: category,
-                        precio_actual: priceNum,
-                        stock_minimo_sugerido: minStockNum
-                    };
-                }
-                return p;
+        try {
+            await productsApi.update(selectedProductForEdit.id_producto, {
+                codigo_barras: barcode || null,
+                nombre: name,
+                precio_actual: priceNum,
+                stock_minimo_sugerido: minStockNum,
+                id_categoria: id_categoria
             });
-        });
-
-        setShowEditProductModal(false);
-        showToastMsg("¡Producto actualizado con éxito!", "success");
+            setShowEditProductModal(false);
+            showToastMsg("¡Producto actualizado con éxito!", "success");
+            await fetchInventory();
+        } catch (err) {
+            console.error(err);
+            showToastMsg(err instanceof Error ? err.message : "Error al actualizar el producto.", "error");
+        }
     };
 
     // Agregar Lote a Producto Existente
@@ -434,7 +262,7 @@ export default function LotesPage() {
         setShowAddLoteModal(true);
     };
 
-    const handleAddLote = (code: string, qtyNum: number, expiry: string) => {
+    const handleAddLote = async (code: string, qtyNum: number, expiry: string) => {
         if (!code || isNaN(qtyNum) || qtyNum <= 0) {
             showToastMsg("Ingresa código de lote y cantidad válidos.", "error");
             return;
@@ -446,33 +274,21 @@ export default function LotesPage() {
             return;
         }
 
-        const newLote: LoteInventario = {
-            id_lote: `l_${Date.now()}`,
-            id_producto: selectedProductIdForLote,
-            codigo_lote: code,
-            fecha_ingreso: SIMULATED_TODAY.toISOString().split("T")[0],
-            fecha_caducidad: expiry || null,
-            cantidad_inicial: qtyNum,
-            cantidad_actual: qtyNum
-        };
-
-        setProductos(prev => {
-            return prev.map(p => {
-                if (p.id_producto === selectedProductIdForLote) {
-                    const updatedLotes = [newLote, ...p.lotes];
-                    const updatedStock = updatedLotes.reduce((sum, l) => sum + l.cantidad_actual, 0);
-                    return {
-                        ...p,
-                        lotes: updatedLotes,
-                        stock_actual: updatedStock
-                    };
-                }
-                return p;
+        try {
+            await lotesApi.create({
+                id_producto: selectedProductIdForLote,
+                codigo_lote: code,
+                fecha_ingreso: SIMULATED_TODAY.toISOString().split("T")[0],
+                fecha_caducidad: expiry || null,
+                cantidad_inicial: qtyNum
             });
-        });
-
-        setShowAddLoteModal(false);
-        showToastMsg(`Lote registrado para: ${targetProduct.nombre}`, "success");
+            setShowAddLoteModal(false);
+            showToastMsg(`Lote registrado para: ${targetProduct.nombre}`, "success");
+            await fetchInventory();
+        } catch (err) {
+            console.error(err);
+            showToastMsg(err instanceof Error ? err.message : "Error al registrar el lote.", "error");
+        }
     };
 
     // Editar Lote
@@ -482,38 +298,26 @@ export default function LotesPage() {
         setShowEditLoteModal(true);
     };
 
-    const handleEditLote = (code: string, qtyNum: number, expiry: string) => {
+    const handleEditLote = async (code: string, qtyNum: number, expiry: string) => {
         if (!selectedLoteForEdit || !code || isNaN(qtyNum) || qtyNum < 0) {
             showToastMsg("Por favor, llena los campos requeridos correctamente.", "error");
             return;
         }
 
-        setProductos(prev => {
-            return prev.map(p => {
-                if (p.id_producto === selectedProductForLoteEdit) {
-                    const updatedLotes = p.lotes.map(l => {
-                        if (l.id_lote === selectedLoteForEdit.id_lote) {
-                            return {
-                                ...l,
-                                codigo_lote: code,
-                                cantidad_actual: qtyNum,
-                                fecha_caducidad: expiry || null
-                            };
-                        }
-                        return l;
-                    });
-                    return {
-                        ...p,
-                        lotes: updatedLotes,
-                        stock_actual: updatedLotes.reduce((sum, l) => sum + l.cantidad_actual, 0)
-                    };
-                }
-                return p;
+        try {
+            await lotesApi.update(selectedLoteForEdit.id_lote, {
+                codigo_lote: code,
+                fecha_ingreso: selectedLoteForEdit.fecha_ingreso ? selectedLoteForEdit.fecha_ingreso.split("T")[0] : SIMULATED_TODAY.toISOString().split("T")[0],
+                fecha_caducidad: expiry || null,
+                cantidad_inicial: qtyNum
             });
-        });
-
-        setShowEditLoteModal(false);
-        showToastMsg("¡Lote actualizado con éxito!", "success");
+            setShowEditLoteModal(false);
+            showToastMsg("¡Lote actualizado con éxito!", "success");
+            await fetchInventory();
+        } catch (err) {
+            console.error(err);
+            showToastMsg(err instanceof Error ? err.message : "Error al actualizar el lote.", "error");
+        }
     };
 
     // Eliminar un Lote Específico (Abre el modal de confirmación)
@@ -527,25 +331,19 @@ export default function LotesPage() {
         }
     };
 
-    const handleDeleteLoteConfirm = () => {
+    const handleDeleteLoteConfirm = async () => {
         if (selectedProduct && selectedLote) {
-            setProductos(prev => {
-                return prev.map(p => {
-                    if (p.id_producto === selectedProduct.id_producto) {
-                        const updatedLotes = p.lotes.filter(l => l.id_lote !== selectedLote.id_lote);
-                        return {
-                            ...p,
-                            lotes: updatedLotes,
-                            stock_actual: updatedLotes.reduce((sum, l) => sum + l.cantidad_actual, 0)
-                        };
-                    }
-                    return p;
-                });
-            });
-            showToastMsg("Lote eliminado.", "info");
-            setActiveModal(null);
-            setSelectedLote(null);
-            setSelectedProduct(null);
+            try {
+                await lotesApi.delete(selectedLote.id_lote);
+                showToastMsg("Lote eliminado.", "info");
+                setActiveModal(null);
+                setSelectedLote(null);
+                setSelectedProduct(null);
+                await fetchInventory();
+            } catch (err) {
+                console.error(err);
+                showToastMsg(err instanceof Error ? err.message : "Error al eliminar el lote.", "error");
+            }
         }
     };
 
@@ -602,22 +400,33 @@ export default function LotesPage() {
                         />
 
                         {/* Tabla de Inventario */}
-                        <ProductTable
-                            products={filteredProducts}
-                            expandedProducts={expandedProducts}
-                            onToggleProduct={handleToggleProduct}
-                            onAddLote={openAddLoteModal}
-                            onEditProduct={openEditProductModal}
-                            onDeleteProduct={handleDeleteProduct}
-                            onEditLote={openEditLoteModal}
-                            onDeleteLote={handleDeleteLote}
-                        />
+                        {loading ? (
+                            <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-[#0f0f0f] border border-gray-100 dark:border-gray-800 rounded-2xl shadow-sm space-y-4">
+                                <div className="relative w-12 h-12">
+                                    <div className="absolute inset-0 border-4 border-gray-100 dark:border-gray-800 rounded-full"></div>
+                                    <div className="absolute inset-0 border-4 border-t-[#00a365] rounded-full animate-spin"></div>
+                                </div>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 font-medium animate-pulse">Cargando inventario y lotes...</p>
+                            </div>
+                        ) : (
+                            <ProductTable
+                                products={filteredProducts}
+                                expandedProducts={expandedProducts}
+                                onToggleProduct={handleToggleProduct}
+                                onAddLote={openAddLoteModal}
+                                onEditProduct={openEditProductModal}
+                                onDeleteProduct={handleDeleteProduct}
+                                onEditLote={openEditLoteModal}
+                                onDeleteLote={handleDeleteLote}
+                            />
+                        )}
                     </div>
 
                     {/* MODAL: REGISTRAR PRODUCTO */}
                     {showAddProductModal && (
                         <AddProductModal
                             onClose={() => setShowAddProductModal(false)}
+                            categories={categories}
                             onConfirm={handleAddProduct}
                         />
                     )}
@@ -636,6 +445,7 @@ export default function LotesPage() {
                         <EditProductModal
                             onClose={() => setShowEditProductModal(false)}
                             product={selectedProductForEdit}
+                            categories={categories}
                             onConfirm={handleEditProduct}
                         />
                     )}

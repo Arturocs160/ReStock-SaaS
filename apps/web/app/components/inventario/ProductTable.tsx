@@ -2,7 +2,7 @@
 
 import { Package } from "lucide-react";
 import { ProductRow } from "./ProductRow";
-import { ProductoConStock, LoteInventario } from "../../dashboard/inventario/page";
+import { ProductoConStock, LoteInventario } from "../../types/inventario";
 
 interface ProductTableProps {
     products: ProductoConStock[];
