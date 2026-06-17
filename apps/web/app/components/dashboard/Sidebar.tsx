@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuthStore } from "@/app/store/authStore";
 
 import {
   Package,
@@ -14,9 +15,28 @@ import {
   LogOut,
   Calendar,
 } from "lucide-react";
+import { useRouter } from 'next/navigation';
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { logout } = useAuthStore();
+
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await logout();
+    router.push('/login');
+  };
+
+  const getToday = () => {
+    const today = new Date();
+    const options = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    } as const;
+    return today.toLocaleDateString("es-CO", options);
+  };
 
   return (
     <aside className="hidden md:block w-72 bg-white border-r border-gray-200 min-h-screen p-4">
@@ -149,14 +169,16 @@ export function Sidebar() {
               className="text-[#07B474]"
             />
             <span className="font-semibold">
-              14 Jun, 2026
+              {getToday()}
             </span>
           </div>
         </div>
 
-        <button className="mt-8 flex items-center gap-2 text-gray-500 cursor-pointer hover:text-red-500">
+        <button
+          onClick={handleLogout}
+          className="mt-8 flex items-center gap-2 text-gray-500 cursor-pointer hover:text-red-500">
           <LogOut size={18} />
-          Cerrar Sesión (Demo)
+          Cerrar Sesión
         </button>
       </div>
     </aside>
