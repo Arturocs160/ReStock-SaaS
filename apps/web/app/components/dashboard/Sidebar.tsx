@@ -79,9 +79,9 @@ export function Sidebar() {
             Vista general
           </span>
 
-          <span className="bg-red-100 text-red-500 text-xs px-2 py-1 rounded-full">
+          {/* <span className="bg-red-100 text-red-500 text-xs px-2 py-1 rounded-full">
             3
-          </span>
+          </span> */}
         </Link>
 
         <Link
@@ -118,9 +118,9 @@ export function Sidebar() {
             Fechas de vencimiento
           </span>
 
-          <span className="bg-red-100 text-red-500 text-xs px-2 py-1 rounded-full">
+          {/* <span className="bg-red-100 text-red-500 text-xs px-2 py-1 rounded-full">
             7
-          </span>
+          </span> */}
         </Link>
 
         <Link

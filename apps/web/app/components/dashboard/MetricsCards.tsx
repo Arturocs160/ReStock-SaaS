@@ -5,17 +5,41 @@ import {
   AlertTriangle,
   Clock3,
 } from "lucide-react";
+import { ProductoConStock } from "../../types/inventario";
 
-export function MetricsCards() {
-  const inventoryValue = 3645;
-  const totalItems = 131;
-  const lowStock = 3;
-  const expiredProducts = 7;
+export function MetricsCards({ products }: { products: ProductoConStock[] }) {
+  const today = new Date();
+
+  // 1. inventoryValue: Sum of (product.precio_actual * lote.cantidad_actual)
+  const inventoryValue = products.reduce((totalVal, p) => {
+    const pValue = p.lotes.reduce((sum, l) => sum + (p.precio_actual * l.cantidad_actual), 0);
+    return totalVal + pValue;
+  }, 0);
+
+  // 2. totalItems: Sum of cantidad_actual of all lotes
+  const totalItems = products.reduce((sum, p) => sum + p.stock_actual, 0);
+
+  // 3. lowStock: Count of products where stock_actual < stock_minimo_sugerido
+  const lowStock = products.filter(p => p.stock_actual < p.stock_minimo_sugerido).length;
+
+  // 4. expiredProducts: Sum of cantidad_actual of expired lotes
+  const expiredProducts = products.reduce((sum, p) => {
+    const expiredQty = p.lotes.reduce((loteSum, l) => {
+      if (l.fecha_caducidad) {
+        const expiry = new Date(l.fecha_caducidad);
+        if (expiry < today) {
+          return loteSum + l.cantidad_actual;
+        }
+      }
+      return loteSum;
+    }, 0);
+    return sum + expiredQty;
+  }, 0);
 
   const metrics = [
     {
       title: "VALOR DE INVENTARIO",
-      value: `$${inventoryValue.toLocaleString()}`,
+      value: `$${inventoryValue.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       subtitle: "Valorizado a precio actual de venta",
       icon: DollarSign,
       iconBg: "bg-green-100",
@@ -26,7 +50,7 @@ export function MetricsCards() {
     {
       title: "ARTÍCULOS TOTALES",
       value: totalItems,
-      subtitle: "Distribuidos en 8 productos",
+      subtitle: `Distribuidos en ${products.length} productos`,
       icon: Layers3,
       iconBg: "bg-blue-100",
       iconColor: "text-blue-600",
@@ -42,7 +66,7 @@ export function MetricsCards() {
       iconColor: "text-red-600",
       valueColor: "text-red-600",
       subtitleColor: "text-red-500",
-      href: "/dashboard/compras",
+      href: "/dashboard/inventario",
     },
     {
       title: "PRODUCTOS CADUCADOS",
@@ -53,7 +77,7 @@ export function MetricsCards() {
       iconColor: "text-red-600",
       valueColor: "text-red-600",
       subtitleColor: "text-red-500",
-      href: "/dashboard/vencimientos",
+      href: "/dashboard/inventario",
     },
   ];
 
