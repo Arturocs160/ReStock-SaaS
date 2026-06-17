@@ -1,3 +1,11 @@
+export interface Categoria {
+  id_categoria: string;
+  id_negocio: string;
+  nombre: string;
+  descripcion: string | null;
+  activo: boolean;
+}
+
 export interface Producto {
   id_producto: string; // UUID
   id_negocio: string;
@@ -6,6 +14,7 @@ export interface Producto {
   precio_actual: number;
   stock_minimo_sugerido: number;
   categoria?: string;
+  id_categoria?: string | null;
 }
 
 export interface LoteInventario {
@@ -29,6 +38,7 @@ export interface CreateProductInput {
   nombre: string;
   precio_actual: number;
   stock_minimo_sugerido: number;
+  id_categoria?: string | null;
 }
 
 export interface CreateLoteInput {

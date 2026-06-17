@@ -3,7 +3,8 @@ import {
   LoteInventario,
   CreateProductInput,
   CreateLoteInput,
-  UpdateLoteInput
+  UpdateLoteInput,
+  Categoria
 } from "../types/inventario";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3010';
@@ -43,6 +44,7 @@ async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> 
 
 export const productsApi = {
   getAll: () => apiFetch<Producto[]>('/products'),
+  getCategories: () => apiFetch<Categoria[]>('/products/categories'),
   create: (data: CreateProductInput) =>
     apiFetch<Producto>('/products', {
       method: 'POST',
