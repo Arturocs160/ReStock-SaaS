@@ -24,7 +24,10 @@ import { DeleteLoteModal } from "../../components/inventario/DeleteLoteModal";
 
 import { Producto, LoteInventario, ProductoConStock, Categoria } from "../../types/inventario";
 
-export const SIMULATED_TODAY = new Date();
+export const SIMULATED_TODAY = (() => {
+    const today = new Date();
+    return new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+})();
 
 
 export const getExpirationStatus = (expiryDateStr: string | null) => {
@@ -357,7 +360,7 @@ export default function LotesPage() {
                 <main className="p-6">
                     {/* Toast Notification */}
                     {toast && (
-                        <div className="fixed top-5 right-5 z-50 animate-scale-up">
+                        <div className="fixed top-5 right-5 z-[100] animate-scale-up">
                             <div className={`flex items-center gap-3 px-5 py-4 rounded-xl shadow-lg border backdrop-blur-md ${toast.type === "success"
                                 ? "bg-[#eafaf1]/95 text-[#00a365] border-[#00a365]/30"
                                 : toast.type === "error"

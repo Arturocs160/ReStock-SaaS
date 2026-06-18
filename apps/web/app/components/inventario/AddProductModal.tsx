@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import { Categoria } from "../../types/inventario";
+import { productoSchema } from "../../lib/validationsInventario";
 
 interface AddProductModalProps {
     onClose: () => void;
@@ -22,11 +23,32 @@ export function AddProductModal({ onClose, categories, onConfirm }: AddProductMo
     const [idCategoria, setIdCategoria] = useState("");
     const [price, setPrice] = useState("");
     const [minStock, setMinStock] = useState("");
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        setFieldErrors({});
+
         const priceNum = parseFloat(price);
         const minStockNum = parseInt(minStock);
+
+        const result = productoSchema.safeParse({
+            nombre: name,
+            codigo_barras: barcode,
+            id_categoria: idCategoria === "" ? null : idCategoria,
+            precio_actual: priceNum,
+            stock_minimo_sugerido: minStockNum,
+        });
+
+        if (!result.success) {
+            const errors: Record<string, string> = {};
+            result.error.issues.forEach((issue) => {
+                const field = issue.path[0] as string;
+                errors[field] = issue.message;
+            });
+            setFieldErrors(errors);
+            return;
+        }
 
         onConfirm(name, barcode, idCategoria === "" ? null : idCategoria, priceNum, minStockNum);
     };
@@ -49,9 +71,19 @@ export function AddProductModal({ onClose, categories, onConfirm }: AddProductMo
                             required
                             placeholder="Ej: Sabritas Limón 110g"
                             value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            className="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white dark:text-white"
+                            onChange={(e) => {
+                                setName(e.target.value);
+                                setFieldErrors((prev) => ({ ...prev, nombre: "" }));
+                            }}
+                            className={`w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 border ${
+                                fieldErrors.nombre ? "border-red-500 focus:ring-red-500" : "border-gray-200 dark:border-gray-800"
+                            } rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white dark:text-white`}
                         />
+                        {fieldErrors.nombre && (
+                            <p className="text-xs font-semibold text-red-500 mt-1">
+                                {fieldErrors.nombre}
+                            </p>
+                        )}
                     </div>
 
                     <div className="space-y-1">
@@ -60,9 +92,19 @@ export function AddProductModal({ onClose, categories, onConfirm }: AddProductMo
                             type="text"
                             placeholder="Ej: 7501011115637"
                             value={barcode}
-                            onChange={(e) => setBarcode(e.target.value)}
-                            className="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white dark:text-white"
+                            onChange={(e) => {
+                                setBarcode(e.target.value);
+                                setFieldErrors((prev) => ({ ...prev, codigo_barras: "" }));
+                            }}
+                            className={`w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 border ${
+                                fieldErrors.codigo_barras ? "border-red-500 focus:ring-red-500" : "border-gray-200 dark:border-gray-800"
+                            } rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white dark:text-white`}
                         />
+                        {fieldErrors.codigo_barras && (
+                            <p className="text-xs font-semibold text-red-500 mt-1">
+                                {fieldErrors.codigo_barras}
+                            </p>
+                        )}
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -88,11 +130,22 @@ export function AddProductModal({ onClose, categories, onConfirm }: AddProductMo
                                 type="number"
                                 step="0.01"
                                 required
+                                min="0.01"
                                 placeholder="19.50"
                                 value={price}
-                                onChange={(e) => setPrice(e.target.value)}
-                                className="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white dark:text-white"
+                                onChange={(e) => {
+                                    setPrice(e.target.value);
+                                    setFieldErrors((prev) => ({ ...prev, precio_actual: "" }));
+                                }}
+                                className={`w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 border ${
+                                    fieldErrors.precio_actual ? "border-red-500 focus:ring-red-500" : "border-gray-200 dark:border-gray-800"
+                                } rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white dark:text-white`}
                             />
+                            {fieldErrors.precio_actual && (
+                                <p className="text-xs font-semibold text-red-500 mt-1">
+                                    {fieldErrors.precio_actual}
+                                </p>
+                            )}
                         </div>
                     </div>
 
@@ -101,11 +154,22 @@ export function AddProductModal({ onClose, categories, onConfirm }: AddProductMo
                         <input
                             type="number"
                             required
+                            min="1"
                             placeholder="20"
                             value={minStock}
-                            onChange={(e) => setMinStock(e.target.value)}
-                            className="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white dark:text-white"
+                            onChange={(e) => {
+                                setMinStock(e.target.value);
+                                setFieldErrors((prev) => ({ ...prev, stock_minimo_sugerido: "" }));
+                            }}
+                            className={`w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 border ${
+                                fieldErrors.stock_minimo_sugerido ? "border-red-500 focus:ring-red-500" : "border-gray-200 dark:border-gray-800"
+                            } rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white dark:text-white`}
                         />
+                        {fieldErrors.stock_minimo_sugerido && (
+                            <p className="text-xs font-semibold text-red-500 mt-1">
+                                {fieldErrors.stock_minimo_sugerido}
+                            </p>
+                        )}
                     </div>
 
                     <div className="pt-3 flex gap-3">
