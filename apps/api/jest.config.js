@@ -1,0 +1,20 @@
+module.exports = {
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  roots: ['<rootDir>/src'],
+  testMatch: ['**/__tests__/**/*.test.ts'],
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+  },
+  collectCoverageFrom: [
+    'src/**/*.ts',
+    '!src/index.ts',
+  ],
+  transform: {
+    '^.+\\.tsx?$': ['ts-jest', {
+      tsconfig: {
+        isolatedModules: true,
+      },
+    }],
+  },
+};

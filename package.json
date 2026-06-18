@@ -1,0 +1,21 @@
+{
+  "name": "restock-saas",
+  "private": true,
+  "scripts": {
+    "prepare": "husky",
+    "lint:web": "npm --prefix apps/web run lint",
+    "lint:api": "npm --prefix apps/api run lint --if-present",
+    "build:web": "npm --prefix apps/web run build",
+    "build:api": "npm --prefix apps/api run build",
+    "check": "npm run lint:web && npm run lint:api && npm run build:web && npm run build:api",
+    "test:backend": "npm --prefix apps/api run test",
+    "test:frontend": "npm --prefix apps/web run test",
+    "test:all": "npm run test:backend && npm run test:frontend"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "husky": "^9.1.7",
+    "k6": "^0.0.0"
+  }
+}

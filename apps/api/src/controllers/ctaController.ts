@@ -1,14 +1,15 @@
-import { Request, Response } from 'express';
-import { createInterestService } from '../services/ctaServices';
+import { Request, Response } from "express";
+import { createInterest } from "../services/ctaServices";
+import logger from "../utils/logger";
 
-export async function createInterest(req: Request, res: Response) {
-    try {
-        const { nombre, negocio, telefono } = req.body;
-        console.log(`Received interest from: ${nombre}, ${negocio}, ${telefono}`);
-        const newInterest = await createInterestService(nombre, negocio, telefono);
-        res.status(201).json({ message: 'Registro exitoso' });
-    } catch (error) {
-        console.error('Error creating interest:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
+export async function createInterestController(req: Request, res: Response) {
+  try {
+    const result = await createInterest(req.body);
+
+    res.status(201).json(result);
+  } catch (error: any) {
+
+    logger.error("Error creando interesado:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
 }
