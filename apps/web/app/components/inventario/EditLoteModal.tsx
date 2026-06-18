@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import { LoteInventario } from "../../types/inventario";
+import { editLoteSchema } from "../../lib/validationsInventario";
 
 interface EditLoteModalProps {
     onClose: () => void;
@@ -15,10 +16,33 @@ export function EditLoteModal({ onClose, productName, lote, onConfirm }: EditLot
     const [code, setCode] = useState(lote.codigo_lote);
     const [qty, setQty] = useState(lote.cantidad_actual.toString());
     const [expiry, setExpiry] = useState(lote.fecha_caducidad || "");
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+    const entryDateStr = lote.fecha_ingreso ? lote.fecha_ingreso.split("T")[0] : "";
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        setFieldErrors({});
+
         const qtyNum = parseInt(qty);
+
+        const result = editLoteSchema.safeParse({
+            codigo_lote: code,
+            cantidad_actual: qtyNum,
+            fecha_ingreso: entryDateStr,
+            fecha_caducidad: expiry || null,
+        });
+
+        if (!result.success) {
+            const errors: Record<string, string> = {};
+            result.error.issues.forEach((issue) => {
+                const field = issue.path[0] as string;
+                errors[field] = issue.message;
+            });
+            setFieldErrors(errors);
+            return;
+        }
+
         onConfirm(code, qtyNum, expiry);
     };
 
@@ -32,7 +56,7 @@ export function EditLoteModal({ onClose, productName, lote, onConfirm }: EditLot
                             Para: {productName}
                         </p>
                     </div>
-                    <button onClick={onClose} className="text-gray-400 hover:text-gray-650 transition cursor-pointer">
+                    <button onClick={onClose} className="text-gray-400 hover:text-gray-655 transition cursor-pointer">
                         <X className="w-5 h-5" />
                     </button>
                 </div>
@@ -43,11 +67,21 @@ export function EditLoteModal({ onClose, productName, lote, onConfirm }: EditLot
                         <input
                             type="text"
                             required
-                            placeholder="Ej: L-SABR-02"
+                            placeholder="Ej: L-689554"
                             value={code}
-                            onChange={(e) => setCode(e.target.value)}
-                            className="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white dark:text-white"
+                            onChange={(e) => {
+                                setCode(e.target.value);
+                                setFieldErrors((prev) => ({ ...prev, codigo_lote: "" }));
+                            }}
+                            className={`w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 border ${
+                                fieldErrors.codigo_lote ? "border-red-500 focus:ring-red-500" : "border-gray-200 dark:border-gray-800"
+                            } rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white dark:text-white`}
                         />
+                        {fieldErrors.codigo_lote && (
+                            <p className="text-xs font-semibold text-red-500 mt-1">
+                                {fieldErrors.codigo_lote}
+                            </p>
+                        )}
                     </div>
 
                     <div className="space-y-1">
@@ -55,11 +89,22 @@ export function EditLoteModal({ onClose, productName, lote, onConfirm }: EditLot
                         <input
                             type="number"
                             required
+                            min="0"
                             placeholder="15"
                             value={qty}
-                            onChange={(e) => setQty(e.target.value)}
-                            className="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white dark:text-white"
+                            onChange={(e) => {
+                                setQty(e.target.value);
+                                setFieldErrors((prev) => ({ ...prev, cantidad_actual: "" }));
+                            }}
+                            className={`w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 border ${
+                                fieldErrors.cantidad_actual ? "border-red-500 focus:ring-red-500" : "border-gray-200 dark:border-gray-800"
+                            } rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white dark:text-white`}
                         />
+                        {fieldErrors.cantidad_actual && (
+                            <p className="text-xs font-semibold text-red-500 mt-1">
+                                {fieldErrors.cantidad_actual}
+                            </p>
+                        )}
                     </div>
 
                     <div className="space-y-1">
@@ -70,10 +115,21 @@ export function EditLoteModal({ onClose, productName, lote, onConfirm }: EditLot
                         <input
                             type="date"
                             placeholder="YYYY-MM-DD"
+                            min={entryDateStr}
                             value={expiry}
-                            onChange={(e) => setExpiry(e.target.value)}
-                            className="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white dark:text-white cursor-pointer"
+                            onChange={(e) => {
+                                setExpiry(e.target.value);
+                                setFieldErrors((prev) => ({ ...prev, fecha_caducidad: "" }));
+                            }}
+                            className={`w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 border ${
+                                fieldErrors.fecha_caducidad ? "border-red-500 focus:ring-red-500" : "border-gray-200 dark:border-gray-800"
+                            } rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white dark:text-white cursor-pointer`}
                         />
+                        {fieldErrors.fecha_caducidad && (
+                            <p className="text-xs font-semibold text-red-500 mt-1">
+                                {fieldErrors.fecha_caducidad}
+                            </p>
+                        )}
                     </div>
 
                     <div className="pt-3 flex gap-3">
