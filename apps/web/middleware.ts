@@ -6,7 +6,7 @@ const PROTECTED_ROUTES = ['/dashboard'];
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const session = request.cookies.get('better-auth.session_token') || request.cookies.get('auth.session') || request.cookies.get('session') || request.cookies.get('__session');
+  const session = request.cookies.get('better-auth.session_token') || request.cookies.get('__Secure-better-auth.session_token') || request.cookies.get('auth.session') || request.cookies.get('session') || request.cookies.get('__session');
 
   if (PROTECTED_ROUTES.some(route => pathname.startsWith(route)) && !session) {
     return NextResponse.redirect(new URL('/login', request.url));
