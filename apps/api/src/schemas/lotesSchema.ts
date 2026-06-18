@@ -8,7 +8,7 @@ export const productoSchema = z.object({
     precio_actual: z.number().positive(),
     stock_minimo_sugerido: z.number().int().nonnegative().default(0),
     activo: z.boolean().default(true),
-    id_categoria: z.string().uuid().nullable().optional(),
+    id_categoria: z.uuid().nullable().optional(),
 });
 
 export const loteInventarioSchema = z.object({
@@ -33,12 +33,12 @@ export const createLoteSchema = loteInventarioSchema
     .refine(
         (data) => {
             if (data.fecha_caducidad && data.fecha_ingreso) {
-                return data.fecha_caducidad > data.fecha_ingreso;
+                return data.fecha_caducidad >= data.fecha_ingreso;
             }
             return true;
         },
         {
-            message: "La fecha de caducidad debe ser posterior a la fecha de ingreso",
+            message: "La fecha de caducidad no puede ser anterior a la fecha de ingreso",
             path: ["fecha_caducidad"],
         }
     );
@@ -52,12 +52,12 @@ export const updateLoteSchema = loteInventarioSchema
     .refine(
         (data) => {
             if (data.fecha_caducidad && data.fecha_ingreso) {
-                return data.fecha_caducidad > data.fecha_ingreso;
+                return data.fecha_caducidad >= data.fecha_ingreso;
             }
             return true;
         },
         {
-            message: "La fecha de caducidad debe ser posterior a la fecha de ingreso",
+            message: "La fecha de caducidad no puede ser anterior a la fecha de ingreso",
             path: ["fecha_caducidad"],
         }
     );
