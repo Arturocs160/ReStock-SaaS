@@ -7,7 +7,10 @@ import {
 import { ProductoConStock } from "../../types/inventario";
 
 export function AlertsPanel({ products }: { products: ProductoConStock[] }) {
-  const today = new Date();
+  const today = (() => {
+    const t = new Date();
+    return new Date(Date.UTC(t.getFullYear(), t.getMonth(), t.getDate()));
+  })();
 
   // 1. Calculate soon-to-expire metrics
   let warningQty = 0;

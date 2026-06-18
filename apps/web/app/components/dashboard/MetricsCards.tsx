@@ -8,7 +8,10 @@ import {
 import { ProductoConStock } from "../../types/inventario";
 
 export function MetricsCards({ products }: { products: ProductoConStock[] }) {
-  const today = new Date();
+  const today = (() => {
+    const t = new Date();
+    return new Date(Date.UTC(t.getFullYear(), t.getMonth(), t.getDate()));
+  })();
 
   // 1. inventoryValue: Sum of (product.precio_actual * lote.cantidad_actual)
   const inventoryValue = products.reduce((totalVal, p) => {
