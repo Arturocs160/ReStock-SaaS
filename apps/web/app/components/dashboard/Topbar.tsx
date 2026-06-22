@@ -1,10 +1,13 @@
 'use client';
 
 import { useEffect } from 'react';
+import { Menu } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
+import { useUiStore } from '../../store/uiStore';
 
 export function Topbar() {
   const { user, checkSession, isLoading } = useAuthStore();
+  const { toggleSidebar } = useUiStore();
 
   useEffect(() => {
     checkSession();
@@ -12,8 +15,15 @@ export function Topbar() {
 
   if (isLoading) {
     return (
-      <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-end px-6">
-        <div className="flex items-center gap-4">
+      <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 md:px-6">
+        <button
+          onClick={toggleSidebar}
+          className="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 focus:outline-none cursor-pointer"
+          aria-label="Abrir menú"
+        >
+          <Menu size={24} />
+        </button>
+        <div className="flex items-center gap-4 ml-auto">
           <div className="text-right">
             <p className="font-semibold text-sm text-gray-500">Cargando...</p>
           </div>
@@ -26,8 +36,16 @@ export function Topbar() {
   const initial = (user?.name || 'M').charAt(0).toUpperCase();
 
   return (
-    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-end px-6">
-      <div className="flex items-center gap-4">
+    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 md:px-6">
+      <button
+        onClick={toggleSidebar}
+        className="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 focus:outline-none cursor-pointer"
+        aria-label="Abrir menú"
+      >
+        <Menu size={24} />
+      </button>
+
+      <div className="flex items-center gap-4 ml-auto">
         <div className="text-right">
           <p className="font-semibold text-sm">
             {storeName}

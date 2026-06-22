@@ -71,7 +71,7 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700">Correo</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300">Correo</label>
         <input
           type="email"
           value={email}
@@ -84,8 +84,10 @@ export function LoginForm() {
           required
           disabled={isLoading}
           className={`mt-1 block w-full rounded-lg border ${
-            fieldErrors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:ring-primary'
-          } bg-white px-3 py-3 text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 disabled:opacity-50`}
+            fieldErrors.email 
+              ? 'border-red-500 focus:ring-red-500 dark:border-red-500/50' 
+              : 'border-gray-200 dark:border-zinc-800 focus:ring-primary'
+          } bg-white dark:bg-zinc-900/50 text-gray-900 dark:text-zinc-100 px-3 py-3 text-sm shadow-sm placeholder-gray-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 disabled:opacity-50`}
         />
         {fieldErrors.email && (
           <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
@@ -95,7 +97,7 @@ export function LoginForm() {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700">Contraseña</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300">Contraseña</label>
         <input
           type="password"
           value={password}
@@ -107,8 +109,10 @@ export function LoginForm() {
           required
           disabled={isLoading}
           className={`mt-1 block w-full rounded-lg border ${
-            fieldErrors.password ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:ring-primary'
-          } bg-white px-3 py-3 text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 disabled:opacity-50`}
+            fieldErrors.password 
+              ? 'border-red-500 focus:ring-red-500 dark:border-red-500/50' 
+              : 'border-gray-200 dark:border-zinc-800 focus:ring-primary'
+          } bg-white dark:bg-zinc-900/50 text-gray-900 dark:text-zinc-100 px-3 py-3 text-sm shadow-sm placeholder-gray-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 disabled:opacity-50`}
         />
         {fieldErrors.password && (
           <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
@@ -117,19 +121,19 @@ export function LoginForm() {
         )}
       </div>
 
-      <div className="flex items-center justify-between">
-        <label className="inline-flex items-center text-sm text-gray-600">
+      <div className="flex flex-col gap-3 xs:flex-row xs:items-center xs:justify-between xs:gap-0">
+        <label className="inline-flex items-center text-sm text-gray-600 dark:text-zinc-400 cursor-pointer">
           <input
             type="checkbox"
             checked={remember}
             onChange={(e) => setRemember(e.target.checked)}
             disabled={isLoading}
-            className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+            className="h-4 w-4 rounded border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-primary focus:ring-primary dark:focus:ring-offset-zinc-950"
           />
-          <span className="ml-2">Recordarme</span>
+          <span className="ml-2 select-none">Recordarme</span>
         </label>
 
-        <a href="#" className="text-sm text-gray-500 hover:text-gray-700">Olvidé mi contraseña</a>
+        <a href="#" className="text-sm text-gray-500 hover:text-gray-700 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors">Olvidé mi contraseña</a>
       </div>
 
       {generalError && (
