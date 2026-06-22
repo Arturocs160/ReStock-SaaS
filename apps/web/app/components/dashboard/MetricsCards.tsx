@@ -104,7 +104,7 @@ export function MetricsCards({ products }: { products: ProductoConStock[] }) {
               </h3>
 
               <p
-                className={`text-[10px] md:text-[11px] mt-1 font-medium whitespace-nowrap ${metric.subtitleColor} ${isClickable ? "group-hover:underline" : ""
+                className={`text-[10px] md:text-[11px] mt-1 font-medium ${metric.subtitleColor} ${isClickable ? "group-hover:underline" : ""
                   }`}
               >
                 {metric.subtitle}

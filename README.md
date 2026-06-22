@@ -16,13 +16,15 @@ ReStock-SaaS es una solución integral que resuelve estos problemas proporcionan
 
 ## Stack Tecnológico
 
-| Componente | Tecnología |
-|---|---|
-| Frontend | Next.js (React) |
-| Backend | Node.js |
-| Base de datos | PostgreSQL |
-| Autenticación | JWT |
-| Contenedorización | Docker & Docker Compose |
+| Componente                         | Tecnología                                              |
+| ---------------------------------- | ------------------------------------------------------- |
+| **Frontend**                       | React, Next.js, Tailwind CSS, Zustand                   |
+| **Backend**                        | Node.js, Express, TypeScript, Zod                       |
+| **Base de Datos & Almacenamiento** | PostgreSQL (Supabase), Redis                            |
+| **Autenticación**                  | better-auth (Cookies seguras HTTP-Only, RBAC)           |
+| **Infraestructura & DevOps**       | Docker, Vercel, Cloudflare                              |
+| **Pruebas (Testing)**              | Jest (Unitarias/Integración), Cypress (E2E), K6 (Carga) |
+| **CI/CD**                          | GitHub Actions                                          |
 
 ## Instalación
 
@@ -35,41 +37,50 @@ ReStock-SaaS es una solución integral que resuelve estos problemas proporcionan
 ### Opción 1: Docker (Recomendado)
 
 1. Clona el repositorio:
+
 ```bash
 git clone https://github.com/Arturocs160/ReStock-SaaS.git
 cd ReStock-SaaS
 ```
 
 2. Configura `.env` con tus valores:
+
 ```env
-DB_USER=ejemplo_usuario
-DB_PASSWORD=contraseña_segura
-DB_NAME=ejemplo_db
-DB_PORT=5432
-API_PORT=3010
-WEB_PORT=3000
-NODE_ENV=development
-JWT_SECRET=tu_clave_secreta
+
+# --- Variables de Entorno del Sistema ---
+# Conexión a la base de datos (PostgreSQL / Supabase)
+DATABASE_URL=postgresql://restock:restock123@localhost:5432/restock
+
+# Conexión a Redis
+REDIS_URL=redis://localhost:6379
+
+# URLs de los servicios
+FRONTEND_URL=http://localhost:3000
 NEXT_PUBLIC_API_URL=http://localhost:3010
+
 ```
 
 4. Inicia los servicios:
+
 ```bash
 docker-compose up --build
 ```
 
 5. Accede a la aplicación:
+
 - Interfaz web: http://localhost:3000
 - API: http://localhost:3010
 
 ### Opción 2: Instalación Local
 
 1. Instala las dependencias raíz para activar Husky y la validación de commits:
+
 ```bash
 npm install
 ```
 
 2. Instala dependencias de cada aplicación:
+
 ```bash
 cd apps/api && npm install
 cd ../web && npm install
@@ -78,6 +89,7 @@ cd ../web && npm install
 3. Configura PostgreSQL y crea la base de datos
 
 4. Inicia los servidores en desarrollo:
+
 ```bash
 # Terminal 1 - Backend
 cd apps/api && npm run dev
@@ -126,11 +138,13 @@ ReStock-SaaS/
 ### Descripción de Directorios
 
 **apps/api**
+
 - API REST en Node.js
 - Manejo de inventario, ventas y alertas
 - Integración con PostgreSQL
 
 **apps/web**
+
 - Interfaz de usuario con Next.js
 - Dashboard y gestión de inventario
 - Consumo de API REST
@@ -139,14 +153,12 @@ ReStock-SaaS/
 
 ### Variables de Entorno
 
-| Variable | Descripción | Requerida |
-|---|---|---|
-| DB_USER | Usuario de PostgreSQL | Sí |
-| DB_PASSWORD | Contraseña de PostgreSQL | Sí |
-| DB_NAME | Nombre de la base de datos | Sí |
-| JWT_SECRET | Clave secreta para JWT | Sí |
-| NEXT_PUBLIC_API_URL | URL del API | Sí |
-| NODE_ENV | Ambiente (development/production) | No |
+| Variable              | Descripción                                | Requerida |
+| --------------------- | ------------------------------------------ | --------- |
+| `DATABASE_URL`        | URL de conexión para PostgreSQL / Supabase | Sí        |
+| `REDIS_URL`           | URL de conexión para Redis                 | Sí        |
+| `FRONTEND_URL`        | URL del frontend (CORS y Auth)             | Sí        |
+| `NEXT_PUBLIC_API_URL` | URL del API consumida por el frontend      | Sí        |
 
 ## Desarrollo
 

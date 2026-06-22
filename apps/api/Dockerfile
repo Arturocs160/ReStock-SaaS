@@ -3,15 +3,14 @@ FROM node:24-alpine AS builder
 
 WORKDIR /app
 
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY package.json package-lock.json ./
 COPY apps/api ./apps/api
 
-RUN npm install -g pnpm@11.2.2 && \
-    pnpm install --frozen-lockfile
+RUN npm ci --prefix apps/api
 
 # Build
 WORKDIR /app/apps/api
-RUN pnpm run build
+RUN npm run build
 
 # Production
 FROM node:24-alpine AS production
@@ -33,15 +32,14 @@ FROM node:24-alpine AS development
 
 WORKDIR /app
 
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY package.json package-lock.json ./
 COPY apps/api ./apps/api
 
-RUN npm install -g pnpm@11.2.2 && \
-    pnpm install
+RUN npm install --prefix apps/api
 
 WORKDIR /app/apps/api
 
 ENV NODE_ENV=development
 EXPOSE 3010
 
-CMD ["pnpm", "run", "dev"]
+CMD ["npm", "run", "dev"]

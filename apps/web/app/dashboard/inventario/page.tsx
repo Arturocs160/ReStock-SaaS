@@ -31,6 +31,7 @@ export const SIMULATED_TODAY = (() => {
 
 
 export const getExpirationStatus = (expiryDateStr: string | null) => {
+
     if (!expiryDateStr) {
         return {
             label: "Sin caducidad",
@@ -114,7 +115,7 @@ export default function LotesPage() {
                 productsApi.getCategories()
             ]);
             setCategories(catsData);
-            
+
             const populated = await Promise.all(prods.map(async (p: any) => {
                 let lotes: LoteInventario[] = [];
                 try {
@@ -354,13 +355,13 @@ export default function LotesPage() {
         <div className="flex min-h-screen bg-slate-50 text-gray-900">
             <Sidebar />
 
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
                 <Topbar />
 
-                <main className="p-6">
+                <main className="p-4 md:p-6">
                     {/* Toast Notification */}
                     {toast && (
-                        <div className="fixed top-5 right-5 z-[100] animate-scale-up">
+                        <div className="fixed top-5 right-5 z-100 animate-scale-up">
                             <div className={`flex items-center gap-3 px-5 py-4 rounded-xl shadow-lg border backdrop-blur-md ${toast.type === "success"
                                 ? "bg-[#eafaf1]/95 text-[#00a365] border-[#00a365]/30"
                                 : toast.type === "error"
