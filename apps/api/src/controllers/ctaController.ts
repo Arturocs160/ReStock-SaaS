@@ -8,7 +8,9 @@ export async function createInterestController(req: Request, res: Response) {
 
     res.status(201).json(result);
   } catch (error: any) {
-
+    if (error.message === "Email already registered") {
+      return res.status(409).json({ message: "Email already registered" });
+    }
     logger.error("Error creando interesado:", error);
     res.status(500).json({ message: "Error interno del servidor" });
   }
