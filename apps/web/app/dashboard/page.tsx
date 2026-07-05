@@ -7,7 +7,7 @@ import { MetricsCards } from "../components/dashboard/MetricsCards";
 import { AlertsPanel } from "../components/dashboard/AlertsPanel";
 import { RecentSales } from "../components/dashboard/RecentSales";
 import { productsApi, lotesApi } from "../lib/api";
-import { LoteInventario, ProductoConStock } from "../types/inventario";
+import { LoteInventario, ProductoConStock, Producto } from "../types/inventario";
 
 export default function DashboardPage() {
     const [products, setProducts] = useState<ProductoConStock[]>([]);
@@ -18,11 +18,11 @@ export default function DashboardPage() {
             try {
                 setLoading(true);
                 const prods = await productsApi.getAll();
-                const populated = await Promise.all(prods.map(async (p: any) => {
+                const populated = await Promise.all(prods.map(async (p: Producto) => {
                     let lotes: LoteInventario[] = [];
                     try {
                         const fetchedLotes = await lotesApi.getByProduct(p.id_producto);
-                        lotes = fetchedLotes.map((l: any) => ({
+                        lotes = fetchedLotes.map((l: LoteInventario) => ({
                             ...l,
                             fecha_ingreso: l.fecha_ingreso ? l.fecha_ingreso.split("T")[0] : "",
                             fecha_caducidad: l.fecha_caducidad ? l.fecha_caducidad.split("T")[0] : null,
