@@ -1,0 +1,99 @@
+services:
+  postgres:
+    image: postgres:18.4-alpine3.23
+    container_name: restock-db
+    environment:
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD_DEV}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - restock_network
+
+  redis:
+    image: redis:8.8.0-alpine
+    container_name: restock-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - restock_redis:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - restock_network
+
+  backend:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: development
+    env_file:
+      - ./apps/api/.env.development
+    container_name: restock-backend
+    ports:
+      - "3010:3010"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/apps/api/node_modules
+    restart: unless-stopped
+    networks:
+      - restock_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+        ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:3010/health').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      target: development
+    container_name: restock-frontend
+    env_file:
+      - ./apps/web/.env.development
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/apps/web/node_modules
+      - /app/apps/web/.next
+    restart: unless-stopped
+    networks:
+      - restock_network
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test:
+        ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:3000/api/health').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  restock_network:
+    driver: bridge
+
+volumes:
+  restock_db:
+  restock_redis:
