@@ -36,8 +36,9 @@ export function LoginForm() {
     try {
       await login(email, password);
       router.push('/dashboard');
-    } catch (err: any) {
-      setGeneralError(err.message || 'Error al iniciar sesión');
+    } catch (err) {
+      const error = err as Error;
+      setGeneralError(error.message || 'Error al iniciar sesión');
     } finally {
       setIsLoading(false);
     }
