@@ -17,6 +17,7 @@ import {
   LogOut,
   Calendar,
   X,
+  Users,
 } from "lucide-react";
 import { useRouter } from 'next/navigation';
 
@@ -186,6 +187,17 @@ export function Sidebar() {
           >
             <Store size={18} />
             Configuración
+          </Link>
+
+          <Link
+            href="/dashboard/equipo"
+            className={`w-full flex items-center gap-2 px-4 py-3 rounded-xl ${pathname === "/dashboard/equipo"
+              ? "bg-[#DFF9E6] text-[#07B474]"
+              : "text-gray-600 hover:bg-gray-50"
+              }`}
+          >
+            <Users size={18} />
+            Equipo
           </Link>
         </nav>
 
