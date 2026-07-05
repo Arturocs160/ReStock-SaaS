@@ -133,7 +133,7 @@ export function LoginForm() {
           <span className="ml-2 select-none">Recordarme</span>
         </label>
 
-        <a href="#" className="text-sm text-gray-500 hover:text-gray-700 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors">Olvidé mi contraseña</a>
+        <a href="/forgot-password" className="text-sm text-gray-500 hover:text-gray-700 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors">Olvidé mi contraseña</a>
       </div>
 
       {generalError && (
