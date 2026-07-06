@@ -1,15 +1,13 @@
 import { betterAuth } from "better-auth";
 import pool from "@/config/db";
-import { jwt } from "better-auth/plugins";
+import { jwt, emailOTP } from "better-auth/plugins";
 import { redisStorage } from "@better-auth/redis-storage";
-import { Redis } from "ioredis";
+import redisClient from "@/config/redis";
 import { hashPassword, verifyPassword } from "./password";
-import { randomUUID } from "node:crypto";
-import logger from "./logger";
+import { sendVerificationOTP } from "@/services/mailService";
+import { handleUserCreation } from "@/services/authHooks";
 
 import "dotenv/config";
-
-const redisClient = new Redis(process.env.REDIS_URL as string);
 
 export const auth = betterAuth({
   database: pool,
@@ -47,48 +45,7 @@ export const auth = betterAuth({
   databaseHooks: {
     user: {
       create: {
-        after: async (user, context) => {
-          if (!context || !context.request) return;
-
-          const body = (await context.request.json().catch(() => ({}))) as { nombre?: string };
-
-          const nombreNegocio = body?.nombre || `Negocio de ${user.name}`;
-
-          const subdominio = nombreNegocio
-            .toLowerCase()
-            .trim()
-            .replace(/[^a-z0-9]/g, "-")
-            .replace(/-+/g, "-");
-
-          const idNegocio = randomUUID();
-
-          const client = await pool.connect();
-
-          try {
-            await client.query("BEGIN");
-
-            const insertNegocioQuery = `
-                            INSERT INTO public.negocio (id_negocio, nombre, subdominio, activo)
-                            VALUES ($1, $2, $3, $4);
-                        `;
-            await client.query(insertNegocioQuery, [idNegocio, nombreNegocio, subdominio, true]);
-
-            const updateUserQuery = `
-                            UPDATE public.user
-                            SET id_negocio = $1, role = 'admin'
-                            WHERE id = $2;
-                        `;
-            await client.query(updateUserQuery, [idNegocio, user.id]);
-
-            await client.query("COMMIT");
-          } catch (error) {
-            logger.error("Error en la transacción de registro automatizado:" + error);
-
-            throw new Error("No se pudo completar el registro del negocio.");
-          } finally {
-            client.release();
-          }
-        },
+        after: handleUserCreation,
       },
     },
   },
@@ -132,6 +89,11 @@ export const auth = betterAuth({
             email: user.email,
           };
         },
+      },
+    }),
+    emailOTP({
+      async sendVerificationOTP({ email, otp, type }) {
+        await sendVerificationOTP({ email, otp, type });
       },
     }),
   ],

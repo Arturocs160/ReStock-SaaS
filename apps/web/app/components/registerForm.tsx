@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2, AlertCircle, Check } from 'lucide-react';
+import { Loader2, AlertCircle, Check, Eye, EyeOff } from 'lucide-react';
 import { registerSchema, RegisterFormValues } from '../lib/validationsAuth';
 import { useAuthStore } from '../store/authStore';
 
@@ -21,6 +21,8 @@ export function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [generalError, setGeneralError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const onChange = (key: keyof RegisterFormValues) => (
     e: React.ChangeEvent<HTMLInputElement>
@@ -164,16 +166,30 @@ export function RegisterForm() {
           <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
             Contraseña
           </label>
-          <input
-            type="password"
-            value={form.password}
-            onChange={onChange('password')}
-            placeholder="Introduce tu contraseña"
-            required
-            disabled={isLoading || isSuccess}
-            className={`w-full h-11 px-3 rounded-lg border ${fieldErrors.password ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:ring-primary'
-              } bg-white dark:bg-zinc-900 text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 disabled:opacity-50`}
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              value={form.password}
+              onChange={onChange('password')}
+              placeholder="Introduce tu contraseña"
+              required
+              disabled={isLoading || isSuccess}
+              className={`w-full h-11 pl-3 pr-10 rounded-lg border ${fieldErrors.password ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:ring-primary'
+                } bg-white dark:bg-zinc-900 text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 disabled:opacity-50`}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 dark:text-zinc-500 hover:text-gray-600 dark:hover:text-zinc-300"
+              tabIndex={-1}
+            >
+              {showPassword ? (
+                <EyeOff className="w-5 h-5" />
+              ) : (
+                <Eye className="w-5 h-5" />
+              )}
+            </button>
+          </div>
           <div className="flex flex-wrap gap-x-2.5 gap-y-1 mt-1 text-[11px]">
             <span className={`flex items-center gap-1.5 transition-colors duration-200 ${checks.length ? 'text-emerald-600 dark:text-emerald-400 font-medium' : 'text-gray-400 dark:text-zinc-500'}`}>
               <span className={`w-1.5 h-1.5 rounded-full ${checks.length ? 'bg-emerald-500 animate-pulse' : 'bg-gray-300 dark:bg-zinc-600'}`} />
@@ -207,16 +223,30 @@ export function RegisterForm() {
           <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
             Confirmar contraseña
           </label>
-          <input
-            type="password"
-            value={form.confirmPassword}
-            onChange={onChange('confirmPassword')}
-            placeholder="Repite tu contraseña"
-            required
-            disabled={isLoading || isSuccess}
-            className={`w-full h-11 px-3 rounded-lg border ${fieldErrors.confirmPassword ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:ring-primary'
-              } bg-white dark:bg-zinc-900 text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 disabled:opacity-50`}
-          />
+          <div className="relative">
+            <input
+              type={showConfirmPassword ? 'text' : 'password'}
+              value={form.confirmPassword}
+              onChange={onChange('confirmPassword')}
+              placeholder="Repite tu contraseña"
+              required
+              disabled={isLoading || isSuccess}
+              className={`w-full h-11 pl-3 pr-10 rounded-lg border ${fieldErrors.confirmPassword ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:ring-primary'
+                } bg-white dark:bg-zinc-900 text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 disabled:opacity-50`}
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 dark:text-zinc-500 hover:text-gray-600 dark:hover:text-zinc-300"
+              tabIndex={-1}
+            >
+              {showConfirmPassword ? (
+                <EyeOff className="w-5 h-5" />
+              ) : (
+                <Eye className="w-5 h-5" />
+              )}
+            </button>
+          </div>
           {fieldErrors.confirmPassword && (
             <p className="text-xs text-red-500 flex items-center gap-1 mt-0.5">
               <AlertCircle className="w-3.5 h-3.5 shrink-0" /> {fieldErrors.confirmPassword}

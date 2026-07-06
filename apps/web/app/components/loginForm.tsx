@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { loginSchema } from '../lib/validationsAuth';
 import { useAuthStore } from '../store/authStore';
 
@@ -10,6 +10,7 @@ export function LoginForm() {
   const { login } = useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -99,22 +100,36 @@ export function LoginForm() {
 
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300">Contraseña</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => {
-            setPassword(e.target.value);
-            setFieldErrors((prev) => ({ ...prev, password: '' }));
-          }}
-          placeholder="Tu contraseña"
-          required
-          disabled={isLoading}
-          className={`mt-1 block w-full rounded-lg border ${
-            fieldErrors.password 
-              ? 'border-red-500 focus:ring-red-500 dark:border-red-500/50' 
-              : 'border-gray-200 dark:border-zinc-800 focus:ring-primary'
-          } bg-white dark:bg-zinc-900/50 text-gray-900 dark:text-zinc-100 px-3 py-3 text-sm shadow-sm placeholder-gray-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 disabled:opacity-50`}
-        />
+        <div className="relative mt-1">
+          <input
+            type={showPassword ? 'text' : 'password'}
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setFieldErrors((prev) => ({ ...prev, password: '' }));
+            }}
+            placeholder="Tu contraseña"
+            required
+            disabled={isLoading}
+            className={`block w-full rounded-lg border ${
+              fieldErrors.password 
+                ? 'border-red-500 focus:ring-red-500 dark:border-red-500/50' 
+                : 'border-gray-200 dark:border-zinc-800 focus:ring-primary'
+            } bg-white dark:bg-zinc-900/50 text-gray-900 dark:text-zinc-100 pl-3 pr-10 py-3 text-sm shadow-sm placeholder-gray-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 disabled:opacity-50`}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 dark:text-zinc-500 hover:text-gray-600 dark:hover:text-zinc-300"
+            tabIndex={-1}
+          >
+            {showPassword ? (
+              <EyeOff className="w-5 h-5" />
+            ) : (
+              <Eye className="w-5 h-5" />
+            )}
+          </button>
+        </div>
         {fieldErrors.password && (
           <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
             <AlertCircle className="w-3.5 h-3.5 shrink-0" /> {fieldErrors.password}
@@ -134,7 +149,7 @@ export function LoginForm() {
           <span className="ml-2 select-none">Recordarme</span>
         </label>
 
-        <a href="#" className="text-sm text-gray-500 hover:text-gray-700 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors">Olvidé mi contraseña</a>
+        <a href="/forgot-password" className="text-sm text-gray-500 hover:text-gray-700 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors">Olvidé mi contraseña</a>
       </div>
 
       {generalError && (
