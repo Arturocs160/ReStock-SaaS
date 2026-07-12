@@ -4,6 +4,7 @@ import cors from "cors";
 import helmet from "helmet";
 import "dotenv/config";
 import routes from "./routes";
+import businessRoutes from "./routes/businessRoutes"; 
 import logger from "./utils/logger";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./utils/auth";
@@ -11,6 +12,8 @@ import { auth } from "./utils/auth";
 const PORT = Number(process.env.PORT) || 3010;
 
 export const app: Express = express();
+
+app.use(express.json());
 
 app.use(
   cors({
@@ -40,6 +43,7 @@ app.get("/", (req, res) => {
 });
 
 routes(app);
+app.use("/api", businessRoutes); 
 
 // Middleware de manejo de errores global
 app.use((err: any, req: any, res: any, _next: any) => {
@@ -49,6 +53,6 @@ app.use((err: any, req: any, res: any, _next: any) => {
 
 if (process.env.NODE_ENV !== "test") {
   app.listen(PORT, () => {
-    logger.info({ port: PORT }, "Server is running"); // restarted
+    logger.info({ port: PORT }, "Server is running"); 
   });
 }
