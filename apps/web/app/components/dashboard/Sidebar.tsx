@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -19,7 +19,7 @@ import {
   X,
   Users,
 } from "lucide-react";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -37,7 +37,7 @@ export function Sidebar() {
   const handleLogout = async () => {
     await logout();
     setSidebarOpen(false);
-    router.push('/login');
+    router.push("/login");
   };
 
   const getToday = () => {
@@ -61,8 +61,11 @@ export function Sidebar() {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-200 p-4 transition-all duration-300 ease-out md:translate-x-0 md:static md:block md:min-h-screen ${sidebarOpen ? "translate-x-0 visible" : "-translate-x-full invisible md:visible"
-          } overflow-y-auto overflow-x-hidden`}
+        className={`fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-200 p-4 transition-all duration-300 ease-out md:translate-x-0 md:static md:block md:min-h-screen ${
+          sidebarOpen
+            ? "translate-x-0 visible"
+            : "-translate-x-full invisible md:visible"
+        } overflow-y-auto overflow-x-hidden`}
       >
         <div className="mb-8 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -95,17 +98,16 @@ export function Sidebar() {
           </button>
         </div>
 
-        <p className="text-xs font-semibold text-gray-400 mb-4">
-          MÓDULOS
-        </p>
+        <p className="text-xs font-semibold text-gray-400 mb-4">MÓDULOS</p>
 
         <nav className="space-y-2" onClick={() => setSidebarOpen(false)}>
           <Link
             href="/dashboard"
-            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium ${pathname === "/dashboard"
-              ? "bg-[#DFF9E6] text-[#07B474]"
-              : "text-gray-600 hover:bg-gray-50"
-              }`}
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium ${
+              pathname === "/dashboard"
+                ? "bg-[#DFF9E6] text-[#07B474]"
+                : "text-gray-600 hover:bg-gray-50"
+            }`}
           >
             <span className="flex items-center gap-2">
               <TrendingUp size={18} />
@@ -119,10 +121,11 @@ export function Sidebar() {
 
           <Link
             href="/dashboard/ventas"
-            className={`w-full flex items-center gap-2 px-4 py-3 rounded-xl ${pathname === "/dashboard/ventas"
-              ? "bg-[#DFF9E6] text-[#07B474]"
-              : "text-gray-600 hover:bg-gray-50"
-              }`}
+            className={`w-full flex items-center gap-2 px-4 py-3 rounded-xl ${
+              pathname === "/dashboard/ventas"
+                ? "bg-[#DFF9E6] text-[#07B474]"
+                : "text-gray-600 hover:bg-gray-50"
+            }`}
           >
             <ShoppingCart size={18} />
             Generar venta
@@ -130,10 +133,11 @@ export function Sidebar() {
 
           <Link
             href="/dashboard/inventario"
-            className={`w-full flex items-center gap-2 px-4 py-3 rounded-xl ${pathname === "/dashboard/inventario"
-              ? "bg-[#DFF9E6] text-[#07B474]"
-              : "text-gray-600 hover:bg-gray-50"
-              }`}
+            className={`w-full flex items-center gap-2 px-4 py-3 rounded-xl ${
+              pathname === "/dashboard/inventario"
+                ? "bg-[#DFF9E6] text-[#07B474]"
+                : "text-gray-600 hover:bg-gray-50"
+            }`}
           >
             <Layers size={18} />
             Inventario por lotes
@@ -141,10 +145,11 @@ export function Sidebar() {
 
           <Link
             href="/dashboard/vencimientos"
-            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl ${pathname === "/dashboard/vencimientos"
-              ? "bg-[#DFF9E6] text-[#07B474]"
-              : "text-gray-600 hover:bg-gray-50"
-              }`}
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl ${
+              pathname === "/dashboard/vencimientos"
+                ? "bg-[#DFF9E6] text-[#07B474]"
+                : "text-gray-600 hover:bg-gray-50"
+            }`}
           >
             <span className="flex items-center gap-2">
               <Clock size={18} />
@@ -158,10 +163,11 @@ export function Sidebar() {
 
           <Link
             href="/dashboard/compras"
-            className={`w-full flex items-center gap-2 px-4 py-3 rounded-xl ${pathname === "/dashboard/compras"
-              ? "bg-orange-50 text-orange-500"
-              : "text-gray-600 hover:bg-gray-50"
-              }`}
+            className={`w-full flex items-center gap-2 px-4 py-3 rounded-xl ${
+              pathname === "/dashboard/compras"
+                ? "bg-orange-50 text-orange-500"
+                : "text-gray-600 hover:bg-gray-50"
+            }`}
           >
             <TrendingUp size={18} />
             Planificación de compras
@@ -169,10 +175,11 @@ export function Sidebar() {
 
           <Link
             href="/dashboard/historial"
-            className={`w-full flex items-center gap-2 px-4 py-3 whitespace-nowrap rounded-xl ${pathname === "/dashboard/historial"
-              ? "bg-[#DFF9E6] text-[#07B474]"
-              : "text-gray-600 hover:bg-gray-50"
-              }`}
+            className={`w-full flex items-center gap-2 px-4 py-3 whitespace-nowrap rounded-xl ${
+              pathname === "/dashboard/historial"
+                ? "bg-[#DFF9E6] text-[#07B474]"
+                : "text-gray-600 hover:bg-gray-50"
+            }`}
           >
             <History size={18} />
             Historial de ventas
@@ -180,10 +187,11 @@ export function Sidebar() {
 
           <Link
             href="/dashboard/configuracion"
-            className={`w-full flex items-center gap-2 px-4 py-3 rounded-xl ${pathname === "/dashboard/configuracion"
-              ? "bg-[#DFF9E6] text-[#07B474]"
-              : "text-gray-600 hover:bg-gray-50"
-              }`}
+            className={`w-full flex items-center gap-2 px-4 py-3 rounded-xl ${
+              pathname === "/dashboard/configuracion"
+                ? "bg-[#DFF9E6] text-[#07B474]"
+                : "text-gray-600 hover:bg-gray-50"
+            }`}
           >
             <Store size={18} />
             Configuración
@@ -191,10 +199,11 @@ export function Sidebar() {
 
           <Link
             href="/dashboard/equipo"
-            className={`w-full flex items-center gap-2 px-4 py-3 rounded-xl ${pathname === "/dashboard/equipo"
-              ? "bg-[#DFF9E6] text-[#07B474]"
-              : "text-gray-600 hover:bg-gray-50"
-              }`}
+            className={`w-full flex items-center gap-2 px-4 py-3 rounded-xl ${
+              pathname === "/dashboard/equipo"
+                ? "bg-[#DFF9E6] text-[#07B474]"
+                : "text-gray-600 hover:bg-gray-50"
+            }`}
           >
             <Users size={18} />
             Equipo
@@ -203,24 +212,18 @@ export function Sidebar() {
 
         <div className="mt-20 border-t pt-6">
           <div className="border rounded-xl p-4">
-            <p className="text-xs text-gray-500">
-              Fecha actual:
-            </p>
+            <p className="text-xs text-gray-500">Fecha actual:</p>
 
             <div className="flex items-center gap-2 mt-2">
-              <Calendar
-                size={18}
-                className="text-[#07B474]"
-              />
-              <span className="font-semibold">
-                {mounted ? getToday() : ""}
-              </span>
+              <Calendar size={18} className="text-[#07B474]" />
+              <span className="font-semibold">{mounted ? getToday() : ""}</span>
             </div>
           </div>
 
           <button
             onClick={handleLogout}
-            className="mt-8 flex items-center gap-2 text-gray-500 cursor-pointer hover:text-red-500">
+            className="mt-8 flex items-center gap-2 text-gray-500 cursor-pointer hover:text-red-500"
+          >
             <LogOut size={18} />
             Cerrar Sesión
           </button>

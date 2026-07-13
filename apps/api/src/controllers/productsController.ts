@@ -41,7 +41,8 @@ export async function getProductByIdController(req: Request, res: Response) {
     const id_producto = req.params.id_producto;
 
     if (typeof id_producto !== "string") {
-      return;
+      logger.warn(`Validación fallida: id_producto inválido. Valor: ${id_producto}`);
+      return res.status(400).json({ message: "ID de producto inválido." });
     }
 
     const product = await getProductsByIdService(id_negocio, id_producto);
@@ -78,7 +79,8 @@ export async function updateProductController(req: Request, res: Response) {
     const { codigo_barras, nombre, precio_actual, stock_minimo_sugerido, id_categoria } = req.body;
 
     if (typeof id_producto !== "string") {
-      return;
+      logger.warn(`Validación fallida: id_producto inválido. Valor: ${id_producto}`);
+      return res.status(400).json({ message: "ID de producto inválido." });
     }
 
     const product = await updateProductService({
@@ -103,7 +105,8 @@ export async function deleteProductController(req: Request, res: Response) {
     const id_producto = req.params.id_producto;
 
     if (typeof id_producto !== "string") {
-      return;
+      logger.warn(`Validación fallida: id_producto inválido. Valor: ${id_producto}`);
+      return res.status(400).json({ message: "ID de producto inválido." });
     }
 
     const product = await deleteProductService(id_producto, id_negocio);
@@ -120,7 +123,8 @@ export async function getProductByBarCodeController(req: Request, res: Response)
     const codigo_barras = req.params.codigo_barras;
 
     if (typeof codigo_barras !== "string") {
-      return;
+      logger.warn(`Validación fallida: codigo_barras inválido. Valor: ${codigo_barras}`);
+      return res.status(400).json({ message: "Código de barras inválido." });
     }
 
     const product = await getProductByBarCodeService(id_negocio, codigo_barras);

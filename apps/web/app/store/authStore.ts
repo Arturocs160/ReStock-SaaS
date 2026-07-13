@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { User } from '../types/auth';
-import { authClient } from '../lib/auth-client';
+import { create } from "zustand";
+import { User } from "../types/auth";
+import { authClient } from "../lib/auth-client";
 
 interface AuthState {
   user: User | null;
@@ -8,7 +8,12 @@ interface AuthState {
   error: string | null;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string, businessName: string) => Promise<void>;
+  register: (
+    name: string,
+    email: string,
+    password: string,
+    businessName: string,
+  ) => Promise<void>;
   logout: () => Promise<void>;
   checkSession: () => Promise<void>;
 }
@@ -22,19 +27,19 @@ export const useAuthStore = create<AuthState>((set) => ({
   checkSession: async () => {
     try {
       set({ isLoading: true, error: null });
-      const { data, error: sessionError } = await authClient.getSession();
+      const session = authClient.getSession();
 
-      if (sessionError) {
-        set({ user: null, isAuthenticated: false });
-      } else if (data?.user) {
+      if (session?.user) {
         set({
           user: {
-            id: data.user.id,
-            email: data.user.email,
-            name: data.user.name,
-            role: (data.user as { role?: string }).role || 'user',
-            nombre: (data.user as { nombre?: string }).nombre,
-            createdAt: data.user.createdAt ? new Date(data.user.createdAt).toISOString() : undefined,
+            id: session.user.id,
+            email: session.user.email,
+            name: session.user.name,
+            role: (session.user as { role?: string }).role || "user",
+            nombre: (session.user as { nombre?: string }).nombre,
+            createdAt: session.user.createdAt
+              ? new Date(session.user.createdAt).toISOString()
+              : undefined,
           },
           isAuthenticated: true,
         });
@@ -42,7 +47,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         set({ user: null, isAuthenticated: false });
       }
     } catch (err) {
-      console.error('Session check error in store:', err);
+      console.error("Session check error in store:", err);
       set({ user: null, isAuthenticated: false });
     } finally {
       set({ isLoading: false });
@@ -52,30 +57,30 @@ export const useAuthStore = create<AuthState>((set) => ({
   login: async (email, password) => {
     try {
       set({ isLoading: true, error: null });
-      const { data, error: loginError } = await authClient.signIn.email({
-        email,
-        password,
-      });
+      const response = await authClient.signIn({ email, password });
 
-      if (loginError) {
-        throw new Error(loginError.message || 'Error al iniciar sesión');
+      if (response.error) {
+        throw new Error(response.error);
       }
 
-      if (data?.user) {
+      if (response.user) {
         set({
           user: {
-            id: data.user.id,
-            email: data.user.email,
-            name: data.user.name,
-            role: (data.user as { role?: string }).role || 'user',
-            nombre: (data.user as { nombre?: string }).nombre,
-            createdAt: data.user.createdAt ? new Date(data.user.createdAt).toISOString() : undefined,
+            id: response.user.id,
+            email: response.user.email,
+            name: response.user.name,
+            role: (response.user as { role?: string }).role || "user",
+            nombre: (response.user as { nombre?: string }).nombre,
+            createdAt: response.user.createdAt
+              ? new Date(response.user.createdAt).toISOString()
+              : undefined,
           },
           isAuthenticated: true,
         });
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
+      const errorMessage =
+        err instanceof Error ? err.message : "Error desconocido";
       set({ error: errorMessage });
       throw err;
     } finally {
@@ -86,32 +91,34 @@ export const useAuthStore = create<AuthState>((set) => ({
   register: async (name, email, password, nombre) => {
     try {
       set({ isLoading: true, error: null });
-      const { data, error: signUpError } = await authClient.signUp.email({
+      const response = await authClient.signUp({
         email,
         password,
         name,
-        nombre,
-      } as Parameters<typeof authClient.signUp.email>[0]);
+      });
 
-      if (signUpError) {
-        throw new Error(signUpError.message || 'Error al registrar');
+      if (response.error) {
+        throw new Error(response.error);
       }
 
-      if (data?.user) {
+      if (response.user) {
         set({
           user: {
-            id: data.user.id,
-            email: data.user.email,
-            name: data.user.name,
-            role: (data.user as { role?: string }).role || 'user',
-            nombre: (data.user as { nombre?: string }).nombre,
-            createdAt: data.user.createdAt ? new Date(data.user.createdAt).toISOString() : undefined,
+            id: response.user.id,
+            email: response.user.email,
+            name: response.user.name,
+            role: (response.user as { role?: string }).role || "user",
+            nombre: (response.user as { nombre?: string }).nombre,
+            createdAt: response.user.createdAt
+              ? new Date(response.user.createdAt).toISOString()
+              : undefined,
           },
           isAuthenticated: true,
         });
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
+      const errorMessage =
+        err instanceof Error ? err.message : "Error desconocido";
       set({ error: errorMessage });
       throw err;
     } finally {
@@ -125,7 +132,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       await authClient.signOut();
       set({ user: null, isAuthenticated: false });
     } catch (err) {
-      console.error('Logout error in store:', err);
+      console.error("Logout error in store:", err);
       set({ user: null, isAuthenticated: false });
     } finally {
       set({ isLoading: false });

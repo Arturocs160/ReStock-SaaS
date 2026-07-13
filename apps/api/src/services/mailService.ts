@@ -1,7 +1,9 @@
 import { Resend } from "resend";
 import "dotenv/config";
+import logger from "../utils/logger";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Initialize Resend with API key from environment, or null if not available
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 interface SendOTPArgs {
   email: string;
@@ -27,6 +29,12 @@ export async function sendVerificationOTP({ email, otp, type }: SendOTPArgs): Pr
                 <p style="font-size: 12px; color: #666; margin-top: 20px;">Si no solicitaste este cambio, puedes ignorar este correo de forma segura.</p>
             </div>
         `;
+  }
+
+  // If Resend API key is not configured, log a warning and skip sending
+  if (!resend) {
+    logger.warn(`Email service not configured. Would have sent email to ${email} with OTP: ${otp}`);
+    return;
   }
 
   await resend.emails.send({
