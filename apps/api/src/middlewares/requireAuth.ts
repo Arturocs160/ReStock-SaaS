@@ -21,6 +21,8 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
             return res.status(401).json({ message: "No autorizado. Inicia sesión primero." });
         }
 
+        console.log(session.user);
+        
         req.user = session.user;
         next();
     } catch (error: any) {

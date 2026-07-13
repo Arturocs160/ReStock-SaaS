@@ -1,13 +1,13 @@
-import { betterAuth, User } from "better-auth";
+import { betterAuth } from "better-auth";
 import pool from "@/config/db";
-import { jwt } from "better-auth/plugins"
+import { jwt } from "better-auth/plugins";
 import { redisStorage } from "@better-auth/redis-storage";
 import { Redis } from "ioredis";
 import { hashPassword, verifyPassword } from "./password";
 import { randomUUID } from "node:crypto";
 import logger from "./logger";
 
-import "dotenv/config"
+import "dotenv/config";
 
 const redisClient = new Redis(process.env.REDIS_URL as string);
 
@@ -16,6 +16,7 @@ export const auth = betterAuth({
     secondaryStorage: redisStorage({
         client: redisClient,
     }),
+
     emailAndPassword: {
         enabled: true,
         password: {
@@ -24,9 +25,10 @@ export const auth = betterAuth({
             },
             verify: async ({ password, hash }) => {
                 return await verifyPassword({ password, hash });
-            }
+            },
         },
     },
+
     user: {
         additionalFields: {
             role: {
@@ -40,20 +42,31 @@ export const auth = betterAuth({
             id_negocio: {
                 type: "string",
                 required: false,
-                input: false
+                input: false,
             },
         },
     },
+
     databaseHooks: {
         user: {
             create: {
                 after: async (user, context) => {
 
-                    if (!context || !context.request) return;
+                    if (!context?.request) return;
 
-                    const body = await context.request.json().catch(() => ({})) as { nombre?: string };
+                    
+                    const body = await context.request.json().catch(() => ({})) as {
+                        nombre?: string;
+                        invitationToken?: string;
+                    };
 
-                    const nombreNegocio = body?.nombre || `Negocio de ${user.name}`;
+                    
+                    if (body.invitationToken) {
+                        return;
+                    }
+
+                    const nombreNegocio =
+                        body.nombre || `Negocio de ${user.name}`;
 
                     const subdominio = nombreNegocio
                         .toLowerCase()
@@ -69,38 +82,67 @@ export const auth = betterAuth({
                         await client.query("BEGIN");
 
                         const insertNegocioQuery = `
-                            INSERT INTO public.negocio (id_negocio, nombre, subdominio, activo)
-                            VALUES ($1, $2, $3, $4);
+                            INSERT INTO public.negocio (
+                                id_negocio,
+                                nombre,
+                                subdominio,
+                                activo
+                            )
+                            VALUES ($1,$2,$3,$4);
                         `;
-                        await client.query(insertNegocioQuery, [idNegocio, nombreNegocio, subdominio, true]);
+
+                        await client.query(insertNegocioQuery, [
+                            idNegocio,
+                            nombreNegocio,
+                            subdominio,
+                            true,
+                        ]);
 
                         const updateUserQuery = `
                             UPDATE public.user
-                            SET id_negocio = $1, role = 'admin'
+                            SET
+                                id_negocio = $1,
+                                role = 'admin'
                             WHERE id = $2;
                         `;
-                        await client.query(updateUserQuery, [idNegocio, user.id]);
+
+                        await client.query(updateUserQuery, [
+                            idNegocio,
+                            user.id,
+                        ]);
 
                         await client.query("COMMIT");
 
                     } catch (error) {
-                        logger.error("Error en la transacción de registro automatizado:" + error);
 
-                        throw new Error("No se pudo completar el registro del negocio.");
+                        await client.query("ROLLBACK");
+
+                        
+                        logger.error(
+                            { error },
+                            "Error en la transacción de registro automatizado."
+                        );
+
+                        throw new Error(
+                            "No se pudo completar el registro del negocio."
+                        );
+
                     } finally {
                         client.release();
                     }
-                }
-            }
-        }
+                },
+            },
+        },
     },
+
     session: {
         cookieCache: {
             enabled: true,
             maxAge: 60 * 60 * 24 * 7,
-            strategy: "jwt"
-        }
+            strategy: "jwt",
+        },
     },
+
     rateLimit: {
         enabled: true,
         window: 60,
@@ -122,20 +164,23 @@ export const auth = betterAuth({
                 window: 60,
                 max: 5,
             },
-        }
+        },
     },
+
     plugins: [
         jwt({
             jwt: {
                 expiresIn: "15m",
-                definePayload: ({ user }) => {
-                    return {
-                        id: user.id,
-                        email: user.email,
-                    };
-                },
+                definePayload: ({ user }) => ({
+                    id: user.id,
+                    email: user.email,
+                }),
             },
         }),
     ],
-    trustedOrigins: ["http://localhost:3000", process.env.FRONTEND_URL as string],
+
+    trustedOrigins: [
+        "http://localhost:3000",
+        process.env.FRONTEND_URL as string,
+    ],
 });
