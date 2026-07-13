@@ -54,6 +54,7 @@ export function CTA() {
 
       const next = count + 1;
       setCount(next);
+      localStorage.setItem("restock_signups", next.toString());
       setSubmitted(true);
       setForm({ nombre: "", negocio: "", telefono: "" });
     } catch (err) {

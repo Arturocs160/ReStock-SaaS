@@ -6,7 +6,7 @@ export const interestSchema = z.object({
     .min(2, 'El nombre debe tener al menos 2 caracteres')
     .max(100, 'El nombre no puede exceder 100 caracteres')
     .regex(
-      /^[a-zA-ZÁÉÍÓÚÑáéíóúñ\s]+$/,
+      /^[a-zA-ZÁÉÍÓÚÑáéíóúñ\s]*$/,
       'El nombre solo puede contener letras y espacios'
     ),
   negocio: z
@@ -14,7 +14,7 @@ export const interestSchema = z.object({
     .min(2, 'El negocio debe tener al menos 2 caracteres')
     .max(100, 'El negocio no puede exceder 100 caracteres')
     .regex(
-      /^[a-zA-ZÁÉÍÓÚÑáéíóúñ\s]+$/,
+      /^[a-zA-ZÁÉÍÓÚÑáéíóúñ\s]*$/,
       'El negocio solo puede contener letras y espacios'
     ),
   telefono: z
