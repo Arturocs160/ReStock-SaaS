@@ -10,9 +10,10 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "ReStock - Inventario Inteligente para tu Negocio",
-  description: "ReStock predice cuánto comprar, te avisa antes de que algo caduque y mantiene tu tienda siempre abastecida — sin hojas de cálculo, sin adivinar.",
+  description:
+    "ReStock predice cuánto comprar, te avisa antes de que algo caduque y mantiene tu tienda siempre abastecida — sin hojas de cálculo, sin adivinar.",
   icons: {
-    icon: '/favicon.svg',
+    icon: "/favicon.svg",
   },
 };
 
@@ -22,14 +23,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${inter.variable} h-full antialiased`}
-    >
+    <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
-        <AuthInitializer>
-          {children}
-        </AuthInitializer>
+        <AuthInitializer>{children}</AuthInitializer>
       </body>
     </html>
   );

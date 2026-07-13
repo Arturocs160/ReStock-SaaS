@@ -1,9 +1,12 @@
-'use client';
+"use client";
 
 import { useState } from "react";
 import { Sidebar } from "../../components/dashboard/Sidebar";
 import { Topbar } from "../../components/dashboard/Topbar";
-import { InviteCollaboratorModal, InvitationData } from "../../components/dashboard/InviteCollaboratorModal";
+import {
+  InviteCollaboratorModal,
+  InvitationData,
+} from "../../components/dashboard/InviteCollaboratorModal";
 import { Pen, Trash2 } from "lucide-react";
 
 export default function ConfiguracionPage() {
@@ -57,7 +60,8 @@ export default function ConfiguracionPage() {
               Configuración del Sistema
             </h1>
             <p className="text-gray-500 text-sm mt-1">
-              Administra los parámetros de tu negocio, los roles del equipo e invita nuevos colaboradores.
+              Administra los parámetros de tu negocio, los roles del equipo e
+              invita nuevos colaboradores.
             </p>
           </div>
 
@@ -100,12 +104,15 @@ export default function ConfiguracionPage() {
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
               <div className="p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-gray-100">
                 <div>
-                  <h2 className="text-[1.05rem] font-bold text-gray-900">Usuarios del Negocio</h2>
+                  <h2 className="text-[1.05rem] font-bold text-gray-900">
+                    Usuarios del Negocio
+                  </h2>
                   <p className="text-[13px] text-gray-500 mt-0.5">
-                    Mapeado directo de colaboradores registrados en la tabla USER para tu ID de negocio.
+                    Mapeado directo de colaboradores registrados en la tabla
+                    USER para tu ID de negocio.
                   </p>
                 </div>
-                
+
                 <button
                   onClick={() => setIsModalOpen(true)}
                   className="px-5 py-2.5 bg-[#07B474] text-white text-sm font-semibold rounded-lg hover:bg-[#069b63] transition-colors whitespace-nowrap"
@@ -122,20 +129,29 @@ export default function ConfiguracionPage() {
                       <th className="px-6 py-4 font-bold">Email</th>
                       <th className="px-6 py-4 font-bold">Rol en Tienda</th>
                       <th className="px-6 py-4 font-bold">Creado El</th>
-                      <th className="px-6 py-4 font-bold text-right">Acciones</th>
+                      <th className="px-6 py-4 font-bold text-right">
+                        Acciones
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
                     {teamMembers.map((member) => (
-                      <tr key={member.id} className="hover:bg-gray-50/50 transition-colors">
+                      <tr
+                        key={member.id}
+                        className="hover:bg-gray-50/50 transition-colors"
+                      >
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
                             <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-semibold text-sm shrink-0">
                               {member.name.charAt(0)}
                             </div>
                             <div>
-                              <p className="font-bold text-[14px] text-gray-900">{member.name}</p>
-                              <p className="text-[12px] text-gray-400">ID: {member.id}</p>
+                              <p className="font-bold text-[14px] text-gray-900">
+                                {member.name}
+                              </p>
+                              <p className="text-[12px] text-gray-400">
+                                ID: {member.id}
+                              </p>
                             </div>
                           </div>
                         </td>
@@ -143,7 +159,9 @@ export default function ConfiguracionPage() {
                           {member.email}
                         </td>
                         <td className="px-6 py-4">
-                          <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${member.roleColor}`}>
+                          <span
+                            className={`px-2.5 py-1 text-xs font-semibold rounded-full ${member.roleColor}`}
+                          >
                             {member.role}
                           </span>
                         </td>
@@ -152,10 +170,16 @@ export default function ConfiguracionPage() {
                         </td>
                         <td className="px-6 py-4 text-right">
                           <div className="flex items-center justify-end gap-2">
-                            <button className="p-1.5 text-blue-500 hover:bg-blue-50 rounded-md transition-colors" aria-label="Editar">
+                            <button
+                              className="p-1.5 text-blue-500 hover:bg-blue-50 rounded-md transition-colors"
+                              aria-label="Editar"
+                            >
                               <Pen size={16} />
                             </button>
-                            <button className="p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors" aria-label="Eliminar">
+                            <button
+                              className="p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors"
+                              aria-label="Eliminar"
+                            >
                               <Trash2 size={16} />
                             </button>
                           </div>

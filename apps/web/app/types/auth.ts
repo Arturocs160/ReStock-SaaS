@@ -14,7 +14,12 @@ export interface AuthContextType {
   error: string | null;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string, businessName: string) => Promise<void>;
+  register: (
+    name: string,
+    email: string,
+    password: string,
+    businessName: string,
+  ) => Promise<void>;
   logout: () => Promise<void>;
   checkSession: () => Promise<void>;
 }
