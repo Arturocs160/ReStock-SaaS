@@ -40,11 +40,11 @@ export async function getLotesByProductIdController(req: Request, res: Response)
 
 export async function getLoteByIdController(req: Request, res: Response) {
   try {
-    const { id_lote } = req.params;
     const id_negocio = req.user?.id_negocio;
+    const id_lote = req.params.id_lote;
 
     if (typeof id_lote !== "string") {
-      return;
+      return res.status(400).json({ message: "ID de lote inválido." });
     }
 
     const lote = await getLoteByIdService(id_lote, id_negocio);
@@ -57,12 +57,12 @@ export async function getLoteByIdController(req: Request, res: Response) {
 
 export async function updateLoteController(req: Request, res: Response) {
   try {
-    const { id_lote } = req.params;
     const id_negocio = req.user?.id_negocio;
+    const id_lote = req.params.id_lote;
     const { codigo_lote, fecha_ingreso, fecha_caducidad, cantidad_inicial } = req.body;
 
     if (typeof id_lote !== "string") {
-      return;
+      return res.status(400).json({ message: "ID de lote inválido." });
     }
 
     const lote = await updateLoteService(
@@ -82,11 +82,11 @@ export async function updateLoteController(req: Request, res: Response) {
 
 export async function deleteLoteController(req: Request, res: Response) {
   try {
-    const { id_lote } = req.params;
     const id_negocio = req.user?.id_negocio;
+    const id_lote = req.params.id_lote;
 
     if (typeof id_lote !== "string") {
-      return;
+      return res.status(400).json({ message: "ID de lote inválido." });
     }
 
     const result = await deleteLoteService(id_lote, id_negocio);
