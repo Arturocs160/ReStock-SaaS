@@ -74,6 +74,7 @@ CREATE TABLE public.categoria (
   nombre character varying NOT NULL,
   descripcion character varying,
   activo boolean NOT NULL DEFAULT true,
+  "createdAt" timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT categoria_pkey PRIMARY KEY (id_categoria),
   CONSTRAINT fk_categoria_negocio FOREIGN KEY (id_negocio) REFERENCES public.negocio(id_negocio)
 );
