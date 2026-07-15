@@ -19,8 +19,29 @@ router.post("/", requireAuth, checkRole(["admin", "Owner"]), validateDataBody(cr
 
         if (!tenantId || !userId) return res.status(401).json({ message: "Usuario no autenticado o sin negocio." });
 
-        const invitation = await invitationService.createInvitation(email_invitado, tenantId, userId, role_asignado);
-        return res.status(201).json({ message: "Invitación creada con éxito", invitation });
+        const invitation = await invitationService.createInvitation(
+    email_invitado,
+    tenantId,
+    userId,
+    role_asignado
+);
+
+const invitationLink =
+    `${process.env.FRONTEND_URL}/register/invitation?token=${invitation.token_seguridad}`;
+
+logger.info(
+    {
+        email: email_invitado,
+        invitationLink,
+    },
+    "Simulación de envío de correo de invitación."
+);
+
+return res.status(201).json({
+    message: "Invitación creada con éxito",
+    invitation,
+    invitationLink,
+});
     } catch (error: any) {
         logger.error({ error }, "Error creando invitación.");
         return res.status(error.message === "Ya existe una invitación pendiente para este correo." ? 409 : 500).json({ message: error.message });
