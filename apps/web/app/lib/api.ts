@@ -29,7 +29,7 @@ async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> 
     try {
       const errorData = await response.json();
       errorMessage = errorData.message || errorData.error || errorMessage;
-    } catch (_) {
+    } catch {
       // Ignorar si la respuesta no es un JSON válido
     }
     throw new Error(errorMessage);
