@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { loginSchema } from '../lib/validationsAuth';
 import { useAuthStore } from '../store/authStore';
@@ -20,7 +20,9 @@ export function LoginForm({
   forgotPasswordText = "Olvidé mi contraseña",
 }: LoginFormProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const { login } = useAuthStore();
+  const isCollaboratorPath = pathname?.includes('/collaborator');
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -216,6 +218,18 @@ export function LoginForm({
           submitText
         )}
       </button>
+
+      {!isCollaboratorPath && (
+        <div className="text-sm text-gray-600 dark:text-zinc-400 mt-2">
+          ¿Eres colaborador?{' '}
+          <a
+            href="/collaborator/login"
+            className="text-primary font-semibold hover:underline"
+          >
+            Inicia sesión aquí
+          </a>
+        </div>
+      )}
     </form>
   );
 }
