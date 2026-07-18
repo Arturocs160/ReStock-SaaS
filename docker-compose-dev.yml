@@ -13,17 +13,6 @@ services:
     networks:
       - restock_network
 
-  redis:
-    image: redis:8.8.0-alpine
-    container_name: restock-redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - restock_redis:/data
-    restart: always
-    networks:
-      - restock_network
-
   backend:
     build:
       context: .
@@ -32,7 +21,6 @@ services:
     container_name: restock-backend
     environment:
       DATABASE_URL: "postgresql://${DATABASE_USER_DEV}:${DATABASE_PASSWORD_DEV}@${DATABASE_HOST_DEV}:${DATABASE_PORT_DEV}/postgres"
-      REDIS_URL: ${REDIS_URL}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
       BETTER_AUTH_URL: ${BETTER_AUTH_URL}
       FRONTEND_URL: ${FRONTEND_URL}
@@ -46,8 +34,6 @@ services:
       - restock_network
     depends_on:
       - postgres
-      - redis
-
   frontend:
     build:
       context: .
@@ -72,6 +58,5 @@ networks:
 
 volumes:
   restock_db:
-  restock_redis:
   restock_backend:
   restock_frontend:
