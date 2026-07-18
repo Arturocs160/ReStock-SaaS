@@ -26,7 +26,7 @@ const MOCK_LOTES: LoteInventario[] = [
   { id_lote: 'l4', id_producto: 'p2', codigo_lote: 'L-LALA-02', fecha_ingreso: '2023-10-05', fecha_caducidad: '2023-12-01', cantidad_inicial: 20, cantidad_actual: 12 },
   { id_lote: 'l5', id_producto: 'p3', codigo_lote: 'L-BIMBO-01', fecha_ingreso: '2023-10-01', fecha_caducidad: '2023-10-25', cantidad_inicial: 10, cantidad_actual: 8 },
   { id_lote: 'l6', id_producto: 'p4', codigo_lote: 'L-HUEV-01', fecha_ingreso: '2023-10-01', fecha_caducidad: '2023-11-20', cantidad_inicial: 15, cantidad_actual: 6 },
-  { id_lote: 'l7', id_producto: 'p5', codigo_lote: 'L-ARIEL-01', fecha_ingreso: '2023-10-01', fecha_caducidad: undefined, cantidad_inicial: 20, cantidad_actual: 15 },
+  { id_lote: 'l7', id_producto: 'p5', codigo_lote: 'L-ARIEL-01', fecha_ingreso: '2023-10-01', fecha_caducidad: null, cantidad_inicial: 20, cantidad_actual: 15 },
   { id_lote: 'l8', id_producto: 'p6', codigo_lote: 'L-ATUN-01', fecha_ingreso: '2023-10-01', fecha_caducidad: '2026-10-01', cantidad_inicial: 40, cantidad_actual: 34 },
 ];
 

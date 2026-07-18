@@ -55,8 +55,12 @@ export function RegisterForm() {
       setTimeout(() => {
         router.push('/dashboard');
       }, 1000);
-    } catch (err: any) {
-      setGeneralError(err.message || 'Error al crear la cuenta');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setGeneralError(err.message || 'Error al crear la cuenta');
+      } else {
+        setGeneralError('Error al crear la cuenta');
+      }
     } finally {
       setIsLoading(false);
     }
