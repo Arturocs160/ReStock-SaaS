@@ -5,10 +5,19 @@ services:
     environment:
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD_DEV}
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - restock_db:/var/lib/postgresql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: always
+    networks:
+      - restock_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: restock-redis
+    ports:
+      - "6379:6379"
     restart: always
     networks:
       - restock_network
