@@ -8,11 +8,9 @@ import logger from "./utils/logger";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./utils/auth";
 
-
 const PORT = Number(process.env.PORT) || 3010;
 
 export const app: Express = express();
-
 
 app.use(
   cors({
@@ -41,6 +39,10 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
 routes(app);
 
 
@@ -54,4 +56,3 @@ if (process.env.NODE_ENV !== "test") {
     logger.info({ port: PORT }, "Server is running"); 
   });
 }
-

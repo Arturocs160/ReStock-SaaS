@@ -116,7 +116,7 @@ export default function LotesPage() {
             ]);
             setCategories(catsData);
 
-            const populated = await Promise.all(prods.map(async (p: any) => {
+            const populated = await Promise.all(prods.map(async (p: Producto) => {
                 let lotes: LoteInventario[] = [];
                 try {
                     const fetchedLotes = await lotesApi.getByProduct(p.id_producto);
@@ -147,7 +147,9 @@ export default function LotesPage() {
     };
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchInventory();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const categorias = useMemo(() => {
