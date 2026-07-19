@@ -112,4 +112,4 @@ router.delete("/:id", requireAuth, checkRole(["admin"]), async (req: Request, re
     }
 });
 
-export default router;
+export default router;

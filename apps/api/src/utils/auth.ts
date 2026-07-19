@@ -5,7 +5,7 @@ import { redisStorage } from "@better-auth/redis-storage";
 import redisClient from "@/config/redis";
 import { hashPassword, verifyPassword } from "./password";
 import { sendVerificationOTP } from "@/services/mailService";
-import { handleUserCreation } from "@/services/authHooks";
+import { handleUserCreation, beforeAuthMiddleware } from "@/services/authHooks";
 
 import "dotenv/config";
 
@@ -14,15 +14,14 @@ export const auth = betterAuth({
   secondaryStorage: redisStorage({
     client: redisClient,
   }),
+  hooks: {
+    before: beforeAuthMiddleware,
+  },
   emailAndPassword: {
     enabled: true,
     password: {
-      hash: async (password) => {
-        return await hashPassword(password);
-      },
-      verify: async ({ password, hash }) => {
-        return await verifyPassword({ password, hash });
-      },
+      hash: hashPassword,
+      verify: verifyPassword,
     },
   },
   user: {
@@ -92,9 +91,7 @@ export const auth = betterAuth({
       },
     }),
     emailOTP({
-      async sendVerificationOTP({ email, otp, type }) {
-        await sendVerificationOTP({ email, otp, type });
-      },
+      sendVerificationOTP,
     }),
   ],
   trustedOrigins: ["http://localhost:3000", process.env.FRONTEND_URL as string],
