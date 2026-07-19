@@ -9,6 +9,7 @@ import {
   getProductsPaginationController,
   updateProductController,
   getAllCategoriesController,
+  getPosCatalogController,
 } from "../controllers/productsController";
 import { validateDataBody, validateDataParams, validateDataQuery } from "../middlewares/verifyData";
 import {
@@ -22,6 +23,7 @@ import {
 const routerProducts: Router = Router();
 
 routerProducts.get("/", requireAuth, getAllProductsByTenantIdController);
+routerProducts.get("/pos/catalog", requireAuth, getPosCatalogController);
 routerProducts.get(
   "/pagination",
   requireAuth,

@@ -8,6 +8,7 @@ import {
   getProductsPaginationService,
   updateProductService,
   getAllCategoriesService,
+  getPosCatalogService,
 } from "../services/productsServices";
 import logger from "../utils/logger";
 
@@ -139,5 +140,19 @@ export async function getAllCategoriesController(req: Request, res: Response) {
   } catch (error: any) {
     logger.error("Error al obtener las categorías del negocio:" + error);
     res.status(500).json({ message: "Error interno del servidor" });
+  }
+}
+
+export async function getPosCatalogController(req: Request, res: Response) {
+  try {
+    const id_negocio = req.user?.id_negocio;
+    if (!id_negocio) {
+      return res.status(400).json({ error: "No se encontró el id_negocio en la sesión." });
+    }
+    const catalog = await getPosCatalogService(id_negocio);
+    res.status(200).json(catalog);
+  } catch (error: any) {
+    logger.error("Error al obtener el catálogo del POS: " + error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 }

@@ -8,6 +8,7 @@ import {
   getProductsPaginationModel,
   updateProductModel,
   getAllCategoriesModel,
+  getPosCatalogModel,
 } from "../models/productsModels";
 
 export async function getAllProductsServiceByTenantId(id_negocio: string) {
@@ -94,4 +95,41 @@ export async function deleteProductService(id_producto: string, id_negocio: stri
 
 export async function getAllCategoriesService(id_negocio: string) {
   return await getAllCategoriesModel(id_negocio);
+}
+
+export async function getPosCatalogService(id_negocio: string) {
+  const rows = await getPosCatalogModel(id_negocio);
+  const productsMap = new Map<string, any>();
+
+  for (const row of rows) {
+    if (!productsMap.has(row.id_producto)) {
+      productsMap.set(row.id_producto, {
+        id_producto: row.id_producto,
+        id_negocio: row.id_negocio,
+        codigo_barras: row.codigo_barras,
+        nombre: row.producto_nombre,
+        precio_actual: row.precio_actual,
+        stock_minimo_sugerido: row.stock_minimo_sugerido,
+        activo: row.producto_activo,
+        id_categoria: row.id_categoria,
+        categoria: row.categoria || "General",
+        lotes: [],
+      });
+    }
+
+    if (row.id_lote) {
+      productsMap.get(row.id_producto).lotes.push({
+        id_lote: row.id_lote,
+        id_producto: row.id_producto,
+        codigo_lote: row.codigo_lote,
+        fecha_ingreso: row.fecha_ingreso,
+        fecha_caducidad: row.fecha_caducidad,
+        cantidad_inicial: row.cantidad_inicial,
+        cantidad_actual: Number(row.cantidad_actual),
+        activo: row.lote_activo,
+      });
+    }
+  }
+
+  return Array.from(productsMap.values());
 }
