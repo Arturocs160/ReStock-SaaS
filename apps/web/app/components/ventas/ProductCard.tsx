@@ -1,6 +1,6 @@
 "use client";
 
-import { ProductoConStock } from "../../../types/inventario";
+import { ProductoConStock } from "../../types/inventario";
 import LoteItem from "./LoteItem";
 
 interface Props {
@@ -43,7 +43,7 @@ export default function ProductCard({ producto }: Props) {
             Lotes Disponibles:
           </span>
           {producto.lotes.map((lote) => (
-            <LoteItem key={lote.id_lote} lote={lote} />
+            <LoteItem key={lote.id_lote} lote={lote} producto={producto} />
           ))}
         </div>
       </div>
