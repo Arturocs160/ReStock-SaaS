@@ -5,6 +5,7 @@ import { Sidebar } from "../../components/dashboard/Sidebar";
 import { Topbar } from "../../components/dashboard/Topbar";
 import { InviteCollaboratorModal, InvitationData } from "../../components/dashboard/InviteCollaboratorModal";
 import { EditMemberModal } from "../../components/dashboard/EditMemberModal";
+import { ConfirmDeleteModal } from "../../components/dashboard/ConfirmDeleteModal";
 import EquipoPanel from "../../components/dashboard/EquipoPanel";
 import { UsuarioTeam, InvitacionTeam, mapBackendRoleToFrontend, mapFrontendRoleToBackend } from "../../types/team";
 import { useAuthStore } from "../../store/authStore";
@@ -16,6 +17,8 @@ export default function EquipoPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<UsuarioTeam | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [memberToDelete, setMemberToDelete] = useState<UsuarioTeam | null>(null);
 
   const [teamUsers, setTeamUsers] = useState<UsuarioTeam[]>([]);
   const [invitaciones, setInvitaciones] = useState<InvitacionTeam[]>([]);
@@ -73,17 +76,18 @@ export default function EquipoPage() {
     }
   };
 
-  const handleRemoveMember = async (id: string) => {
-    if (!user?.id_negocio) return;
-    if (confirm("¿Estás seguro de que deseas eliminar a este colaborador del negocio?")) {
-      try {
-        await teamApi.removeMember(user.id_negocio, id);
-        fetchTeamData();
-      } catch (err: any) {
-        console.error("Error al remover miembro:", err);
-        alert(err.message || "No se pudo remover al miembro.");
-      }
+  const handleRemoveMemberClick = (id: string) => {
+    const member = teamUsers.find(m => m.id === id);
+    if (member) {
+      setMemberToDelete(member);
+      setIsDeleteModalOpen(true);
     }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!user?.id_negocio || !memberToDelete) return;
+    await teamApi.removeMember(user.id_negocio, memberToDelete.id);
+    fetchTeamData();
   };
 
   const handleSuccess = (newInvitation: InvitationData) => {
@@ -137,7 +141,7 @@ export default function EquipoPage() {
               teamUsers={teamUsers}
               invitaciones={invitaciones}
               handleDeleteInvite={handleDeleteInvite}
-              handleRemoveMember={handleRemoveMember}
+              handleRemoveMember={handleRemoveMemberClick}
               setShowInviteModal={setIsModalOpen}
               openEditMemberModal={openEditMemberModal}
             />
@@ -156,6 +160,17 @@ export default function EquipoPage() {
         onClose={() => setIsEditModalOpen(false)}
         member={selectedMember}
         onSave={handleUpdateMemberRole}
+      />
+
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setMemberToDelete(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        memberName={memberToDelete?.name || "Usuario Sin Nombre"}
+        memberEmail={memberToDelete?.email || ""}
       />
     </div>
   );
