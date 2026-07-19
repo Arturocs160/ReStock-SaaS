@@ -213,7 +213,7 @@ export default function ConfiguracionPage() {
                   {errors.email && <p className="text-rose-600 text-xs mt-1 font-medium">{errors.email.message}</p>}
                 </div>
 
-                {/* Campo Estado */}
+                {/* Campo Estado - Ocultado
                 <div className="flex items-center justify-between p-4 bg-slate-50/50 rounded-xl border border-slate-100/60">
                   <div className="flex flex-col pr-4">
                     <span className="text-sm font-bold text-slate-800">
@@ -233,6 +233,7 @@ export default function ConfiguracionPage() {
                   </label>
                 </div>
                 {errors.status && <p className="text-rose-600 text-xs mt-1 font-medium">{errors.status.message}</p>}
+                */}
 
                 {/* Botón Guardar */}
                 <div className="pt-2">
