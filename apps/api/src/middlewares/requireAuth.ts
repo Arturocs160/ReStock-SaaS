@@ -17,17 +17,8 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
       headers: fromNodeHeaders(req.headers),
     });
 
-        if (!session) {
-            return res.status(401).json({ message: "No autorizado. Inicia sesión primero." });
-        }
-
-        console.log(session.user);
-        
-        req.user = session.user;
-        next();
-    } catch (error: any) {
-        logger.error("Error validando sesión: ", error);
-        return res.status(500).json({ message: "Error interno del servidor" });
+    if (!session) {
+        return res.status(401).json({ message: "No autorizado. Inicia sesión primero." });
     }
 
     req.user = session.user;
