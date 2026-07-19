@@ -54,10 +54,10 @@ export function AlertsPanel({ products }: { products: ProductoConStock[] }) {
     : [{ name: "General", stock: "0 uds." }];
 
   return (
-    <div className="bg-white border border-gray-200 rounded-[24px] p-6 h-full flex flex-col justify-between">
+    <div className="bg-white border border-gray-200 rounded-2xl p-5 h-full flex flex-col justify-between">
       <div>
         {/* Header */}
-        <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center justify-between mb-4">
           <h2 className="font-bold text-gray-800 flex items-center gap-2">
             <TrendingUp size={18} className="text-[#07B474]" />
             Análisis de Inventario y Alertas
@@ -121,7 +121,7 @@ export function AlertsPanel({ products }: { products: ProductoConStock[] }) {
 
         {/* Recomendación de abastecimiento */}
         {lowStockProds.length > 0 ? (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-5">
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-4">
             <div className="flex gap-3">
               <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center shrink-0">
                 <AlertTriangle
@@ -151,7 +151,7 @@ export function AlertsPanel({ products }: { products: ProductoConStock[] }) {
             </div>
           </div>
         ) : (
-          <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-4 mb-5 flex gap-3 items-center">
+          <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-4 mb-4 flex gap-3 items-center">
             <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
               <CheckCircle2
                 size={16}
