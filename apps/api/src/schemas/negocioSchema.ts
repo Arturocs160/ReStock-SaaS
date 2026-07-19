@@ -10,6 +10,13 @@ export const negocioDbSchema = z.object({
       message: "El subdominio solo puede contener letras minúsculas, números y guiones",
     }),
   activo: z.boolean().default(true),
+  telefono: z.string().nullable().optional(),
+  email_comercial: z
+    .string()
+    .email({ message: "El correo electrónico debe ser válido" })
+    .or(z.literal(""))
+    .nullable()
+    .optional(),
 });
 
 export type Negocio = z.infer<typeof negocioDbSchema>;

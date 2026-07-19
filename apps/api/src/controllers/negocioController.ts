@@ -28,8 +28,8 @@ export async function updateNegocioController(req: Request, res: Response) {
       return res.status(401).json({ message: "No autorizado. Inicia sesión primero." });
     }
 
-    const { nombre, subdominio } = req.body;
-    const result = await updateNegocioService(id_negocio, nombre, subdominio);
+    const { nombre, subdominio, telefono, email_comercial } = req.body;
+    const result = await updateNegocioService(id_negocio, nombre, subdominio, telefono, email_comercial);
 
     res.status(200).json(result);
   } catch (error: any) {
