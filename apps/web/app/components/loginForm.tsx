@@ -113,7 +113,7 @@ export function LoginForm({
           ref={emailRef}
           type="email"
           value={email}
-          placeholder="colaborador@negocio.com"
+          placeholder="admin@negocio.com"
           disabled={isLoading}
           required
           onChange={(e) => {
@@ -129,11 +129,6 @@ export function LoginForm({
               : 'border-gray-200 dark:border-zinc-800 focus:ring-primary'
           } bg-white dark:bg-zinc-900/50 text-gray-900 dark:text-zinc-100 px-3 py-3 text-sm shadow-sm placeholder-gray-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 disabled:opacity-50`}
         />
-
-        {/* 💡 Texto de ayuda reubicado abajo del input */}
-        <p className="mt-1.5 text-xs text-gray-500 dark:text-zinc-400">
-          Usa el correo con el que fuiste invitado por el dueño del negocio
-        </p>
 
         {fieldErrors.email && (
           <p className="mt-1 flex items-center gap-1 text-xs text-red-500">
