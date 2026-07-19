@@ -4,8 +4,10 @@ import {
   CreateProductInput,
   CreateLoteInput,
   UpdateLoteInput,
-  Categoria
+  Categoria,
+  ProductoConStock
 } from "../types/inventario";
+import { UsuarioTeam, InvitacionTeam } from "../types/team";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3010';
 
@@ -29,7 +31,7 @@ async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> 
     try {
       const errorData = await response.json();
       errorMessage = errorData.message || errorData.error || errorMessage;
-    } catch (_) {
+    } catch {
       // Ignorar si la respuesta no es un JSON válido
     }
     throw new Error(errorMessage);
@@ -44,7 +46,21 @@ async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> 
 
 export const productsApi = {
   getAll: () => apiFetch<Producto[]>('/products'),
-  getCategories: () => apiFetch<Categoria[]>('/products/categories'),
+  getCategories: (all?: boolean) => apiFetch<Categoria[]>(`/categories${all ? '?all=true' : ''}`),
+  createCategory: (data: { nombre: string; descripcion: string | null }) =>
+    apiFetch<Categoria>('/categories', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  updateCategory: (id: string, data: { nombre: string; descripcion: string | null }) =>
+    apiFetch<Categoria>(`/categories/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  toggleCategoryActive: (id: string) =>
+    apiFetch<Categoria>(`/categories/${id}/toggle`, {
+      method: 'PATCH',
+    }),
   create: (data: CreateProductInput) =>
     apiFetch<Producto>('/products', {
       method: 'POST',
@@ -59,6 +75,7 @@ export const productsApi = {
     apiFetch<void>(`/products/${id}`, {
       method: 'DELETE',
     }),
+  getPosCatalog: () => apiFetch<ProductoConStock[]>('/products/pos/catalog'),
 };
 
 export const lotesApi = {
@@ -79,3 +96,37 @@ export const lotesApi = {
       method: 'DELETE',
     }),
 };
+
+export const salesApi = {
+  create: (data: { items: { id_lote: string; cantidad_sold: number; precio_unitario: number }[] }) =>
+    apiFetch<any>('/sales', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+};
+
+export const teamApi = {
+  getMembers: (idNegocio: string) =>
+    apiFetch<any[]>(`/negocio/${idNegocio}/usuarios`),
+  getInvitations: () =>
+    apiFetch<any[]>(`/invitations`),
+  createInvitation: (data: { email_invitado: string; role_asignado: string }) =>
+    apiFetch<any>('/invitations', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  deleteInvitation: (id: string) =>
+    apiFetch<void>(`/invitations/${id}`, {
+      method: 'DELETE',
+    }),
+  updateMemberRole: (idNegocio: string, idUsuario: string, role: string) =>
+    apiFetch<void>(`/negocio/${idNegocio}/usuarios/${idUsuario}/role`, {
+      method: 'PUT',
+      body: JSON.stringify({ role }),
+    }),
+  removeMember: (idNegocio: string, idUsuario: string) =>
+    apiFetch<void>(`/negocio/${idNegocio}/usuarios/${idUsuario}`, {
+      method: 'DELETE',
+    }),
+};
+

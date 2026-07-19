@@ -4,6 +4,8 @@ CREATE TABLE public.negocio (
   nombre character varying NOT NULL,
   subdominio character varying NOT NULL,
   activo boolean NOT NULL DEFAULT true,
+  telefono character varying,
+  email_comercial character varying,
   CONSTRAINT negocio_pkey PRIMARY KEY (id_negocio)
 );
 
@@ -74,6 +76,7 @@ CREATE TABLE public.categoria (
   nombre character varying NOT NULL,
   descripcion character varying,
   activo boolean NOT NULL DEFAULT true,
+  "createdAt" timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT categoria_pkey PRIMARY KEY (id_categoria),
   CONSTRAINT fk_categoria_negocio FOREIGN KEY (id_negocio) REFERENCES public.negocio(id_negocio)
 );

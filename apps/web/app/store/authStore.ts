@@ -32,9 +32,10 @@ export const useAuthStore = create<AuthState>((set) => ({
             id: data.user.id,
             email: data.user.email,
             name: data.user.name,
-            role: (data.user as any).role || 'user',
-            nombre: (data.user as any).nombre,
+            role: (data.user as { role?: string }).role || 'user',
+            nombre: (data.user as { nombre?: string }).nombre,
             createdAt: data.user.createdAt ? new Date(data.user.createdAt).toISOString() : undefined,
+            id_negocio: (data.user as { id_negocio?: string }).id_negocio,
           },
           isAuthenticated: true,
         });
@@ -67,9 +68,10 @@ export const useAuthStore = create<AuthState>((set) => ({
             id: data.user.id,
             email: data.user.email,
             name: data.user.name,
-            role: (data.user as any).role || 'user',
-            nombre: (data.user as any).nombre,
+            role: (data.user as { role?: string }).role || 'user',
+            nombre: (data.user as { nombre?: string }).nombre,
             createdAt: data.user.createdAt ? new Date(data.user.createdAt).toISOString() : undefined,
+            id_negocio: (data.user as { id_negocio?: string }).id_negocio,
           },
           isAuthenticated: true,
         });
@@ -91,7 +93,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         password,
         name,
         nombre,
-      } as any);
+      } as Parameters<typeof authClient.signUp.email>[0]);
 
       if (signUpError) {
         throw new Error(signUpError.message || 'Error al registrar');
@@ -103,9 +105,10 @@ export const useAuthStore = create<AuthState>((set) => ({
             id: data.user.id,
             email: data.user.email,
             name: data.user.name,
-            role: (data.user as any).role || 'user',
-            nombre: (data.user as any).nombre,
+            role: (data.user as { role?: string }).role || 'user',
+            nombre: (data.user as { nombre?: string }).nombre,
             createdAt: data.user.createdAt ? new Date(data.user.createdAt).toISOString() : undefined,
+            id_negocio: (data.user as { id_negocio?: string }).id_negocio,
           },
           isAuthenticated: true,
         });

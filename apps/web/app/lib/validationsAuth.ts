@@ -32,3 +32,35 @@ export const registerSchema = z.object({
 export type RegisterFormValues = z.infer<typeof registerSchema>;
 export type RegisterFormData = RegisterFormValues;
 
+export const invitationRegisterSchema = z
+  .object({
+    name: z
+      .string()
+      .min(3, "El nombre debe tener al menos 3 caracteres"),
+
+    email: z
+      .string()
+      .email("Correo electrónico inválido"),
+
+    password: z
+      .string()
+      .min(8, "La contraseña debe tener al menos 8 caracteres")
+      .regex(/[A-Z]/, "Debe contener una mayúscula")
+      .regex(/[a-z]/, "Debe contener una minúscula")
+      .regex(/[0-9]/, "Debe contener un número"),
+
+    confirmPassword: z
+      .string(),
+
+    token: z
+      .string()
+      .min(1, "Token inválido"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Las contraseñas no coinciden",
+  });
+
+export type InvitationRegisterValues =
+  z.infer<typeof invitationRegisterSchema>;
+

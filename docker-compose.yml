@@ -11,7 +11,7 @@ services:
     ports:
       - "${DB_PORT:-5432}:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-restock}" ]
       interval: 10s
@@ -64,26 +64,9 @@ services:
       - restock-network
     restart: unless-stopped
 
-  redis:
-    image: redis:8.8.0-alpine
-    container_name: restock-redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: [ "CMD-SHELL", "redis-cli ping" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - restock-network
-    restart: unless-stopped
-
 volumes:
   postgres_data:
   development:
-  redis_data:
 
 networks:
   restock-network:

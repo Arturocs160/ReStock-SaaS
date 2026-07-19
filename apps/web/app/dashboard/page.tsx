@@ -7,7 +7,7 @@ import { MetricsCards } from "../components/dashboard/MetricsCards";
 import { AlertsPanel } from "../components/dashboard/AlertsPanel";
 import { RecentSales } from "../components/dashboard/RecentSales";
 import { productsApi, lotesApi } from "../lib/api";
-import { LoteInventario, ProductoConStock } from "../types/inventario";
+import { LoteInventario, ProductoConStock, Producto } from "../types/inventario";
 
 export default function DashboardPage() {
     const [products, setProducts] = useState<ProductoConStock[]>([]);
@@ -18,11 +18,11 @@ export default function DashboardPage() {
             try {
                 setLoading(true);
                 const prods = await productsApi.getAll();
-                const populated = await Promise.all(prods.map(async (p: any) => {
+                const populated = await Promise.all(prods.map(async (p: Producto) => {
                     let lotes: LoteInventario[] = [];
                     try {
                         const fetchedLotes = await lotesApi.getByProduct(p.id_producto);
-                        lotes = fetchedLotes.map((l: any) => ({
+                        lotes = fetchedLotes.map((l: LoteInventario) => ({
                             ...l,
                             fecha_ingreso: l.fecha_ingreso ? l.fecha_ingreso.split("T")[0] : "",
                             fecha_caducidad: l.fecha_caducidad ? l.fecha_caducidad.split("T")[0] : null,
@@ -69,9 +69,9 @@ export default function DashboardPage() {
                     </div>
 
                     {loading ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
                             {[1, 2, 3, 4].map((n) => (
-                                <div key={n} className="bg-white border border-gray-200 rounded-[24px] px-5 py-6 shadow-sm flex items-center justify-between min-h-[112px] animate-pulse">
+                                <div key={n} className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm flex items-center justify-between min-h-[100px] animate-pulse">
                                     <div className="flex-1 space-y-3">
                                         <div className="h-3 bg-gray-200 rounded-full w-24"></div>
                                         <div className="h-8 bg-gray-200 rounded-full w-16"></div>
@@ -85,7 +85,7 @@ export default function DashboardPage() {
                         <MetricsCards products={products} />
                     )}
 
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
                         <div className="lg:col-span-2">
                             {loading ? (
                                 <div className="bg-white border border-gray-200 rounded-2xl p-6 h-full space-y-4 animate-pulse">

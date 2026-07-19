@@ -62,3 +62,16 @@ export const editLoteSchema = z.object({
 });
 
 export type EditLoteInputData = z.infer<typeof editLoteSchema>;
+
+export const categoriaSchema = z.object({
+    nombre: z.string()
+        .min(1, "El nombre de la categoría es obligatorio")
+        .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ0-9\s-]+$/, "El nombre de la categoría solo puede contener letras, números, espacios y guiones medios"),
+    descripcion: z.string()
+        .nullable()
+        .optional()
+        .or(z.literal(""))
+        .transform(val => val === "" ? null : val),
+});
+
+export type CategoriaInputData = z.infer<typeof categoriaSchema>;
