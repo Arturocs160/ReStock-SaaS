@@ -4,14 +4,14 @@ import { invitationRepository } from "../repositories/invitation.repository";
 import { invitationService } from "../services/invitation.service";
 import { validateDataBody } from "../middlewares/verifyData";
 import { requireAuth } from "../middlewares/requireAuth";
-import { checkRole } from "../middlewares/checkRole";
+import { requireRole } from "../middlewares/requireRole";
 import { createInvitationSchema, registerInvitationSchema } from "../schemas/invitation.schema";
 import logger from "../utils/logger";
 
 const router = Router();
 
 // --- Crear invitación ---
-router.post("/", requireAuth, checkRole(["admin", "Owner"]), validateDataBody(createInvitationSchema), async (req: Request, res: Response) => {
+router.post("/", requireAuth, requireRole(["admin", "Owner"]), validateDataBody(createInvitationSchema), async (req: Request, res: Response) => {
     try {
         const { email_invitado, role_asignado } = req.body;
         const tenantId = req.user?.id_negocio;
