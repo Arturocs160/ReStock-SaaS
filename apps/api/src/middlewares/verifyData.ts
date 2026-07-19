@@ -11,7 +11,9 @@ export function validateDataBody(schema: z.ZodTypeAny) {
         const errorMessages = error.issues.map((issue: any) => ({
           message: issue.message,
         }));
-        res.status(400).json({ error: "Datos invalidos", details: errorMessages });
+        res
+          .status(400)
+          .json({ error: "Datos invalidos", message: "Datos invalidos", details: errorMessages });
       } else {
         res.status(500).json({ error: "Error interno del servidor" });
       }
@@ -29,7 +31,9 @@ export function validateDataParams(schema: z.ZodTypeAny) {
         const errorMessages = error.issues.map((issue: any) => ({
           message: issue.message,
         }));
-        res.status(400).json({ error: "Datos invalidos", details: errorMessages });
+        res
+          .status(400)
+          .json({ error: "Datos invalidos", message: "Datos invalidos", details: errorMessages });
       } else {
         res.status(500).json({ error: "Error interno del servidor" });
       }
@@ -47,7 +51,9 @@ export function validateDataQuery(schema: z.ZodTypeAny) {
         const errorMessages = error.issues.map((issue: any) => ({
           message: issue.message,
         }));
-        res.status(400).json({ error: "Datos invalidos", details: errorMessages });
+        res
+          .status(400)
+          .json({ error: "Datos invalidos", message: "Datos invalidos", details: errorMessages });
       } else {
         res.status(500).json({ error: "Error interno del servidor" });
       }

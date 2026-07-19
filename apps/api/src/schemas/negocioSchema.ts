@@ -1,10 +1,22 @@
 import { z } from "zod";
 
-export const updateNegocioSchema = z.object({
-  nombre: z.string().min(1, "El nombre del negocio es requerido").optional(),
+export const negocioDbSchema = z.object({
+  id_negocio: z.string().uuid({ message: "El ID del negocio debe ser un UUID válido" }),
+  nombre: z.string().min(1, { message: "El nombre es obligatorio" }),
   subdominio: z
     .string()
-    .min(3, "El subdominio debe tener al menos 3 caracteres")
-    .regex(/^[a-z0-9-]+$/, "El subdominio solo puede contener letras minúsculas, números y guiones")
-    .optional(),
+    .min(1, { message: "El subdominio es obligatorio" })
+    .regex(/^[a-z0-9-]+$/, {
+      message: "El subdominio solo puede contener letras minúsculas, números y guiones",
+    }),
+  activo: z.boolean().default(true),
 });
+
+export type Negocio = z.infer<typeof negocioDbSchema>;
+
+export const updateNegocioSchema = negocioDbSchema.omit({
+  id_negocio: true,
+  activo: true,
+});
+
+export type UpdateNegocioInput = z.infer<typeof updateNegocioSchema>;

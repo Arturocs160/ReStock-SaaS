@@ -1,25 +1,15 @@
-import { getNegocioBySubdominioModel, updateNegocioModel } from "../models/negocioModels";
+import { getNegocioBySubdomainModel, updateNegocioModel } from "../models/negocioModel";
 
-export class ConflictError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "ConflictError";
-  }
-}
+export async function updateNegocioService(id_negocio: string, nombre: string, subdominio: string) {
+  // Verificar la disponibilidad del subdominio
+  const existingNegocio = await getNegocioBySubdomainModel(subdominio);
 
-export async function updateNegocioService(
-  id_negocio: string,
-  data: { nombre?: string; subdominio?: string }
-) {
-  if (data.subdominio) {
-    // Verificar unicidad global del subdominio
-    const existingNegocio = await getNegocioBySubdominioModel(data.subdominio);
-
-    if (existingNegocio && existingNegocio.id_negocio !== id_negocio) {
-      throw new ConflictError("El subdominio ya está en uso por otro negocio");
-    }
+  if (existingNegocio && existingNegocio.id_negocio !== id_negocio) {
+    const error = new Error("El subdominio ya está asignado a otro negocio");
+    (error as any).statusCode = 409;
+    throw error;
   }
 
-  const updated = await updateNegocioModel(id_negocio, data.nombre, data.subdominio);
-  return updated;
+  const updatedNegocio = await updateNegocioModel(id_negocio, nombre, subdominio);
+  return updatedNegocio;
 }
