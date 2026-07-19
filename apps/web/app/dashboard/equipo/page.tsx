@@ -13,7 +13,7 @@ import { teamApi } from "../../lib/api";
 import { Loader2 } from "lucide-react";
 
 export default function EquipoPage() {
-  const { user } = useAuthStore();
+  const { user, isLoading: authLoading } = useAuthStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<UsuarioTeam | null>(null);
@@ -24,6 +24,8 @@ export default function EquipoPage() {
   const [invitaciones, setInvitaciones] = useState<InvitacionTeam[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const hasAccess = user?.role === 'admin';
 
   const fetchTeamData = async () => {
     if (!user?.id_negocio) return;
@@ -59,12 +61,14 @@ export default function EquipoPage() {
   };
 
   useEffect(() => {
-    if (user?.id_negocio) {
-      fetchTeamData();
-    } else {
-      setLoading(false);
+    if (!authLoading) {
+      if (hasAccess && user?.id_negocio) {
+        fetchTeamData();
+      } else {
+        setLoading(false);
+      }
     }
-  }, [user?.id_negocio]);
+  }, [authLoading, hasAccess, user?.id_negocio]);
 
   const handleDeleteInvite = async (id_invitacion: string) => {
     try {
@@ -120,10 +124,15 @@ export default function EquipoPage() {
         <Topbar />
 
         <main className="p-4 md:p-6 lg:p-8">
-          {loading ? (
+          {authLoading || loading ? (
             <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
               <Loader2 className="w-10 h-10 text-[#00a365] animate-spin" />
               <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Cargando gestión de equipo...</p>
+            </div>
+          ) : !hasAccess ? (
+            <div className="bg-red-50 border border-red-100 rounded-2xl p-6 text-center max-w-lg mx-auto mt-12">
+              <h3 className="text-red-800 font-bold text-lg mb-2">Acceso Denegado</h3>
+              <p className="text-red-600 text-sm">Solo los usuarios con rol Admin pueden administrar el equipo de la tienda.</p>
             </div>
           ) : error ? (
             <div className="bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 rounded-2xl p-6 text-center max-w-lg mx-auto mt-12">
