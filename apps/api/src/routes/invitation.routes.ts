@@ -8,6 +8,8 @@ import { checkRole } from "../middlewares/checkRole";
 import { createInvitationSchema, registerInvitationSchema } from "../schemas/invitation.schema";
 import logger from "../utils/logger";
 import { sendInvitationEmail } from "../services/mailService";
+import pool from "../config/db";
+import { verifyPassword } from "../utils/password";
 
 const router = Router();
 
@@ -56,21 +58,56 @@ router.post("/register", validateDataBody(registerInvitationSchema), async (req:
     try {
         const { token, email, password, name } = req.body;
 
-        
         const invitation = await invitationService.validateInvitationToken(token);
 
-        
-        const session = await auth.api.signUpEmail({
-            body: { email, password, name }
-        });
+        // Check if the user already exists
+        const userResult = await pool.query(
+            `SELECT u.id, u.id_negocio, a.password AS password_hash
+             FROM public."user" u
+             LEFT JOIN public.account a ON a."userId" = u.id
+             WHERE u.email = $1
+             LIMIT 1`,
+            [email]
+        );
 
-        
-        await invitationRepository.updateUser(session.user.id, invitation.id_negocio, invitation.role_asignado);
+        if (userResult.rows.length > 0) {
+            const existingUser = userResult.rows[0];
 
-        
-        await invitationRepository.deleteInvitation(invitation.id_invitacion);
+            // If the user already has a business, they cannot join another
+            if (existingUser.id_negocio) {
+                return res.status(400).json({ message: "El usuario ya pertenece a un negocio." });
+            }
 
-        return res.status(201).json({ message: "Usuario registrado correctamente" });
+            if (!existingUser.password_hash) {
+                return res.status(400).json({ message: "El usuario existe pero no tiene contraseña registrada." });
+            }
+
+            const isPasswordValid = await verifyPassword({
+                password,
+                hash: existingUser.password_hash,
+            });
+
+            if (!isPasswordValid) {
+                return res.status(401).json({ message: "Contraseña incorrecta." });
+            }
+
+            // Re-associate user with business
+            await invitationRepository.updateUser(existingUser.id, invitation.id_negocio, invitation.role_asignado);
+            // Delete invitation
+            await invitationRepository.deleteInvitation(invitation.id_invitacion);
+
+            return res.status(200).json({ message: "Usuario asociado correctamente al negocio" });
+        } else {
+            // New user signup
+            const session = await auth.api.signUpEmail({
+                body: { email, password, name }
+            });
+
+            await invitationRepository.updateUser(session.user.id, invitation.id_negocio, invitation.role_asignado);
+            await invitationRepository.deleteInvitation(invitation.id_invitacion);
+
+            return res.status(201).json({ message: "Usuario registrado correctamente" });
+        }
     } catch (error: any) {
         logger.error({ error }, "Error en el registro del invitado.");
         const statusMap: Record<string, number> = { "INVALID_TOKEN": 400, "TOKEN_EXPIRED": 410, "TOKEN_ALREADY_USED": 409 };

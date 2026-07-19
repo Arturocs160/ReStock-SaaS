@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { z } from "zod";
 import { X, Check, Loader2 } from "lucide-react";
+import { teamApi } from "../../lib/api";
+import { mapFrontendRoleToBackend } from "../../types/team";
 
-export type Role = "Gerente" | "Empleado" | "Cajero";
+export type Role = "Admin" | "Empleado";
 
 export interface InvitationData {
   email: string;
@@ -42,25 +44,33 @@ export function InviteCollaboratorModal({ isOpen, onClose, onSuccess }: Props) {
 
     setIsLoading(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      const backendRole = mapFrontendRoleToBackend(role);
+      await teamApi.createInvitation({
+        email_invitado: email,
+        role_asignado: backendRole,
+      });
 
-    setIsLoading(false);
-    setShowSuccess(true);
+      setIsLoading(false);
+      setShowSuccess(true);
 
-    const newInvitation: InvitationData = {
-      email,
-      role: role as Role,
-      date: new Date().toISOString(),
-    };
+      const newInvitation: InvitationData = {
+        email,
+        role: role as Role,
+        date: new Date().toISOString(),
+      };
 
-    setTimeout(() => {
-      onSuccess(newInvitation);
-      setShowSuccess(false);
-      setEmail("");
-      setRole("");
-      onClose();
-    }, 1500);
+      setTimeout(() => {
+        onSuccess(newInvitation);
+        setShowSuccess(false);
+        setEmail("");
+        setRole("");
+        onClose();
+      }, 1500);
+    } catch (err: any) {
+      setIsLoading(false);
+      setError(err.message || "Ha ocurrido un error al enviar la invitación");
+    }
   };
 
   return (
@@ -120,9 +130,8 @@ export function InviteCollaboratorModal({ isOpen, onClose, onSuccess }: Props) {
                     disabled={isLoading}
                   >
                     <option value="" disabled>Selecciona un rol</option>
-                    <option value="Gerente">Gerente</option>
+                    <option value="Admin">Admin</option>
                     <option value="Empleado">Empleado</option>
-                    <option value="Cajero">Cajero</option>
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-500">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

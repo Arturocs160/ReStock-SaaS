@@ -13,3 +13,26 @@ export interface InvitacionTeam {
   token_seguridad: string;
   expiresAt: string;
 }
+
+export const mapFrontendRoleToBackend = (role: string): string => {
+  switch (role) {
+    case "Admin":
+      return "admin";
+    case "Empleado":
+      return "collaborator";
+    default:
+      return "collaborator";
+  }
+};
+
+export const mapBackendRoleToFrontend = (role: string): string => {
+  switch (role) {
+    case "admin":
+      return "Admin";
+    case "collaborator":
+      return "Empleado";
+    default:
+      return role;
+  }
+};
+

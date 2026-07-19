@@ -35,6 +35,7 @@ export const useAuthStore = create<AuthState>((set) => ({
             role: (data.user as { role?: string }).role || 'user',
             nombre: (data.user as { nombre?: string }).nombre,
             createdAt: data.user.createdAt ? new Date(data.user.createdAt).toISOString() : undefined,
+            id_negocio: (data.user as { id_negocio?: string }).id_negocio,
           },
           isAuthenticated: true,
         });
@@ -70,6 +71,7 @@ export const useAuthStore = create<AuthState>((set) => ({
             role: (data.user as { role?: string }).role || 'user',
             nombre: (data.user as { nombre?: string }).nombre,
             createdAt: data.user.createdAt ? new Date(data.user.createdAt).toISOString() : undefined,
+            id_negocio: (data.user as { id_negocio?: string }).id_negocio,
           },
           isAuthenticated: true,
         });
@@ -106,6 +108,7 @@ export const useAuthStore = create<AuthState>((set) => ({
             role: (data.user as { role?: string }).role || 'user',
             nombre: (data.user as { nombre?: string }).nombre,
             createdAt: data.user.createdAt ? new Date(data.user.createdAt).toISOString() : undefined,
+            id_negocio: (data.user as { id_negocio?: string }).id_negocio,
           },
           isAuthenticated: true,
         });
