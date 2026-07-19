@@ -23,7 +23,9 @@ export default function ConfiguracionPage() {
     defaultValues: {
       name: '',
       subdomain: '',
-      status: true
+      status: true,
+      phone: '',
+      email: ''
     }
   });
 
@@ -44,6 +46,8 @@ export default function ConfiguracionPage() {
           name: data.nombre,
           subdomain: data.subdominio,
           status: data.activo,
+          phone: data.telefono || '',
+          email: data.email_comercial || '',
         });
       } catch (error: any) {
         setFeedback({ type: 'error', message: error.message || 'Error al cargar los datos del negocio' });
@@ -66,6 +70,8 @@ export default function ConfiguracionPage() {
       const mappedData = {
         nombre: data.name,
         subdominio: data.subdomain,
+        telefono: data.phone,
+        email_comercial: data.email,
       };
 
       const response = await fetch(`${apiUrl}/negocio`, {
@@ -90,6 +96,8 @@ export default function ConfiguracionPage() {
         name: result.nombre,
         subdomain: result.subdominio,
         status: result.activo,
+        phone: result.telefono || '',
+        email: result.email_comercial || '',
       });
 
       setFeedback({ type: 'success', message: '¡Identidad del negocio actualizada con éxito!' });
@@ -130,10 +138,10 @@ export default function ConfiguracionPage() {
             <div className="p-8 bg-white rounded-[20px] shadow-sm border border-slate-100/80 max-w-xl">
               <div className="border-b border-slate-100 pb-4 mb-6">
                 <h2 className="text-lg font-bold text-slate-800">
-                  Datos de la Empresa (NEGOCIO)
+                  Datos del Negocio
                 </h2>
                 <p className="text-xs text-slate-400 mt-1">
-                  Esta información se almacena en la tabla relacional de negocios.
+                  Esta apartado es para editar la informacion de su negocio.
                 </p>
               </div>
               
@@ -174,23 +182,35 @@ export default function ConfiguracionPage() {
                   {errors.name && <p className="text-rose-600 text-xs mt-1 font-medium">{errors.name.message}</p>}
                 </div>
 
-                {/* Campo Subdominio */}
+                {/* Subdominio Oculto */}
+                <input type="hidden" {...register('subdomain')} />
+
+                {/* Campo Teléfono */}
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                    Subdominio *
+                    Teléfono del Negocio
                   </label>
-                  <div className="flex items-center w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus-within:border-slate-300 focus-within:ring-2 focus-within:ring-slate-100 transition-all">
-                    <input
-                      type="text"
-                      {...register('subdomain')}
-                      className="flex-1 text-slate-800 focus:outline-none bg-transparent text-sm font-semibold"
-                      placeholder="mi-tienda"
-                    />
-                    <span className="text-slate-400 text-sm select-none font-medium">
-                      .restocksaas.com
-                    </span>
-                  </div>
-                  {errors.subdomain && <p className="text-rose-600 text-xs mt-1 font-medium">{errors.subdomain.message}</p>}
+                  <input
+                    type="text"
+                    {...register('phone')}
+                    placeholder="Ej. +52 55 1234 5678"
+                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:border-slate-300 focus:ring-2 focus:ring-slate-100 transition-all text-sm font-medium"
+                  />
+                  {errors.phone && <p className="text-rose-600 text-xs mt-1 font-medium">{errors.phone.message}</p>}
+                </div>
+
+                {/* Campo Correo Comercial */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                    Correo Electrónico Comercial
+                  </label>
+                  <input
+                    type="email"
+                    {...register('email')}
+                    placeholder="contacto@minegocio.com"
+                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:border-slate-300 focus:ring-2 focus:ring-slate-100 transition-all text-sm font-medium"
+                  />
+                  {errors.email && <p className="text-rose-600 text-xs mt-1 font-medium">{errors.email.message}</p>}
                 </div>
 
                 {/* Campo Estado */}
