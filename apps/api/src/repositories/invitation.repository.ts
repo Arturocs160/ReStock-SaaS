@@ -23,6 +23,18 @@ export const invitationRepository = {
     return result.rows[0] ?? null;
   },
 
+  async findPendingByTenant(tenantId: string) {
+    const query = `
+      SELECT id_invitacion, id_negocio, inviter_user_id, email_invitado,
+             role_asignado, token_seguridad, expiresat, aceptada
+      FROM public.invitacion
+      WHERE id_negocio = $1
+        AND aceptada = false;
+    `;
+    const result = await pool.query(query, [tenantId]);
+    return result.rows;
+  },
+
   async create(data: CreateInvitationDTO) {
     const query = `
       INSERT INTO public.invitacion (
@@ -45,6 +57,17 @@ export const invitationRepository = {
       LIMIT 1;
     `;
     const result = await pool.query(query, [token]);
+    return result.rows[0] ?? null;
+  },
+
+  async findById(idInvitacion: string) {
+    const query = `
+      SELECT *
+      FROM public.invitacion
+      WHERE id_invitacion = $1
+      LIMIT 1;
+    `;
+    const result = await pool.query(query, [idInvitacion]);
     return result.rows[0] ?? null;
   },
 
