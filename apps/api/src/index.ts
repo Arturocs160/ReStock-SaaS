@@ -12,6 +12,8 @@ const PORT = Number(process.env.PORT) || 3010;
 
 export const app: Express = express();
 
+app.use(express.json());
+
 app.use(
   cors({
     origin: ["http://localhost:3000", process.env.FRONTEND_URL!],
@@ -29,7 +31,7 @@ app.use(helmet());
 
 app.disable("x-powered-by");
 
-// Middleware de logging para requests entrantes
+
 app.use((req, res, next) => {
   logger.info({ method: req.method, url: req.url, ip: req.ip }, "Incoming request");
   next();
@@ -39,9 +41,13 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
 routes(app);
 
-// Middleware de manejo de errores global
+
 app.use((err: any, req: any, res: any, _next: any) => {
   logger.error({ err, url: req.url, method: req.method }, "Unhandled error");
   res.status(500).json({ error: "Internal Server Error" });
@@ -49,6 +55,6 @@ app.use((err: any, req: any, res: any, _next: any) => {
 
 if (process.env.NODE_ENV !== "test") {
   app.listen(PORT, () => {
-    logger.info({ port: PORT }, "Server is running"); // restarted
+    logger.info({ port: PORT }, "Server is running"); 
   });
 }
