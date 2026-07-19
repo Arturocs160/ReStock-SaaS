@@ -10,7 +10,7 @@ import { Topbar } from "../../components/dashboard/Topbar";
 
 export default function ConfiguracionPage() {
   
-  const { user } = useAuthStore() as { user: { role: string } | null }; 
+  const { user, isLoading: authLoading } = useAuthStore() as { user: { role: string } | null; isLoading: boolean }; 
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [loadingData, setLoadingData] = useState(true);
   const [negocioId, setNegocioId] = useState<string>('');
@@ -56,12 +56,14 @@ export default function ConfiguracionPage() {
       }
     };
 
-    if (hasAccess) {
-      fetchNegocio();
-    } else {
-      setLoadingData(false);
+    if (!authLoading) {
+      if (hasAccess) {
+        fetchNegocio();
+      } else {
+        setLoadingData(false);
+      }
     }
-  }, [hasAccess, reset]);
+  }, [authLoading, hasAccess, reset]);
 
   const onSubmit = async (data: BusinessFormValues) => {
     setFeedback(null);
@@ -124,7 +126,7 @@ export default function ConfiguracionPage() {
             </p>
           </div>
 
-          {loadingData ? (
+          {authLoading || loadingData ? (
             <div className="p-4 text-sm text-slate-500 bg-white border rounded-md shadow-sm">
               Cargando perfil del negocio...
             </div>
