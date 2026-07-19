@@ -62,10 +62,11 @@ export function Sidebar() {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-200 p-4 transition-all duration-300 ease-out md:translate-x-0 md:static md:block md:min-h-screen ${sidebarOpen ? "translate-x-0 visible" : "-translate-x-full invisible md:visible"
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 p-4 transition-all duration-300 ease-out md:translate-x-0 md:sticky md:top-0 md:h-screen flex flex-col justify-between ${sidebarOpen ? "translate-x-0 visible" : "-translate-x-full invisible md:visible"
           } overflow-y-auto overflow-x-hidden`}
       >
-        <div className="mb-8 flex items-center justify-between">
+        <div className="flex flex-col">
+          <div className="mb-8 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-[#07B474] flex items-center justify-center text-white">
               <Package size={20} />
@@ -80,7 +81,7 @@ export function Sidebar() {
                 </span>
               </div>
 
-              <p className="text-xs text-gray-500 whitespace-nowrap">
+              <p className="text-[11px] text-gray-500 leading-tight mt-0.5">
                 Inventario Inteligente para tu Negocio
               </p>
             </div>
@@ -96,14 +97,14 @@ export function Sidebar() {
           </button>
         </div>
 
-        <p className="text-xs font-semibold text-gray-400 mb-4">
+        <p className="text-[10px] font-bold text-gray-400 mb-3 tracking-wider uppercase">
           MÓDULOS
         </p>
 
-        <nav className="space-y-2" onClick={() => setSidebarOpen(false)}>
+        <nav className="space-y-2 text-sm" onClick={() => setSidebarOpen(false)}>
           <Link
             href="/dashboard"
-            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium ${pathname === "/dashboard"
+            className={`w-full flex items-center justify-between px-4 py-2 rounded-xl font-medium ${pathname === "/dashboard"
               ? "bg-[#DFF9E6] text-[#07B474]"
               : "text-gray-600 hover:bg-gray-50"
               }`}
@@ -120,7 +121,7 @@ export function Sidebar() {
 
           <Link
             href="/dashboard/ventas"
-            className={`w-full flex items-center gap-2 px-4 py-3 rounded-xl ${pathname === "/dashboard/ventas"
+            className={`w-full flex items-center gap-2 px-4 py-2 rounded-xl ${pathname === "/dashboard/ventas"
               ? "bg-[#DFF9E6] text-[#07B474]"
               : "text-gray-600 hover:bg-gray-50"
               }`}
@@ -131,7 +132,7 @@ export function Sidebar() {
 
           <Link
             href="/dashboard/inventario"
-            className={`w-full flex items-center gap-2 px-4 py-3 rounded-xl ${pathname === "/dashboard/inventario"
+            className={`w-full flex items-center gap-2 px-4 py-2 rounded-xl ${pathname === "/dashboard/inventario"
               ? "bg-[#DFF9E6] text-[#07B474]"
               : "text-gray-600 hover:bg-gray-50"
               }`}
@@ -142,7 +143,7 @@ export function Sidebar() {
 
           <Link
             href="/dashboard/categorias"
-            className={`w-full flex items-center gap-2 px-4 py-3 rounded-xl ${pathname === "/dashboard/categorias"
+            className={`w-full flex items-center gap-2 px-4 py-2 rounded-xl ${pathname === "/dashboard/categorias"
               ? "bg-[#DFF9E6] text-[#07B474]"
               : "text-gray-600 hover:bg-gray-50"
               }`}
@@ -153,7 +154,7 @@ export function Sidebar() {
 
           <Link
             href="/dashboard/vencimientos"
-            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl ${pathname === "/dashboard/vencimientos"
+            className={`w-full flex items-center justify-between px-4 py-2 rounded-xl ${pathname === "/dashboard/vencimientos"
               ? "bg-[#DFF9E6] text-[#07B474]"
               : "text-gray-600 hover:bg-gray-50"
               }`}
@@ -170,7 +171,7 @@ export function Sidebar() {
 
           <Link
             href="/dashboard/compras"
-            className={`w-full flex items-center gap-2 px-4 py-3 rounded-xl ${pathname === "/dashboard/compras"
+            className={`w-full flex items-center gap-2 px-4 py-2 rounded-xl ${pathname === "/dashboard/compras"
               ? "bg-orange-50 text-orange-500"
               : "text-gray-600 hover:bg-gray-50"
               }`}
@@ -181,7 +182,7 @@ export function Sidebar() {
 
           <Link
             href="/dashboard/historial"
-            className={`w-full flex items-center gap-2 px-4 py-3 whitespace-nowrap rounded-xl ${pathname === "/dashboard/historial"
+            className={`w-full flex items-center gap-2 px-4 py-2 whitespace-nowrap rounded-xl ${pathname === "/dashboard/historial"
               ? "bg-[#DFF9E6] text-[#07B474]"
               : "text-gray-600 hover:bg-gray-50"
               }`}
@@ -192,7 +193,7 @@ export function Sidebar() {
 
           <Link
             href="/dashboard/configuracion"
-            className={`w-full flex items-center gap-2 px-4 py-3 rounded-xl ${pathname === "/dashboard/configuracion"
+            className={`w-full flex items-center gap-2 px-4 py-2 rounded-xl ${pathname === "/dashboard/configuracion"
               ? "bg-[#DFF9E6] text-[#07B474]"
               : "text-gray-600 hover:bg-gray-50"
               }`}
@@ -203,7 +204,7 @@ export function Sidebar() {
 
           <Link
             href="/dashboard/equipo"
-            className={`w-full flex items-center gap-2 px-4 py-3 rounded-xl ${pathname === "/dashboard/equipo"
+            className={`w-full flex items-center gap-2 px-4 py-2 rounded-xl ${pathname === "/dashboard/equipo"
               ? "bg-[#DFF9E6] text-[#07B474]"
               : "text-gray-600 hover:bg-gray-50"
               }`}
@@ -212,19 +213,20 @@ export function Sidebar() {
             Equipo
           </Link>
         </nav>
+        </div>
 
-        <div className="mt-20 border-t pt-6">
-          <div className="border rounded-xl p-4">
-            <p className="text-xs text-gray-500">
-              Fecha actual:
+        <div className="mt-8 border-t pt-6 text-sm">
+          <div className="border rounded-xl p-3 bg-gray-50/50">
+            <p className="text-[11px] text-gray-400 uppercase font-semibold tracking-wider">
+              Fecha actual
             </p>
 
-            <div className="flex items-center gap-2 mt-2">
+            <div className="flex items-center gap-2 mt-1.5">
               <Calendar
                 size={18}
                 className="text-[#07B474]"
               />
-              <span className="font-semibold">
+              <span className="font-semibold text-gray-700 text-xs">
                 {mounted ? getToday() : ""}
               </span>
             </div>
@@ -232,7 +234,7 @@ export function Sidebar() {
 
           <button
             onClick={handleLogout}
-            className="mt-8 flex items-center gap-2 text-gray-500 cursor-pointer hover:text-red-500">
+            className="mt-5 flex items-center gap-2 text-sm text-gray-500 hover:text-red-500 transition-colors cursor-pointer">
             <LogOut size={18} />
             Cerrar Sesión
           </button>
