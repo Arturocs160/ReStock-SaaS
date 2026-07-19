@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Logo } from "../../components/logo";
 import { RegisterBenefitPanel } from "../../components/registerBenefitPanel";
 import { InvitationRegisterForm } from "../../components/InvitationRegisterForm";
@@ -23,7 +24,13 @@ export default function InvitationRegisterPage() {
             </p>
 
             <div className="mt-6">
-              <InvitationRegisterForm />
+              <Suspense fallback={
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+              }>
+                <InvitationRegisterForm />
+              </Suspense>
             </div>
 
           </section>
