@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { loginSchema } from '../lib/validationsAuth';
 import { useAuthStore } from '../store/authStore';
