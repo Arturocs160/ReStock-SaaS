@@ -1,22 +1,181 @@
+"use client";
+
+import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation"; 
 import { Sidebar } from "../../components/dashboard/Sidebar";
 import { Topbar } from "../../components/dashboard/Topbar";
+import ProductGrid from "./components/ProductGrid";
+import ProductCard from "./components/ProductCard";
+import LoadingState from "./components/LoadingState";
+import EmptyState from "./components/EmptyState";
+import ErrorState from "./components/ErrorState";
+import { productsApi, lotesApi } from "../../lib/api";
+import { Producto, LoteInventario, ProductoConStock } from "../../types/inventario";
 
 export default function VentasPage() {
-  return (
-    <div className="flex min-h-screen bg-slate-50">
-      <Sidebar />
+  const [productos, setProductos] = useState<ProductoConStock[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  
+  const isMounted = useRef(true);
+  const router = useRouter(); 
 
+  const fetchCatalog = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const prods = await productsApi.getAll();
+      
+      if (!isMounted.current) return;
+
+      const populated: ProductoConStock[] = [];
+
+      for (const p of prods) {
+        if (!isMounted.current) return;
+        
+        let lotes: LoteInventario[] = [];
+
+        try {
+          const fetchedLotes = await lotesApi.getByProduct(p.id_producto);
+
+          lotes = fetchedLotes
+            .map((l: LoteInventario) => ({
+              ...l,
+              cantidad_actual: l.cantidad_actual !== undefined ? l.cantidad_actual : l.cantidad_inicial,
+              fecha_caducidad: l.fecha_caducidad ? l.fecha_caducidad.split("T")[0] : null,
+            }))
+            .filter((lote) => lote.cantidad_actual > 0)
+            
+            .sort((a, b) => {
+              if (!a.fecha_caducidad) return 1;
+              if (!b.fecha_caducidad) return -1;
+              return new Date(a.fecha_caducidad).getTime() - new Date(b.fecha_caducidad).getTime();
+            });
+
+        } catch (err) {
+          console.error(`Error cargando lotes del producto ${p.id_producto}`, err);
+        }
+
+        populated.push({
+          ...p,
+          categoria: p.categoria ?? "General",
+          lotes,
+          stock_actual: lotes.reduce((total, lote) => total + lote.cantidad_actual, 0),
+        });
+      }
+
+      if (isMounted.current) {
+        setProductos(populated.filter((producto) => producto.lotes.length > 0));
+      }
+
+    } catch (err: any) {
+      console.error("Error cargando catálogo POS:", err);
+      if (isMounted.current) {
+        if (err?.response?.status === 401) {
+          
+          router.push("/login");
+        } else {
+          setError("No fue posible cargar los productos disponibles.");
+        }
+      }
+    } finally {
+      if (isMounted.current) {
+        setLoading(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    isMounted.current = true;
+    fetchCatalog();
+
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
+  
+  const filteredProducts = productos.filter((p) =>
+    p.nombre.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (p.codigo_barras && p.codigo_barras.includes(searchQuery))
+  );
+
+  return (
+    <div className="flex min-h-screen bg-slate-50 text-gray-900">
+      <Sidebar />
       <div className="flex-1 min-w-0">
         <Topbar />
+        
+        {/*  dos columnas: Izquierda catálogo  / Derecha carrito */}
+        <main className="p-4 md:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          <div className="lg:col-span-2 space-y-6">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Generar Venta</h1>
+              <p className="mt-1 text-sm text-gray-500">
+                Busca el producto y selecciona el lote específico del cual quieres descontar stock para realizar la venta.
+              </p>
+            </div>
 
-        <main className="p-4 md:p-6">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Generar Venta
-          </h1>
+            {/* Barra de búsqueda */}
+            {!loading && !error && (
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </span>
+                <input
+                  type="text"
+                  placeholder="Busca por nombre de producto o escanea código de barras..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-gray-700 placeholder-gray-400 text-sm"
+                />
+              </div>
+            )}
 
-          <p className="text-gray-500 mt-2">
-            Página simulada para registrar ventas.
-          </p>
+            {loading && <LoadingState />}
+
+            {error && <ErrorState message={error} onRetry={fetchCatalog} />}
+
+            {!loading && !error && filteredProducts.length === 0 && <EmptyState />}
+
+            {!loading && !error && filteredProducts.length > 0 && (
+              <ProductGrid>
+                {filteredProducts.map((producto) => (
+                  <ProductCard key={producto.id_producto} producto={producto} />
+                ))}
+              </ProductGrid>
+            )}
+          </div>
+
+          {/*  Carrito de Venta */}
+          <div className="bg-white border border-gray-200 rounded-[24px] p-6 shadow-sm h-fit space-y-6">
+            <div>
+              <div className="flex items-center space-x-2 text-emerald-600">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <h2 className="text-lg font-bold text-gray-900">Carrito de Venta</h2>
+              </div>
+              <p className="text-xs text-gray-400 mt-0.5">Registrando salida de inventario por venta</p>
+            </div>
+
+            <div className="border-2 border-dashed border-gray-100 rounded-2xl py-12 px-4 flex flex-col items-center justify-center text-center">
+              {/* Icono de Carrito de Supermercado Vacío */}
+              <svg className="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              <p className="text-sm font-semibold text-gray-600">El carrito está vacío</p>
+              <p className="text-xs text-gray-400 mt-1 max-w-[200px]">
+                Agrega lotes de los productos en el catálogo de la izquierda.
+              </p>
+            </div>
+          </div>
+
         </main>
       </div>
     </div>
