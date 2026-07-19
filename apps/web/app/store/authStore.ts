@@ -91,7 +91,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         password,
         name,
         nombre,
-      } as { email: string, password: string, name: string, nombre: string });
+      } as Parameters<typeof authClient.signUp.email>[0]);
 
       if (signUpError) {
         throw new Error(signUpError.message || 'Error al registrar');

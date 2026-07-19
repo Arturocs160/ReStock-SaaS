@@ -17,6 +17,8 @@ import {
   LogOut,
   Calendar,
   X,
+  Users,
+  Tag,
 } from "lucide-react";
 import { useRouter } from 'next/navigation';
 
@@ -29,8 +31,8 @@ export function Sidebar() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setMounted(true), 0);
-    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
   }, []);
 
   const handleLogout = async () => {
@@ -139,6 +141,17 @@ export function Sidebar() {
           </Link>
 
           <Link
+            href="/dashboard/categorias"
+            className={`w-full flex items-center gap-2 px-4 py-3 rounded-xl ${pathname === "/dashboard/categorias"
+              ? "bg-[#DFF9E6] text-[#07B474]"
+              : "text-gray-600 hover:bg-gray-50"
+              }`}
+          >
+            <Tag size={18} />
+            Categorías
+          </Link>
+
+          <Link
             href="/dashboard/vencimientos"
             className={`w-full flex items-center justify-between px-4 py-3 rounded-xl ${pathname === "/dashboard/vencimientos"
               ? "bg-[#DFF9E6] text-[#07B474]"
@@ -186,6 +199,17 @@ export function Sidebar() {
           >
             <Store size={18} />
             Configuración
+          </Link>
+
+          <Link
+            href="/dashboard/equipo"
+            className={`w-full flex items-center gap-2 px-4 py-3 rounded-xl ${pathname === "/dashboard/equipo"
+              ? "bg-[#DFF9E6] text-[#07B474]"
+              : "text-gray-600 hover:bg-gray-50"
+              }`}
+          >
+            <Users size={18} />
+            Equipo
           </Link>
         </nav>
 

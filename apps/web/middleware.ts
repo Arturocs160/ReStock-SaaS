@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+
 const PROTECTED_ROUTES = ['/dashboard'];
 
 export async function middleware(request: NextRequest) {
