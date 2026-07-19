@@ -4,6 +4,7 @@ export interface Categoria {
   nombre: string;
   descripcion: string | null;
   activo: boolean;
+  createdAt?: string | Date;
 }
 
 export interface Producto {
