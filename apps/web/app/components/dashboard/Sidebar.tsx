@@ -24,7 +24,7 @@ import { useRouter } from 'next/navigation';
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { logout } = useAuthStore();
+  const { user, logout } = useAuthStore();
   const { sidebarOpen, setSidebarOpen } = useUiStore();
   const router = useRouter();
 
@@ -191,27 +191,31 @@ export function Sidebar() {
             Historial de ventas
           </Link>
 
-          <Link
-            href="/dashboard/configuracion"
-            className={`w-full flex items-center gap-2 px-4 py-2 rounded-xl ${pathname === "/dashboard/configuracion"
-              ? "bg-[#DFF9E6] text-[#07B474]"
-              : "text-gray-600 hover:bg-gray-50"
-              }`}
-          >
-            <Store size={18} />
-            Configuración
-          </Link>
+          {mounted && user?.role === 'admin' && (
+            <>
+              <Link
+                href="/dashboard/configuracion"
+                className={`w-full flex items-center gap-2 px-4 py-2 rounded-xl ${pathname === "/dashboard/configuracion"
+                  ? "bg-[#DFF9E6] text-[#07B474]"
+                  : "text-gray-600 hover:bg-gray-50"
+                  }`}
+              >
+                <Store size={18} />
+                Configuración
+              </Link>
 
-          <Link
-            href="/dashboard/equipo"
-            className={`w-full flex items-center gap-2 px-4 py-2 rounded-xl ${pathname === "/dashboard/equipo"
-              ? "bg-[#DFF9E6] text-[#07B474]"
-              : "text-gray-600 hover:bg-gray-50"
-              }`}
-          >
-            <Users size={18} />
-            Equipo
-          </Link>
+              <Link
+                href="/dashboard/equipo"
+                className={`w-full flex items-center gap-2 px-4 py-2 rounded-xl ${pathname === "/dashboard/equipo"
+                  ? "bg-[#DFF9E6] text-[#07B474]"
+                  : "text-gray-600 hover:bg-gray-50"
+                  }`}
+              >
+                <Users size={18} />
+                Equipo
+              </Link>
+            </>
+          )}
         </nav>
         </div>
 
