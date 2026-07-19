@@ -59,5 +59,26 @@ export const invitationService = {
 
     
     await invitationRepository.deleteInvitation(invitation.id_invitacion);
+  },
+
+  async getPendingInvitations(tenantId: string) {
+    return await invitationRepository.findPendingByTenant(tenantId);
+  },
+
+  async deleteInvitation(idInvitacion: string, tenantId: string) {
+    const invitation = await invitationRepository.findById(idInvitacion);
+    if (!invitation) {
+      const error = new Error("Invitación no encontrada.");
+      (error as any).status = 404;
+      throw error;
+    }
+
+    if (invitation.id_negocio !== tenantId) {
+      const error = new Error("No tienes permisos para eliminar esta invitación.");
+      (error as any).status = 403;
+      throw error;
+    }
+
+    await invitationRepository.deleteInvitation(idInvitacion);
   }
-};
+};
