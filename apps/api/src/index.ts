@@ -23,6 +23,20 @@ app.use(
   })
 );
 
+app.use((req, res, next) => {
+  if (req.path === "/api/auth/sign-in/email" && req.method === "POST") {
+    const originalJson = res.json;
+    res.json = function (body) {
+      if (res.statusCode === 200 && body && body.session && body.user) {
+        body.session.role = body.user.role;
+        body.session.id_negocio = body.user.id_negocio;
+      }
+      return originalJson.call(this, body);
+    };
+  }
+  next();
+});
+
 app.all("/api/auth/*splat", toNodeHandler(auth));
 
 app.use(express.json());
