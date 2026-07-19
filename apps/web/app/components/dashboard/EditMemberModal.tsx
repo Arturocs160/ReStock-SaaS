@@ -71,11 +71,8 @@ export function EditMemberModal({ isOpen, onClose, member, onSave }: EditMemberM
                 onChange={(e) => setRole(e.target.value)}
                 className="block w-full pl-3 pr-10 py-2.5 border border-gray-200 dark:border-gray-800 rounded-lg focus:ring-2 focus:ring-[#00a365] focus:border-[#00a365] transition-colors appearance-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white outline-none text-sm font-medium"
               >
-                <option value="Owner">Owner</option>
                 <option value="Admin">Admin</option>
-                <option value="Gerente">Gerente</option>
                 <option value="Empleado">Empleado</option>
-                <option value="Cajero">Cajero</option>
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-500">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

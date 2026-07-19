@@ -15,7 +15,7 @@ export default function ConfiguracionPage() {
   const [loadingData, setLoadingData] = useState(true);
 
   
-  const hasAccess = user?.role === 'owner' || user?.role === 'admin';
+  const hasAccess = user?.role === 'admin';
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<BusinessFormValues>({
     resolver: zodResolver(businessFormSchema),
@@ -95,7 +95,7 @@ export default function ConfiguracionPage() {
             /* Criterio de Aceptación: Validación y renderizado condicional de rol */
             <div className="p-6 bg-red-50 text-red-600 rounded-md border border-red-200">
               <h2 className="text-lg font-semibold mb-1">Acceso Denegado</h2>
-              <p className="text-sm">Solo los usuarios con rol Owner o Admin pueden administrar la identidad de la tienda.</p>
+              <p className="text-sm">Solo los usuarios con rol Admin pueden administrar la identidad de la tienda.</p>
             </div>
           ) : (
             <div className="p-8 bg-white rounded-[20px] shadow-sm border border-slate-100/80 max-w-xl">
