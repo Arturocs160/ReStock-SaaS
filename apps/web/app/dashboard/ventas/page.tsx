@@ -131,7 +131,7 @@ export default function VentasPage() {
           </div>
 
           {/* Carrito de Venta */}
-          <CartPanel />
+          <CartPanel onSaleCompleted={fetchCatalog} />
 
         </main>
       </div>

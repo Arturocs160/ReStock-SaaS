@@ -1,15 +1,21 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ShoppingCart, CheckCircle2, Loader2 } from 'lucide-react';
+import { ShoppingCart, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
 import { useCartStore } from '../../store/cartStore';
 import { CartItemRow } from './CartItemRow';
 import { CheckoutSuccessModal } from './CheckoutSuccessModal';
+import { salesApi } from '../../lib/api';
 
-export function CartPanel() {
+interface CartPanelProps {
+  onSaleCompleted?: () => void;
+}
+
+export function CartPanel({ onSaleCompleted }: CartPanelProps) {
   const { items, total } = useCartStore();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const [completedItems, setCompletedItems] = useState(items);
 
@@ -19,13 +25,28 @@ export function CartPanel() {
     if (items.length === 0) return;
     
     setIsCheckingOut(true);
+    setError(null);
     
-    // Simular una llamada a la API (1.5 segundos)
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setCompletedItems([...items]);
-    setIsCheckingOut(false);
-    setShowSuccessModal(true);
+    try {
+      const payload = {
+        items: items.map((item) => ({
+          id_lote: item.loteId,
+          cantidad_sold: item.cantidad,
+          precio_unitario: item.precio_unitario,
+        })),
+      };
+
+      await salesApi.create(payload);
+      
+      setCompletedItems([...items]);
+      setIsCheckingOut(false);
+      onSaleCompleted?.();
+      setShowSuccessModal(true);
+    } catch (err: any) {
+      console.error("Error cargando venta:", err);
+      setError(err?.message || "Ha ocurrido un error inesperado al procesar la venta.");
+      setIsCheckingOut(false);
+    }
   };
 
   return (
@@ -58,6 +79,13 @@ export function CartPanel() {
 
         {/* Footer / Summary */}
         <div className="bg-slate-50 p-5 rounded-b-2xl">
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-red-500" />
+              <span className="font-medium leading-relaxed">{error}</span>
+            </div>
+          )}
+
           <div className="flex justify-between items-center mb-3 text-sm">
             <span className="text-slate-500 font-medium">Items Totales:</span>
             <span className="font-bold text-slate-800">{totalItems} uds.</span>
