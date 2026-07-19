@@ -13,6 +13,7 @@ export default function ConfiguracionPage() {
   const { user } = useAuthStore() as { user: { role: string } | null }; 
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [loadingData, setLoadingData] = useState(true);
+  const [negocioId, setNegocioId] = useState<string>('');
 
   
   const hasAccess = user?.role === 'admin';
@@ -22,21 +23,41 @@ export default function ConfiguracionPage() {
     defaultValues: {
       name: '',
       subdomain: '',
-      status: true
+      status: true,
+      phone: '',
+      email: ''
     }
   });
 
   
   useEffect(() => {
-    if (hasAccess) {
-      setTimeout(() => {
-        reset({
-          name: "Mi Tienda Inventario",
-          subdomain: "mitienda",
-          status: true
+    const fetchNegocio = async () => {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3010';
+        const response = await fetch(`${apiUrl}/negocio`, {
+          credentials: 'include',
         });
+        if (!response.ok) {
+          throw new Error('Error al obtener la información del negocio');
+        }
+        const data = await response.json();
+        setNegocioId(data.id_negocio);
+        reset({
+          name: data.nombre,
+          subdomain: data.subdominio,
+          status: data.activo,
+          phone: data.telefono || '',
+          email: data.email_comercial || '',
+        });
+      } catch (error: any) {
+        setFeedback({ type: 'error', message: error.message || 'Error al cargar los datos del negocio' });
+      } finally {
         setLoadingData(false);
-      }, 500);
+      }
+    };
+
+    if (hasAccess) {
+      fetchNegocio();
     } else {
       setLoadingData(false);
     }
@@ -45,11 +66,19 @@ export default function ConfiguracionPage() {
   const onSubmit = async (data: BusinessFormValues) => {
     setFeedback(null);
     try {
-      
-      const response = await fetch('http://localhost:3010/api/business/update', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3010';
+      const mappedData = {
+        nombre: data.name,
+        subdominio: data.subdomain,
+        telefono: data.phone,
+        email_comercial: data.email,
+      };
+
+      const response = await fetch(`${apiUrl}/negocio`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify(mappedData),
+        credentials: 'include',
       });
 
       const result = await response.json();
@@ -63,12 +92,20 @@ export default function ConfiguracionPage() {
         throw new Error(result.message || 'El subdominio ya no está disponible.');
       }
 
-      
-      setFeedback({ type: 'success', message: result.message || '¡Identidad del negocio actualizada con éxito!' });
+      reset({
+        name: result.nombre,
+        subdomain: result.subdominio,
+        status: result.activo,
+        phone: result.telefono || '',
+        email: result.email_comercial || '',
+      });
+
+      setFeedback({ type: 'success', message: '¡Identidad del negocio actualizada con éxito!' });
     } catch (error: any) {
       setFeedback({ type: 'error', message: error.message || 'Ocurrió un error al guardar.' });
     }
   };
+
 
   return (
     <div className="flex min-h-screen bg-slate-50">
@@ -101,10 +138,10 @@ export default function ConfiguracionPage() {
             <div className="p-8 bg-white rounded-[20px] shadow-sm border border-slate-100/80 max-w-xl">
               <div className="border-b border-slate-100 pb-4 mb-6">
                 <h2 className="text-lg font-bold text-slate-800">
-                  Datos de la Empresa (NEGOCIO)
+                  Datos del Negocio
                 </h2>
                 <p className="text-xs text-slate-400 mt-1">
-                  Esta información se almacena en la tabla relacional de negocios.
+                  Esta apartado es para editar la informacion de su negocio.
                 </p>
               </div>
               
@@ -126,7 +163,7 @@ export default function ConfiguracionPage() {
                   </label>
                   <input
                     type="text"
-                    value="n1"
+                    value={negocioId}
                     readOnly
                     className="w-full px-4 py-3 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-400 focus:outline-none cursor-not-allowed text-sm"
                   />
@@ -145,26 +182,38 @@ export default function ConfiguracionPage() {
                   {errors.name && <p className="text-rose-600 text-xs mt-1 font-medium">{errors.name.message}</p>}
                 </div>
 
-                {/* Campo Subdominio */}
+                {/* Subdominio Oculto */}
+                <input type="hidden" {...register('subdomain')} />
+
+                {/* Campo Teléfono */}
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                    Subdominio *
+                    Teléfono del Negocio
                   </label>
-                  <div className="flex items-center w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus-within:border-slate-300 focus-within:ring-2 focus-within:ring-slate-100 transition-all">
-                    <input
-                      type="text"
-                      {...register('subdomain')}
-                      className="flex-1 text-slate-800 focus:outline-none bg-transparent text-sm font-semibold"
-                      placeholder="mi-tienda"
-                    />
-                    <span className="text-slate-400 text-sm select-none font-medium">
-                      .restocksaas.com
-                    </span>
-                  </div>
-                  {errors.subdomain && <p className="text-rose-600 text-xs mt-1 font-medium">{errors.subdomain.message}</p>}
+                  <input
+                    type="text"
+                    {...register('phone')}
+                    placeholder="Ej. +52 55 1234 5678"
+                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:border-slate-300 focus:ring-2 focus:ring-slate-100 transition-all text-sm font-medium"
+                  />
+                  {errors.phone && <p className="text-rose-600 text-xs mt-1 font-medium">{errors.phone.message}</p>}
                 </div>
 
-                {/* Campo Estado */}
+                {/* Campo Correo Comercial */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                    Correo Electrónico Comercial
+                  </label>
+                  <input
+                    type="email"
+                    {...register('email')}
+                    placeholder="contacto@minegocio.com"
+                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:border-slate-300 focus:ring-2 focus:ring-slate-100 transition-all text-sm font-medium"
+                  />
+                  {errors.email && <p className="text-rose-600 text-xs mt-1 font-medium">{errors.email.message}</p>}
+                </div>
+
+                {/* Campo Estado - Ocultado
                 <div className="flex items-center justify-between p-4 bg-slate-50/50 rounded-xl border border-slate-100/60">
                   <div className="flex flex-col pr-4">
                     <span className="text-sm font-bold text-slate-800">
@@ -184,6 +233,7 @@ export default function ConfiguracionPage() {
                   </label>
                 </div>
                 {errors.status && <p className="text-rose-600 text-xs mt-1 font-medium">{errors.status.message}</p>}
+                */}
 
                 {/* Botón Guardar */}
                 <div className="pt-2">

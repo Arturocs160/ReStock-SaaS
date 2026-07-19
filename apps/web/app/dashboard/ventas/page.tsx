@@ -86,10 +86,9 @@ export default function VentasPage() {
       <div className="flex-1 min-w-0">
         <Topbar />
         
-        {/*  dos columnas: Izquierda catálogo  / Derecha carrito */}
-        <main className="p-4 md:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <main className="p-4 md:p-6 grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-6">
           
-          <div className="lg:col-span-2 space-y-6">
+          <div className="space-y-6">
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Generar Venta</h1>
               <p className="mt-1 text-sm text-gray-500">
@@ -131,7 +130,9 @@ export default function VentasPage() {
           </div>
 
           {/* Carrito de Venta */}
-          <CartPanel onSaleCompleted={fetchCatalog} />
+          <div className="lg:sticky lg:top-6 lg:h-[calc(100vh-112px)] flex">
+            <CartPanel onSaleCompleted={fetchCatalog} />
+          </div>
 
         </main>
       </div>

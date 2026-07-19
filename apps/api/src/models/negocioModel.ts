@@ -12,14 +12,26 @@ export async function getNegocioBySubdomainModel(subdominio: string) {
   return result.rows[0] || null;
 }
 
-export async function updateNegocioModel(id_negocio: string, nombre: string, subdominio: string) {
+export async function updateNegocioModel(
+  id_negocio: string,
+  nombre: string,
+  subdominio: string,
+  telefono?: string | null,
+  email_comercial?: string | null
+) {
   const query = `
     UPDATE public.negocio
-    SET nombre = $2, subdominio = $3
+    SET nombre = $2, subdominio = $3, telefono = $4, email_comercial = $5
     WHERE id_negocio = $1
     RETURNING *;
   `;
-  const result = await pool.query(query, [id_negocio, nombre, subdominio]);
+  const result = await pool.query(query, [
+    id_negocio,
+    nombre,
+    subdominio,
+    telefono || null,
+    email_comercial || null,
+  ]);
   return result.rows[0] || null;
 }
 

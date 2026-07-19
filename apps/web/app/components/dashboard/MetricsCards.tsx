@@ -98,7 +98,7 @@ export function MetricsCards({ products }: { products: ProductoConStock[] }) {
               </p>
 
               <h3
-                className={`text-3xl md:text-[38px] font-bold leading-none mt-2 ${metric.valueColor}`}
+                className={`text-2xl md:text-[30px] font-bold leading-none mt-2 ${metric.valueColor}`}
               >
                 {metric.value}
               </h3>
@@ -137,7 +137,7 @@ export function MetricsCards({ products }: { products: ProductoConStock[] }) {
             <Link
               key={metric.title}
               href={metric.href}
-              className="bg-white dark:bg-[#0f0f0f] border border-gray-100 dark:border-gray-900 rounded-2xl p-6 shadow-sm flex items-center justify-between hover:shadow-md transition cursor-pointer group"
+              className="bg-white dark:bg-[#0f0f0f] border border-gray-100 dark:border-gray-900 rounded-2xl p-5 shadow-sm flex items-center justify-between hover:shadow-md transition cursor-pointer group"
             >
               {cardContent}
             </Link>
@@ -151,14 +151,13 @@ export function MetricsCards({ products }: { products: ProductoConStock[] }) {
               bg-white
               border
               border-gray-200
-              rounded-[24px]
-              px-5
-              py-4
+              rounded-2xl
+              p-5
               shadow-sm
               flex
               items-center
               justify-between
-              min-h-[112px]
+              min-h-[100px]
             "
           >
             {cardContent}
