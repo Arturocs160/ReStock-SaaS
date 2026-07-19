@@ -1,6 +1,25 @@
 import { Request, Response } from "express";
-import { updateNegocioService } from "../services/negocioServices";
+import { updateNegocioService, getNegocioByIdService } from "../services/negocioServices";
 import logger from "../utils/logger";
+
+export async function getNegocioController(req: Request, res: Response) {
+  try {
+    const id_negocio = req.user?.id_negocio;
+    if (!id_negocio) {
+      return res.status(401).json({ message: "No autorizado. Inicia sesión primero." });
+    }
+
+    const negocio = await getNegocioByIdService(id_negocio);
+    if (!negocio) {
+      return res.status(404).json({ message: "Negocio no encontrado." });
+    }
+
+    res.status(200).json(negocio);
+  } catch (error: any) {
+    logger.error("Error al obtener el perfil del negocio:" + error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+}
 
 export async function updateNegocioController(req: Request, res: Response) {
   try {
@@ -21,3 +40,4 @@ export async function updateNegocioController(req: Request, res: Response) {
     res.status(500).json({ message: "Error interno del servidor" });
   }
 }
+

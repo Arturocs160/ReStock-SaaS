@@ -13,6 +13,7 @@ export default function ConfiguracionPage() {
   const { user } = useAuthStore() as { user: { role: string } | null }; 
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [loadingData, setLoadingData] = useState(true);
+  const [negocioId, setNegocioId] = useState<string>('');
 
   
   const hasAccess = user?.role === 'admin';
@@ -28,15 +29,31 @@ export default function ConfiguracionPage() {
 
   
   useEffect(() => {
-    if (hasAccess) {
-      setTimeout(() => {
-        reset({
-          name: "Mi Tienda Inventario",
-          subdomain: "mitienda",
-          status: true
+    const fetchNegocio = async () => {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3010';
+        const response = await fetch(`${apiUrl}/negocio`, {
+          credentials: 'include',
         });
+        if (!response.ok) {
+          throw new Error('Error al obtener la información del negocio');
+        }
+        const data = await response.json();
+        setNegocioId(data.id_negocio);
+        reset({
+          name: data.nombre,
+          subdomain: data.subdominio,
+          status: data.activo,
+        });
+      } catch (error: any) {
+        setFeedback({ type: 'error', message: error.message || 'Error al cargar los datos del negocio' });
+      } finally {
         setLoadingData(false);
-      }, 500);
+      }
+    };
+
+    if (hasAccess) {
+      fetchNegocio();
     } else {
       setLoadingData(false);
     }
@@ -45,11 +62,17 @@ export default function ConfiguracionPage() {
   const onSubmit = async (data: BusinessFormValues) => {
     setFeedback(null);
     try {
-      
-      const response = await fetch('http://localhost:3010/api/business/update', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3010';
+      const mappedData = {
+        nombre: data.name,
+        subdominio: data.subdomain,
+      };
+
+      const response = await fetch(`${apiUrl}/negocio`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify(mappedData),
+        credentials: 'include',
       });
 
       const result = await response.json();
@@ -63,12 +86,18 @@ export default function ConfiguracionPage() {
         throw new Error(result.message || 'El subdominio ya no está disponible.');
       }
 
-      
-      setFeedback({ type: 'success', message: result.message || '¡Identidad del negocio actualizada con éxito!' });
+      reset({
+        name: result.nombre,
+        subdomain: result.subdominio,
+        status: result.activo,
+      });
+
+      setFeedback({ type: 'success', message: '¡Identidad del negocio actualizada con éxito!' });
     } catch (error: any) {
       setFeedback({ type: 'error', message: error.message || 'Ocurrió un error al guardar.' });
     }
   };
+
 
   return (
     <div className="flex min-h-screen bg-slate-50">
@@ -126,7 +155,7 @@ export default function ConfiguracionPage() {
                   </label>
                   <input
                     type="text"
-                    value="n1"
+                    value={negocioId}
                     readOnly
                     className="w-full px-4 py-3 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-400 focus:outline-none cursor-not-allowed text-sm"
                   />

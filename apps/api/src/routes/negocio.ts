@@ -3,13 +3,15 @@ import { requireAuth } from "../middlewares/requireAuth";
 import { checkRole } from "../middlewares/checkRole";
 import { validateDataBody } from "../middlewares/verifyData";
 import { updateNegocioSchema } from "../schemas/negocioSchema";
-import { updateNegocioController } from "../controllers/negocioController";
+import { updateNegocioController, getNegocioController } from "../controllers/negocioController";
 import { userService } from "../services/user.service";
 import logger from "../utils/logger";
 
 const routerNegocio: Router = Router();
 
+routerNegocio.get("/", requireAuth, getNegocioController);
 routerNegocio.put("/", requireAuth, validateDataBody(updateNegocioSchema), updateNegocioController);
+
 
 // GET /negocio/:id_negocio/usuarios
 routerNegocio.get(

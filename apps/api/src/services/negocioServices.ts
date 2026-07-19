@@ -1,4 +1,4 @@
-import { getNegocioBySubdomainModel, updateNegocioModel } from "../models/negocioModel";
+import { getNegocioBySubdomainModel, updateNegocioModel, getNegocioByIdModel } from "../models/negocioModel";
 
 export async function updateNegocioService(id_negocio: string, nombre: string, subdominio: string) {
   // Verificar la disponibilidad del subdominio
@@ -13,3 +13,8 @@ export async function updateNegocioService(id_negocio: string, nombre: string, s
   const updatedNegocio = await updateNegocioModel(id_negocio, nombre, subdominio);
   return updatedNegocio;
 }
+
+export async function getNegocioByIdService(id_negocio: string) {
+  return await getNegocioByIdModel(id_negocio);
+}
+
