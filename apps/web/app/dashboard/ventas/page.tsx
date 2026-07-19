@@ -4,11 +4,12 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation"; 
 import { Sidebar } from "../../components/dashboard/Sidebar";
 import { Topbar } from "../../components/dashboard/Topbar";
-import ProductGrid from "./components/ProductGrid";
-import ProductCard from "./components/ProductCard";
-import LoadingState from "./components/LoadingState";
-import EmptyState from "./components/EmptyState";
-import ErrorState from "./components/ErrorState";
+import ProductGrid from "../../components/ventas/ProductGrid";
+import ProductCard from "../../components/ventas/ProductCard";
+import LoadingState from "../../components/ventas/LoadingState";
+import EmptyState from "../../components/ventas/EmptyState";
+import ErrorState from "../../components/ventas/ErrorState";
+import { CartPanel } from "../../components/ventas/CartPanel";
 import { productsApi, lotesApi } from "../../lib/api";
 import { Producto, LoteInventario, ProductoConStock } from "../../types/inventario";
 
@@ -152,29 +153,8 @@ export default function VentasPage() {
             )}
           </div>
 
-          {/*  Carrito de Venta */}
-          <div className="bg-white border border-gray-200 rounded-[24px] p-6 shadow-sm h-fit space-y-6">
-            <div>
-              <div className="flex items-center space-x-2 text-emerald-600">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                <h2 className="text-lg font-bold text-gray-900">Carrito de Venta</h2>
-              </div>
-              <p className="text-xs text-gray-400 mt-0.5">Registrando salida de inventario por venta</p>
-            </div>
-
-            <div className="border-2 border-dashed border-gray-100 rounded-2xl py-12 px-4 flex flex-col items-center justify-center text-center">
-              {/* Icono de Carrito de Supermercado Vacío */}
-              <svg className="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-              <p className="text-sm font-semibold text-gray-600">El carrito está vacío</p>
-              <p className="text-xs text-gray-400 mt-1 max-w-[200px]">
-                Agrega lotes de los productos en el catálogo de la izquierda.
-              </p>
-            </div>
-          </div>
+          {/* Carrito de Venta */}
+          <CartPanel />
 
         </main>
       </div>
