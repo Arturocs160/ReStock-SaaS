@@ -191,7 +191,7 @@ export function LoginForm({
         </label>
 
         <a
-          href="#"
+          href="/forgot-password"
           className="text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-zinc-400 dark:hover:text-zinc-200"
         >
           {forgotPasswordText}

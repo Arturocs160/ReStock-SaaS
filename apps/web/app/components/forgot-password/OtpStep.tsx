@@ -92,6 +92,9 @@ export function OtpStep({
         <p className="text-sm text-gray-600 dark:text-gray-300">
           Hemos enviado un código a <span className="font-semibold text-gray-900 dark:text-white">{email}</span>
         </p>
+        <p className="text-[11px] text-amber-650 dark:text-amber-400 font-medium mt-1">
+          Verificar en el correo spam o no deseado
+        </p>
       </div>
 
       <div className="space-y-4">

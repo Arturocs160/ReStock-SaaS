@@ -55,6 +55,9 @@ export function EmailStep({
         <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
           Ingresa la dirección de correo asociada a tu cuenta para recibir un código de verificación.
         </p>
+        <p className="text-[11px] text-amber-650 dark:text-amber-400 font-medium mt-1">
+          Verificar en el correo spam o no deseado
+        </p>
       </div>
 
       {error && (
