@@ -97,7 +97,7 @@ router.get("/", requireAuth, checkRole(["admin"]), async (req: Request, res: Res
 // --- Eliminar invitación físicamente ---
 router.delete("/:id", requireAuth, checkRole(["admin"]), async (req: Request, res: Response) => {
     try {
-        const { id } = req.params;
+        const id = req.params.id as string;
         const tenantId = req.user?.id_negocio;
         if (!tenantId) {
             return res.status(401).json({ message: "Usuario no autenticado o sin negocio." });
