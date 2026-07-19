@@ -22,7 +22,7 @@ import { EditLoteModal } from "../../components/inventario/EditLoteModal";
 import { DeleteProductModal } from "../../components/inventario/DeleteProductModal";
 import { DeleteLoteModal } from "../../components/inventario/DeleteLoteModal";
 
-import { Producto, LoteInventario, ProductoConStock, Categoria } from "../../types/inventario";
+import { LoteInventario, ProductoConStock, Categoria, Producto } from "../../types/inventario";
 
 export const SIMULATED_TODAY = (() => {
     const today = new Date();

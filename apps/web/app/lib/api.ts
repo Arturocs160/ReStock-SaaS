@@ -44,7 +44,21 @@ async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> 
 
 export const productsApi = {
   getAll: () => apiFetch<Producto[]>('/products'),
-  getCategories: () => apiFetch<Categoria[]>('/products/categories'),
+  getCategories: (all?: boolean) => apiFetch<Categoria[]>(`/categories${all ? '?all=true' : ''}`),
+  createCategory: (data: { nombre: string; descripcion: string | null }) =>
+    apiFetch<Categoria>('/categories', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  updateCategory: (id: string, data: { nombre: string; descripcion: string | null }) =>
+    apiFetch<Categoria>(`/categories/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  toggleCategoryActive: (id: string) =>
+    apiFetch<Categoria>(`/categories/${id}/toggle`, {
+      method: 'PATCH',
+    }),
   create: (data: CreateProductInput) =>
     apiFetch<Producto>('/products', {
       method: 'POST',
