@@ -95,3 +95,11 @@ export const lotesApi = {
       method: 'DELETE',
     }),
 };
+
+export const salesApi = {
+  create: (data: { items: { id_lote: string; cantidad_sold: number; precio_unitario: number }[] }) =>
+    apiFetch<any>('/sales', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+};
