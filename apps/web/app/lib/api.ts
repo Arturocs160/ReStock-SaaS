@@ -4,7 +4,8 @@ import {
   CreateProductInput,
   CreateLoteInput,
   UpdateLoteInput,
-  Categoria
+  Categoria,
+  ProductoConStock
 } from "../types/inventario";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3010';
@@ -73,6 +74,7 @@ export const productsApi = {
     apiFetch<void>(`/products/${id}`, {
       method: 'DELETE',
     }),
+  getPosCatalog: () => apiFetch<ProductoConStock[]>('/products/pos/catalog'),
 };
 
 export const lotesApi = {

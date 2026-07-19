@@ -18,7 +18,7 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
     });
 
     if (!session) {
-        return res.status(401).json({ message: "No autorizado. Inicia sesión primero." });
+        return res.status(401).json({ error: "Sesión inválida o expirada", message: "No autorizado. Inicia sesión primero." });
     }
 
     req.user = session.user;

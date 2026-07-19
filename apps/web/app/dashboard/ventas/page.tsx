@@ -27,45 +27,23 @@ export default function VentasPage() {
       setLoading(true);
       setError("");
 
-      const prods = await productsApi.getAll();
+      const catalog = await productsApi.getPosCatalog();
       
       if (!isMounted.current) return;
 
-      const populated: ProductoConStock[] = [];
+      const populated: ProductoConStock[] = catalog.map((p) => {
+        const lotes = (p.lotes || []).map((l: LoteInventario) => ({
+          ...l,
+          fecha_caducidad: l.fecha_caducidad ? l.fecha_caducidad.split("T")[0] : null,
+        }));
 
-      for (const p of prods) {
-        if (!isMounted.current) return;
-        
-        let lotes: LoteInventario[] = [];
-
-        try {
-          const fetchedLotes = await lotesApi.getByProduct(p.id_producto);
-
-          lotes = fetchedLotes
-            .map((l: LoteInventario) => ({
-              ...l,
-              cantidad_actual: l.cantidad_actual !== undefined ? l.cantidad_actual : l.cantidad_inicial,
-              fecha_caducidad: l.fecha_caducidad ? l.fecha_caducidad.split("T")[0] : null,
-            }))
-            .filter((lote) => lote.cantidad_actual > 0)
-            
-            .sort((a, b) => {
-              if (!a.fecha_caducidad) return 1;
-              if (!b.fecha_caducidad) return -1;
-              return new Date(a.fecha_caducidad).getTime() - new Date(b.fecha_caducidad).getTime();
-            });
-
-        } catch (err) {
-          console.error(`Error cargando lotes del producto ${p.id_producto}`, err);
-        }
-
-        populated.push({
+        return {
           ...p,
           categoria: p.categoria ?? "General",
           lotes,
           stock_actual: lotes.reduce((total, lote) => total + lote.cantidad_actual, 0),
-        });
-      }
+        };
+      });
 
       if (isMounted.current) {
         setProductos(populated.filter((producto) => producto.lotes.length > 0));
@@ -74,8 +52,7 @@ export default function VentasPage() {
     } catch (err: any) {
       console.error("Error cargando catálogo POS:", err);
       if (isMounted.current) {
-        if (err?.response?.status === 401) {
-          
+        if (err?.response?.status === 401 || err?.message?.includes("Sesión inválida")) {
           router.push("/login");
         } else {
           setError("No fue posible cargar los productos disponibles.");
