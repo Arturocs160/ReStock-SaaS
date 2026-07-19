@@ -99,6 +99,9 @@ export function InviteCollaboratorModal({ isOpen, onClose, onSuccess }: Props) {
               </div>
               <h3 className="text-xl font-medium text-gray-900 mb-2">¡Invitación enviada!</h3>
               <p className="text-gray-500">Se ha enviado un correo a {email} con las instrucciones de acceso.</p>
+              <p className="text-[11px] text-amber-650 dark:text-amber-400 font-medium mt-2">
+                Verificar en el correo spam o no deseado
+              </p>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-5">
