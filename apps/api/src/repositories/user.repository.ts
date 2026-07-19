@@ -46,7 +46,7 @@ export const userRepository = {
   async removeUserFromNegocio(userId: string): Promise<void> {
     const query = `
       UPDATE public."user"
-      SET id_negocio = NULL, role = 'user', "updatedAt" = NOW()
+      SET id_negocio = NULL, role = 'collaborator', "updatedAt" = NOW()
       WHERE id = $1;
     `;
     await pool.query(query, [userId]);

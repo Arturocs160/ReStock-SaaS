@@ -15,7 +15,7 @@ routerNegocio.put("/", requireAuth, validateDataBody(updateNegocioSchema), updat
 routerNegocio.get(
   "/:id_negocio/usuarios",
   requireAuth,
-  checkRole(["owner", "admin"]),
+  checkRole(["admin"]),
   async (req: Request, res: Response) => {
     try {
       const id_negocio = req.params.id_negocio as string;
@@ -41,7 +41,7 @@ routerNegocio.get(
 routerNegocio.put(
   "/:id_negocio/usuarios/:id_usuario/role",
   requireAuth,
-  checkRole(["owner", "admin"]),
+  checkRole(["admin"]),
   async (req: Request, res: Response) => {
     try {
       const id_negocio = req.params.id_negocio as string;
@@ -73,7 +73,7 @@ routerNegocio.put(
 routerNegocio.delete(
   "/:id_negocio/usuarios/:id_usuario",
   requireAuth,
-  checkRole(["owner", "admin"]),
+  checkRole(["admin"]),
   async (req: Request, res: Response) => {
     try {
       const id_negocio = req.params.id_negocio as string;

@@ -9,7 +9,7 @@ export const userService = {
   },
 
   async updateMemberRole(id_negocio: string, requestorId: string, memberId: string, newRole: string): Promise<void> {
-    const allowedRoles = ["admin", "manager", "collaborator", "owner"];
+    const allowedRoles = ["admin", "collaborator"];
     if (!allowedRoles.includes(newRole)) {
       throw new Error("Rol inválido.");
     }
@@ -29,17 +29,8 @@ export const userService = {
       throw new Error("No puedes modificar tu propio rol.");
     }
 
-    if (requestor.role !== "owner" && requestor.role !== "admin") {
+    if (requestor.role !== "admin") {
       throw new Error("No tienes permisos para modificar roles.");
-    }
-
-    if (requestor.role === "admin") {
-      if (member.role === "owner") {
-        throw new Error("Un administrador no puede modificar el rol del Owner.");
-      }
-      if (newRole === "owner") {
-        throw new Error("Un administrador no puede promover a un usuario a Owner.");
-      }
     }
 
     await userRepository.updateUserRole(memberId, newRole);
@@ -61,12 +52,8 @@ export const userService = {
       throw new Error("No puedes removerte a ti mismo del negocio.");
     }
 
-    if (requestor.role !== "owner" && requestor.role !== "admin") {
+    if (requestor.role !== "admin") {
       throw new Error("No tienes permisos para remover miembros.");
-    }
-
-    if (requestor.role === "admin" && member.role === "owner") {
-      throw new Error("Un administrador no puede remover al Owner del negocio.");
     }
 
     await userRepository.removeUserFromNegocio(memberId);

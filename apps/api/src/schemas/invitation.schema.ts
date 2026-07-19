@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const createInvitationSchema = z.object({
   email_invitado: z.string().email("El formato del correo es inválido"),
-  role_asignado: z.enum(["admin", "manager", "collaborator"]),
+  role_asignado: z.enum(["admin", "collaborator"]),
 });
 
 
