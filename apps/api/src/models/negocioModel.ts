@@ -22,3 +22,10 @@ export async function updateNegocioModel(id_negocio: string, nombre: string, sub
   const result = await pool.query(query, [id_negocio, nombre, subdominio]);
   return result.rows[0] || null;
 }
+
+
+export async function getFirstNegocioModel() {
+  const query = "SELECT id_negocio FROM public.negocio LIMIT 1";
+  const result = await pool.query(query); 
+  return result.rows[0] || null;
+}

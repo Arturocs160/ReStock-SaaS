@@ -12,6 +12,8 @@ const PORT = Number(process.env.PORT) || 3010;
 
 export const app: Express = express();
 
+app.use(express.json());
+
 app.use(
   cors({
     origin: ["http://localhost:3000", process.env.FRONTEND_URL!],
