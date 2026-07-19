@@ -6,6 +6,7 @@ export interface User {
   role?: string;
   nombre?: string;
   createdAt?: string;
+  id_negocio?: string;
 }
 
 export interface AuthContextType {

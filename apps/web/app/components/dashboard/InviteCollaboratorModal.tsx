@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { z } from "zod";
 import { X, Check, Loader2 } from "lucide-react";
+import { teamApi } from "../../lib/api";
+import { mapFrontendRoleToBackend } from "../../types/team";
 
 export type Role = "Gerente" | "Empleado" | "Cajero";
 
@@ -42,25 +44,33 @@ export function InviteCollaboratorModal({ isOpen, onClose, onSuccess }: Props) {
 
     setIsLoading(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      const backendRole = mapFrontendRoleToBackend(role);
+      await teamApi.createInvitation({
+        email_invitado: email,
+        role_asignado: backendRole,
+      });
 
-    setIsLoading(false);
-    setShowSuccess(true);
+      setIsLoading(false);
+      setShowSuccess(true);
 
-    const newInvitation: InvitationData = {
-      email,
-      role: role as Role,
-      date: new Date().toISOString(),
-    };
+      const newInvitation: InvitationData = {
+        email,
+        role: role as Role,
+        date: new Date().toISOString(),
+      };
 
-    setTimeout(() => {
-      onSuccess(newInvitation);
-      setShowSuccess(false);
-      setEmail("");
-      setRole("");
-      onClose();
-    }, 1500);
+      setTimeout(() => {
+        onSuccess(newInvitation);
+        setShowSuccess(false);
+        setEmail("");
+        setRole("");
+        onClose();
+      }, 1500);
+    } catch (err: any) {
+      setIsLoading(false);
+      setError(err.message || "Ha ocurrido un error al enviar la invitación");
+    }
   };
 
   return (

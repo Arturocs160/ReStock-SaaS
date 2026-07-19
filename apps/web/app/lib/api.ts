@@ -7,6 +7,7 @@ import {
   Categoria,
   ProductoConStock
 } from "../types/inventario";
+import { UsuarioTeam, InvitacionTeam } from "../types/team";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3010';
 
@@ -103,3 +104,29 @@ export const salesApi = {
       body: JSON.stringify(data),
     }),
 };
+
+export const teamApi = {
+  getMembers: (idNegocio: string) =>
+    apiFetch<any[]>(`/negocio/${idNegocio}/usuarios`),
+  getInvitations: () =>
+    apiFetch<any[]>(`/invitations`),
+  createInvitation: (data: { email_invitado: string; role_asignado: string }) =>
+    apiFetch<any>('/invitations', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  deleteInvitation: (id: string) =>
+    apiFetch<void>(`/invitations/${id}`, {
+      method: 'DELETE',
+    }),
+  updateMemberRole: (idNegocio: string, idUsuario: string, role: string) =>
+    apiFetch<void>(`/negocio/${idNegocio}/usuarios/${idUsuario}/role`, {
+      method: 'PUT',
+      body: JSON.stringify({ role }),
+    }),
+  removeMember: (idNegocio: string, idUsuario: string) =>
+    apiFetch<void>(`/negocio/${idNegocio}/usuarios/${idUsuario}`, {
+      method: 'DELETE',
+    }),
+};
+
