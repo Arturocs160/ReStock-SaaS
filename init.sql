@@ -4,6 +4,8 @@ CREATE TABLE public.negocio (
   nombre character varying NOT NULL,
   subdominio character varying NOT NULL,
   activo boolean NOT NULL DEFAULT true,
+  telefono character varying,
+  email_comercial character varying,
   CONSTRAINT negocio_pkey PRIMARY KEY (id_negocio)
 );
 
