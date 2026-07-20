@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { requireAuth } from "../middlewares/requireAuth";
+import { checkRole } from "../middlewares/checkRole";
 import {
   getAllCategoriesController,
   createCategoryController,
@@ -26,6 +27,7 @@ routerCategories.get(
 routerCategories.post(
   "/",
   requireAuth,
+  checkRole(["admin", "collaborator"]),
   validateDataBody(createCategoriaSchema),
   createCategoryController
 );
@@ -33,6 +35,7 @@ routerCategories.post(
 routerCategories.put(
   "/:id_categoria",
   requireAuth,
+  checkRole(["admin", "collaborator"]),
   validateDataParams(categoriaIdParamSchema),
   validateDataBody(updateCategoriaSchema),
   updateCategoryController
@@ -41,6 +44,7 @@ routerCategories.put(
 routerCategories.patch(
   "/:id_categoria/toggle",
   requireAuth,
+  checkRole(["admin", "collaborator"]),
   validateDataParams(categoriaIdParamSchema),
   toggleCategoryActiveController
 );

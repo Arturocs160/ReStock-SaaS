@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { requireAuth } from "../middlewares/requireAuth";
+import { checkRole } from "../middlewares/checkRole";
 import {
   createLoteController,
   deleteLoteController,
@@ -13,7 +14,13 @@ import { productoIdParamSchema } from "../schemas/productsSchema";
 
 const routerLote: Router = Router();
 
-routerLote.post("/", requireAuth, validateDataBody(createLoteSchema), createLoteController);
+routerLote.post(
+  "/",
+  requireAuth,
+  checkRole(["admin", "collaborator"]),
+  validateDataBody(createLoteSchema),
+  createLoteController
+);
 routerLote.get(
   "/product/:id_producto",
   requireAuth,
@@ -29,6 +36,7 @@ routerLote.get(
 routerLote.put(
   "/:id_lote",
   requireAuth,
+  checkRole(["admin", "collaborator"]),
   validateDataParams(loteIdParamSchema),
   validateDataBody(updateLoteSchema),
   updateLoteController
@@ -36,6 +44,7 @@ routerLote.put(
 routerLote.delete(
   "/:id_lote",
   requireAuth,
+  checkRole(["admin", "collaborator"]),
   validateDataParams(loteIdParamSchema),
   deleteLoteController
 );
