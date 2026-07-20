@@ -12,6 +12,8 @@ const PORT = Number(process.env.PORT) || 3010;
 
 export const app: Express = express();
 
+app.set("trust proxy", true);
+
 app.use(express.json());
 
 app.use(

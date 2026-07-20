@@ -94,5 +94,13 @@ export const auth = betterAuth({
       sendVerificationOTP,
     }),
   ],
-  trustedOrigins: ["http://localhost:3000", process.env.FRONTEND_URL as string],
+  trustedOrigins: [
+    process.env.FRONTEND_URL as string
+  ],
+  advanced: {
+    crossSubDomainCookies: {
+      enabled: true,
+      domain: process.env.NODE_ENV === "development" ? "localhost" : "restock.website",
+    }
+  }
 });
