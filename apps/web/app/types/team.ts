@@ -20,6 +20,8 @@ export const mapFrontendRoleToBackend = (role: string): string => {
       return "admin";
     case "Empleado":
       return "collaborator";
+    case "Cajero":
+      return "cashier";
     default:
       return "collaborator";
   }
@@ -31,6 +33,8 @@ export const mapBackendRoleToFrontend = (role: string): string => {
       return "Admin";
     case "collaborator":
       return "Empleado";
+    case "cashier":
+      return "Cajero";
     default:
       return role;
   }

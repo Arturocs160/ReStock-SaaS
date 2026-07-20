@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { requireAuth } from "../middlewares/requireAuth";
+import { checkRole } from "../middlewares/checkRole";
 import {
   createProductController,
   deleteProductController,
@@ -46,12 +47,14 @@ routerProducts.get(
 routerProducts.post(
   "/",
   requireAuth,
+  checkRole(["admin", "collaborator"]),
   validateDataBody(createProductoSchema),
   createProductController
 );
 routerProducts.put(
   "/:id_producto",
   requireAuth,
+  checkRole(["admin", "collaborator"]),
   validateDataParams(productoIdParamSchema),
   validateDataBody(updateProductoSchema),
   updateProductController
@@ -59,6 +62,7 @@ routerProducts.put(
 routerProducts.delete(
   "/:id_producto",
   requireAuth,
+  checkRole(["admin", "collaborator"]),
   validateDataParams(productoIdParamSchema),
   deleteProductController
 );

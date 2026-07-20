@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "../../store/authStore";
 import { Sidebar } from "../../components/dashboard/Sidebar";
 import { Topbar } from "../../components/dashboard/Topbar";
 import CategoriasPanel from "../../components/dashboard/CategoriasPanel";
@@ -10,6 +12,15 @@ import { CheckCircle2, AlertTriangle, X } from "lucide-react";
 import { categoriaSchema } from "../../lib/validationsInventario";
 
 export default function CategoriasPage() {
+  const { user } = useAuthStore();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user?.role === 'cashier') {
+      router.replace('/dashboard/ventas');
+    }
+  }, [user, router]);
+
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState<{ message: string; type: "success" | "info" | "error" } | null>(null);

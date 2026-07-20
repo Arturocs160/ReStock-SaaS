@@ -9,7 +9,7 @@ export const userService = {
   },
 
   async updateMemberRole(id_negocio: string, requestorId: string, memberId: string, newRole: string): Promise<void> {
-    const allowedRoles = ["admin", "collaborator"];
+    const allowedRoles = ["admin", "collaborator", "cashier"];
     if (!allowedRoles.includes(newRole)) {
       throw new Error("Rol inválido.");
     }

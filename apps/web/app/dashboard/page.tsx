@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "../store/authStore";
 import { Sidebar } from "../components/dashboard/Sidebar";
 import { Topbar } from "../components/dashboard/Topbar";
 import { MetricsCards } from "../components/dashboard/MetricsCards";
@@ -10,8 +12,16 @@ import { productsApi, lotesApi } from "../lib/api";
 import { LoteInventario, ProductoConStock, Producto } from "../types/inventario";
 
 export default function DashboardPage() {
+    const { user } = useAuthStore();
+    const router = useRouter();
     const [products, setProducts] = useState<ProductoConStock[]>([]);
     const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (user?.role === 'cashier') {
+            router.replace('/dashboard/ventas');
+        }
+    }, [user, router]);
 
     useEffect(() => {
         const fetchInventory = async () => {
