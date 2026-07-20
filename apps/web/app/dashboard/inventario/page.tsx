@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "../../store/authStore";
 import {
     Plus,
     CheckCircle2,
@@ -71,6 +73,15 @@ export const getExpirationStatus = (expiryDateStr: string | null) => {
 }
 
 export default function LotesPage() {
+    const { user } = useAuthStore();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (user?.role === 'cashier') {
+            router.replace('/dashboard/ventas');
+        }
+    }, [user, router]);
+
     const [productos, setProductos] = useState<ProductoConStock[]>([]);
     const [categories, setCategories] = useState<Categoria[]>([]);
     const [loading, setLoading] = useState(true);

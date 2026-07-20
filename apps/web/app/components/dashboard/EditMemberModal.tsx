@@ -73,6 +73,7 @@ export function EditMemberModal({ isOpen, onClose, member, onSave }: EditMemberM
               >
                 <option value="Admin">Admin</option>
                 <option value="Empleado">Empleado</option>
+                <option value="Cajero">Cajero</option>
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-500">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

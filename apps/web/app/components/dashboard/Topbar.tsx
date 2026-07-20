@@ -53,7 +53,7 @@ export function Topbar() {
 
           <p className="text-[#07B474] text-sm flex items-center justify-end gap-1">
             <span className="h-2 w-2 rounded-full bg-[#07B474] inline-block"></span>
-            {user?.role === 'admin' ? 'Administrador' : 'Usuario'}
+            {user?.role === 'admin' ? 'Administrador' : user?.role === 'cashier' ? 'Cajero' : 'Empleado'}
           </p>
         </div>
 

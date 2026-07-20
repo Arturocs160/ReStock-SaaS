@@ -4,7 +4,7 @@ import { X, Check, Loader2 } from "lucide-react";
 import { teamApi } from "../../lib/api";
 import { mapFrontendRoleToBackend } from "../../types/team";
 
-export type Role = "Admin" | "Empleado";
+export type Role = "Admin" | "Empleado" | "Cajero";
 
 export interface InvitationData {
   email: string;
@@ -80,7 +80,7 @@ export function InviteCollaboratorModal({ isOpen, onClose, onSuccess }: Props) {
         <div className="flex items-start justify-between p-6 pb-2">
           <div>
             <h2 className="text-[1.35rem] font-bold text-gray-900 leading-tight">Invitar Colaborador</h2>
-            <p className="text-gray-500 text-[13px] mt-1">Registra una invitación en la tabla INVITACION del negocio.</p>
+            <p className="text-gray-500 text-[13px] mt-1">Envía una invitación por correo para sumar un nuevo miembro a tu equipo.</p>
           </div>
           <button
             onClick={onClose}
@@ -135,6 +135,7 @@ export function InviteCollaboratorModal({ isOpen, onClose, onSuccess }: Props) {
                     <option value="" disabled>Selecciona un rol</option>
                     <option value="Admin">Admin</option>
                     <option value="Empleado">Empleado</option>
+                    <option value="Cajero">Cajero</option>
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-500">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

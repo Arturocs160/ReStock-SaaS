@@ -102,118 +102,138 @@ export function Sidebar() {
         </p>
 
         <nav className="space-y-2 text-sm" onClick={() => setSidebarOpen(false)}>
-          <Link
-            href="/dashboard"
-            className={`w-full flex items-center justify-between px-4 py-2 rounded-xl font-medium ${pathname === "/dashboard"
-              ? "bg-[#DFF9E6] text-[#07B474]"
-              : "text-gray-600 hover:bg-gray-50"
-              }`}
-          >
-            <span className="flex items-center gap-2">
-              <TrendingUp size={18} />
-              Vista general
-            </span>
-
-            {/* <span className="bg-red-100 text-red-500 text-xs px-2 py-1 rounded-full">
-              3
-            </span> */}
-          </Link>
-
-          <Link
-            href="/dashboard/ventas"
-            className={`w-full flex items-center gap-2 px-4 py-2 rounded-xl ${pathname === "/dashboard/ventas"
-              ? "bg-[#DFF9E6] text-[#07B474]"
-              : "text-gray-600 hover:bg-gray-50"
-              }`}
-          >
-            <ShoppingCart size={18} />
-            Generar venta
-          </Link>
-
-          <Link
-            href="/dashboard/inventario"
-            className={`w-full flex items-center gap-2 px-4 py-2 rounded-xl ${pathname === "/dashboard/inventario"
-              ? "bg-[#DFF9E6] text-[#07B474]"
-              : "text-gray-600 hover:bg-gray-50"
-              }`}
-          >
-            <Layers size={18} />
-            Inventario por lotes
-          </Link>
-
-          <Link
-            href="/dashboard/categorias"
-            className={`w-full flex items-center gap-2 px-4 py-2 rounded-xl ${pathname === "/dashboard/categorias"
-              ? "bg-[#DFF9E6] text-[#07B474]"
-              : "text-gray-600 hover:bg-gray-50"
-              }`}
-          >
-            <Tag size={18} />
-            Categorías
-          </Link>
-
-          <Link
-            href="/dashboard/vencimientos"
-            className={`w-full flex items-center justify-between px-4 py-2 rounded-xl ${pathname === "/dashboard/vencimientos"
-              ? "bg-[#DFF9E6] text-[#07B474]"
-              : "text-gray-600 hover:bg-gray-50"
-              }`}
-          >
-            <span className="flex items-center gap-2">
-              <Clock size={18} />
-              Fechas de vencimiento
-            </span>
-
-            {/* <span className="bg-red-100 text-red-500 text-xs px-2 py-1 rounded-full">
-              7
-            </span> */}
-          </Link>
-
-          <Link
-            href="/dashboard/compras"
-            className={`w-full flex items-center gap-2 px-4 py-2 rounded-xl ${pathname === "/dashboard/compras"
-              ? "bg-orange-50 text-orange-500"
-              : "text-gray-600 hover:bg-gray-50"
-              }`}
-          >
-            <TrendingUp size={18} />
-            Planificación de compras
-          </Link>
-
-          <Link
-            href="/dashboard/historial"
-            className={`w-full flex items-center gap-2 px-4 py-2 whitespace-nowrap rounded-xl ${pathname === "/dashboard/historial"
-              ? "bg-[#DFF9E6] text-[#07B474]"
-              : "text-gray-600 hover:bg-gray-50"
-              }`}
-          >
-            <History size={18} />
-            Historial de ventas
-          </Link>
-
-          {mounted && user?.role === 'admin' && (
+          {mounted && user?.role === 'cashier' ? (
             <>
               <Link
-                href="/dashboard/configuracion"
-                className={`w-full flex items-center gap-2 px-4 py-2 rounded-xl ${pathname === "/dashboard/configuracion"
+                href="/dashboard/ventas"
+                className={`w-full flex items-center gap-2 px-4 py-2 rounded-xl ${pathname === "/dashboard/ventas"
                   ? "bg-[#DFF9E6] text-[#07B474]"
                   : "text-gray-600 hover:bg-gray-50"
                   }`}
               >
-                <Store size={18} />
-                Configuración
+                <ShoppingCart size={18} />
+                Generar venta
               </Link>
 
               <Link
-                href="/dashboard/equipo"
-                className={`w-full flex items-center gap-2 px-4 py-2 rounded-xl ${pathname === "/dashboard/equipo"
+                href="/dashboard/historial"
+                className={`w-full flex items-center gap-2 px-4 py-2 whitespace-nowrap rounded-xl ${pathname === "/dashboard/historial"
                   ? "bg-[#DFF9E6] text-[#07B474]"
                   : "text-gray-600 hover:bg-gray-50"
                   }`}
               >
-                <Users size={18} />
-                Equipo
+                <History size={18} />
+                Historial de ventas
               </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/dashboard"
+                className={`w-full flex items-center justify-between px-4 py-2 rounded-xl font-medium ${pathname === "/dashboard"
+                  ? "bg-[#DFF9E6] text-[#07B474]"
+                  : "text-gray-600 hover:bg-gray-50"
+                  }`}
+              >
+                <span className="flex items-center gap-2">
+                  <TrendingUp size={18} />
+                  Vista general
+                </span>
+              </Link>
+
+              <Link
+                href="/dashboard/ventas"
+                className={`w-full flex items-center gap-2 px-4 py-2 rounded-xl ${pathname === "/dashboard/ventas"
+                  ? "bg-[#DFF9E6] text-[#07B474]"
+                  : "text-gray-600 hover:bg-gray-50"
+                  }`}
+              >
+                <ShoppingCart size={18} />
+                Generar venta
+              </Link>
+
+              <Link
+                href="/dashboard/inventario"
+                className={`w-full flex items-center gap-2 px-4 py-2 rounded-xl ${pathname === "/dashboard/inventario"
+                  ? "bg-[#DFF9E6] text-[#07B474]"
+                  : "text-gray-600 hover:bg-gray-50"
+                  }`}
+              >
+                <Layers size={18} />
+                Inventario por lotes
+              </Link>
+
+              <Link
+                href="/dashboard/categorias"
+                className={`w-full flex items-center gap-2 px-4 py-2 rounded-xl ${pathname === "/dashboard/categorias"
+                  ? "bg-[#DFF9E6] text-[#07B474]"
+                  : "text-gray-600 hover:bg-gray-50"
+                  }`}
+              >
+                <Tag size={18} />
+                Categorías
+              </Link>
+
+              <Link
+                href="/dashboard/vencimientos"
+                className={`w-full flex items-center justify-between px-4 py-2 rounded-xl ${pathname === "/dashboard/vencimientos"
+                  ? "bg-[#DFF9E6] text-[#07B474]"
+                  : "text-gray-600 hover:bg-gray-50"
+                  }`}
+              >
+                <span className="flex items-center gap-2">
+                  <Clock size={18} />
+                  Fechas de vencimiento
+                </span>
+              </Link>
+
+              <Link
+                href="/dashboard/compras"
+                className={`w-full flex items-center gap-2 px-4 py-2 rounded-xl ${pathname === "/dashboard/compras"
+                  ? "bg-orange-50 text-orange-500"
+                  : "text-gray-600 hover:bg-gray-50"
+                  }`}
+              >
+                <TrendingUp size={18} />
+                Planificación de compras
+              </Link>
+
+              <Link
+                href="/dashboard/historial"
+                className={`w-full flex items-center gap-2 px-4 py-2 whitespace-nowrap rounded-xl ${pathname === "/dashboard/historial"
+                  ? "bg-[#DFF9E6] text-[#07B474]"
+                  : "text-gray-600 hover:bg-gray-50"
+                  }`}
+              >
+                <History size={18} />
+                Historial de ventas
+              </Link>
+
+              {mounted && user?.role === 'admin' && (
+                <>
+                  <Link
+                    href="/dashboard/configuracion"
+                    className={`w-full flex items-center gap-2 px-4 py-2 rounded-xl ${pathname === "/dashboard/configuracion"
+                      ? "bg-[#DFF9E6] text-[#07B474]"
+                      : "text-gray-600 hover:bg-gray-50"
+                      }`}
+                  >
+                    <Store size={18} />
+                    Configuración
+                  </Link>
+
+                  <Link
+                    href="/dashboard/equipo"
+                    className={`w-full flex items-center gap-2 px-4 py-2 rounded-xl ${pathname === "/dashboard/equipo"
+                      ? "bg-[#DFF9E6] text-[#07B474]"
+                      : "text-gray-600 hover:bg-gray-50"
+                      }`}
+                  >
+                    <Users size={18} />
+                    Equipo
+                  </Link>
+                </>
+              )}
             </>
           )}
         </nav>
