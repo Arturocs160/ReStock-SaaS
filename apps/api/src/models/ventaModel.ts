@@ -39,11 +39,13 @@ export async function createVentaTransactionModel(
         WHERE l.id_lote = $1 AND p.id_negocio = $2 AND l.activo = true AND p.activo = true
         FOR UPDATE;
       `;
-      
+
       const stockRes = await client.query(stockQuery, [item.id_lote, id_negocio]);
 
       if (stockRes.rowCount === 0) {
-        throw new Error(`El lote con ID ${item.id_lote} no existe, está inactivo o no pertenece a tu negocio.`);
+        throw new Error(
+          `El lote con ID ${item.id_lote} no existe, está inactivo o no pertenece a tu negocio.`
+        );
       }
 
       const lote = stockRes.rows[0];

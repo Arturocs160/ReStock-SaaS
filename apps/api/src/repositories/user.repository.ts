@@ -50,5 +50,5 @@ export const userRepository = {
       WHERE id = $1;
     `;
     await pool.query(query, [userId]);
-  }
+  },
 };

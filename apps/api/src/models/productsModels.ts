@@ -192,4 +192,3 @@ export async function getPosCatalogModel(id_negocio: string) {
 
   return res.rows;
 }
-

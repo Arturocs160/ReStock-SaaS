@@ -352,7 +352,7 @@ export default function LotesPage() {
         if (selectedProduct && selectedLote) {
             try {
                 await lotesApi.delete(selectedLote.id_lote);
-                showToastMsg("Lote eliminado.", "info");
+                showToastMsg("Lote dado de baja exitosamente.", "success");
                 setActiveModal(null);
                 setSelectedLote(null);
                 setSelectedProduct(null);
