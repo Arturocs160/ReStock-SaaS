@@ -95,6 +95,11 @@ export const lotesApi = {
     apiFetch<void>(`/lote/${id}`, {
       method: 'DELETE',
     }),
+  reportMerma: (id: string, cantidad: number, motivo: string) =>
+    apiFetch<any>(`/lote/${id}/merma`, {
+      method: 'POST',
+      body: JSON.stringify({ cantidad, motivo }),
+    }),
 };
 
 export const salesApi = {

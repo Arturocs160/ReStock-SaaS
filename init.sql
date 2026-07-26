@@ -155,3 +155,18 @@ CREATE TABLE public.detalle_va_venta (
   CONSTRAINT fk_detalle_lote FOREIGN KEY (id_lote) REFERENCES public.lote_inventario(id_lote),
   CONSTRAINT fk_detalle_venta FOREIGN KEY (id_venta) REFERENCES public.venta(id_venta)
 );
+
+-- 7. TABLA DE MERMAS
+CREATE TABLE public.merma (
+  id_merma uuid NOT NULL,
+  id_lote uuid NOT NULL,
+  id_producto uuid NOT NULL,
+  cantidad integer NOT NULL,
+  motivo character varying NOT NULL,
+  id_usuario character varying NOT NULL,
+  fecha_creacion timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT merma_pkey PRIMARY KEY (id_merma),
+  CONSTRAINT fk_merma_lote FOREIGN KEY (id_lote) REFERENCES public.lote_inventario(id_lote),
+  CONSTRAINT fk_merma_producto FOREIGN KEY (id_producto) REFERENCES public.producto(id_producto),
+  CONSTRAINT fk_merma_user FOREIGN KEY (id_usuario) REFERENCES public."user"(id)
+);

@@ -7,9 +7,15 @@ import {
   getLoteByIdController,
   getLotesByProductIdController,
   updateLoteController,
+  createMermaController,
 } from "../controllers/loteController";
 import { validateDataBody, validateDataParams } from "../middlewares/verifyData";
-import { createLoteSchema, updateLoteSchema, loteIdParamSchema } from "../schemas/lotesSchema";
+import {
+  createLoteSchema,
+  updateLoteSchema,
+  loteIdParamSchema,
+  createMermaSchema,
+} from "../schemas/lotesSchema";
 import { productoIdParamSchema } from "../schemas/productsSchema";
 
 const routerLote: Router = Router();
@@ -47,6 +53,14 @@ routerLote.delete(
   checkRole(["admin", "collaborator"]),
   validateDataParams(loteIdParamSchema),
   deleteLoteController
+);
+routerLote.post(
+  "/:id_lote/merma",
+  requireAuth,
+  checkRole(["admin", "collaborator"]),
+  validateDataParams(loteIdParamSchema),
+  validateDataBody(createMermaSchema),
+  createMermaController
 );
 
 export default routerLote;

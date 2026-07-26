@@ -66,8 +66,17 @@ export const loteIdParamSchema = z.object({
   id_lote: z.uuid({ message: "ID de lote inválido en los parámetros" }),
 });
 
+export const createMermaSchema = z.object({
+  cantidad: z
+    .number({ message: "La cantidad debe ser un número" })
+    .int()
+    .positive({ message: "La cantidad debe ser un entero positivo mayor a 0" }),
+  motivo: z.string().min(1, { message: "El motivo es requerido" }),
+});
+
 export type LoteInventario = z.infer<typeof loteInventarioSchema>;
 export type LoteConProducto = z.infer<typeof loteConProductoSchema>;
 export type CreateLoteInput = z.infer<typeof createLoteSchema>;
 export type UpdateLoteInput = z.infer<typeof updateLoteSchema>;
 export type LoteIdParam = z.infer<typeof loteIdParamSchema>;
+export type CreateMermaInput = z.infer<typeof createMermaSchema>;

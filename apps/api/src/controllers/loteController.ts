@@ -5,6 +5,7 @@ import {
   getLoteByIdService,
   getLotesByProductIdService,
   updateLoteService,
+  createMermaService,
 } from "../services/loteServices";
 import { Request, Response } from "express";
 
@@ -94,5 +95,38 @@ export async function deleteLoteController(req: Request, res: Response) {
   } catch (error: any) {
     logger.error("Error al eliminar lote" + error);
     res.status(500).json({ error: error.message });
+  }
+}
+
+export async function createMermaController(req: Request, res: Response) {
+  try {
+    const { id_lote } = req.params;
+    const id_negocio = req.user?.id_negocio;
+    const id_usuario = req.user?.id;
+    const { cantidad, motivo } = req.body;
+
+    if (typeof id_lote !== "string") {
+      res.status(400).json({ error: "ID de lote inválido" });
+      return;
+    }
+
+    if (!id_usuario) {
+      res.status(401).json({
+        error: "Sesión inválida o expirada",
+        message: "No autorizado. Inicia sesión primero.",
+      });
+      return;
+    }
+
+    const merma = await createMermaService(id_lote, id_negocio, cantidad, motivo, id_usuario);
+
+    res.status(200).json(merma);
+  } catch (error: any) {
+    logger.error("Error al registrar merma: " + error.message);
+    const statusCode = error.statusCode || 500;
+    res.status(statusCode).json({
+      error: error.message || "Error interno del servidor",
+      message: error.message,
+    });
   }
 }

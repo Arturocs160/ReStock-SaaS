@@ -11,6 +11,7 @@ export default function routes(app: Express) {
   app.use("/cta", routerCTA);
   app.use("/products", routerProducts);
   app.use("/lote", routerLote);
+  app.use("/api/lotes", routerLote);
   app.use("/negocio", routerNegocio);
   app.use("/categories", routerCategories);
   app.use("/invitations", routerInvitation);
