@@ -5,6 +5,7 @@ import {
   getLoteByIdModel,
   getLotesByProductIdModel,
   updateLoteModel,
+  createMermaTransactionModel,
 } from "../models/loteModel";
 
 export async function createLoteService(
@@ -51,4 +52,14 @@ export async function updateLoteService(
 }
 export async function deleteLoteService(id_lote: string, id_negocio: string) {
   return await deleteLoteModel(id_lote, id_negocio);
+}
+
+export async function createMermaService(
+  id_lote: string,
+  id_negocio: string,
+  cantidad: number,
+  motivo: string,
+  id_usuario: string
+) {
+  return await createMermaTransactionModel(id_lote, id_negocio, cantidad, motivo, id_usuario);
 }
