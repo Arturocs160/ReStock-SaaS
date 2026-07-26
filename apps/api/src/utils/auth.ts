@@ -86,6 +86,9 @@ export const auth = betterAuth({
           return {
             id: user.id,
             email: user.email,
+            name: user.name,
+            role: user.role,
+            id_negocio: user.id_negocio,
           };
         },
       },
@@ -94,13 +97,11 @@ export const auth = betterAuth({
       sendVerificationOTP,
     }),
   ],
-  trustedOrigins: [
-    process.env.FRONTEND_URL as string
-  ],
+  trustedOrigins: [process.env.FRONTEND_URL as string],
   advanced: {
     crossSubDomainCookies: {
-      enabled: true,
-      domain: process.env.NODE_ENV === "development" ? "localhost" : "restock.website",
-    }
-  }
+      enabled: process.env.NODE_ENV === "production",
+      domain: process.env.NODE_ENV === "production" ? "restock.website" : undefined,
+    },
+  },
 });

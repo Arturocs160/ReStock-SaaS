@@ -44,7 +44,14 @@ export const invitationRepository = {
       VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, false)
       RETURNING *;
     `;
-    const values = [data.tenant_id, data.invited_by, data.email, data.role, data.token, data.expires_at];
+    const values = [
+      data.tenant_id,
+      data.invited_by,
+      data.email,
+      data.role,
+      data.token,
+      data.expires_at,
+    ];
     const result = await pool.query(query, values);
     return result.rows[0];
   },
@@ -97,12 +104,7 @@ export const invitationRepository = {
     await pool.query(query, [tenantId, role, userId]);
   },
 
-  async assignInvitationData(
-    userId: string,
-    tenantId: string,
-    role: string,
-    creatorId: string
-  ) {
+  async assignInvitationData(userId: string, tenantId: string, role: string, creatorId: string) {
     const query = `
       UPDATE public."user"
       SET id_negocio = $1, role = $2, id_usuario_creador = $3

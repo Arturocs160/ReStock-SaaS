@@ -5,7 +5,6 @@ export const createInvitationSchema = z.object({
   role_asignado: z.enum(["admin", "collaborator", "cashier"]),
 });
 
-
 export const registerInvitationSchema = z.object({
   token: z.string().min(1, "El token es obligatorio"),
 
@@ -15,4 +14,3 @@ export const registerInvitationSchema = z.object({
 
   password: z.string().min(8, "La contraseña debe tener mínimo 8 caracteres"),
 });
-

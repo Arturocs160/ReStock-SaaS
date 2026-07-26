@@ -8,7 +8,12 @@ export const userService = {
     return await userRepository.findUsersByTenantId(tenantId);
   },
 
-  async updateMemberRole(id_negocio: string, requestorId: string, memberId: string, newRole: string): Promise<void> {
+  async updateMemberRole(
+    id_negocio: string,
+    requestorId: string,
+    memberId: string,
+    newRole: string
+  ): Promise<void> {
     const allowedRoles = ["admin", "collaborator", "cashier"];
     if (!allowedRoles.includes(newRole)) {
       throw new Error("Rol inválido.");
@@ -36,7 +41,11 @@ export const userService = {
     await userRepository.updateUserRole(memberId, newRole);
   },
 
-  async removeMemberFromNegocio(id_negocio: string, requestorId: string, memberId: string): Promise<void> {
+  async removeMemberFromNegocio(
+    id_negocio: string,
+    requestorId: string,
+    memberId: string
+  ): Promise<void> {
     const requestor = await userRepository.findUserById(requestorId);
     const member = await userRepository.findUserById(memberId);
 
@@ -57,5 +66,5 @@ export const userService = {
     }
 
     await userRepository.removeUserFromNegocio(memberId);
-  }
+  },
 };

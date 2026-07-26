@@ -2,12 +2,7 @@ import crypto from "crypto";
 import { invitationRepository } from "../repositories/invitation.repository";
 
 export const invitationService = {
-  async createInvitation(
-    email: string,
-    tenantId: string,
-    invitedBy: string,
-    role: string
-  ) {
+  async createInvitation(email: string, tenantId: string, invitedBy: string, role: string) {
     const existingInvitation = await invitationRepository.findPendingByEmail(email, tenantId);
 
     if (existingInvitation) {
@@ -57,7 +52,6 @@ export const invitationService = {
       invitation.inviter_user_id
     );
 
-    
     await invitationRepository.deleteInvitation(invitation.id_invitacion);
   },
 
@@ -80,5 +74,5 @@ export const invitationService = {
     }
 
     await invitationRepository.deleteInvitation(idInvitacion);
-  }
-};
+  },
+};

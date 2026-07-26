@@ -75,7 +75,10 @@ export async function toggleCategoryActiveModel(id_categoria: string, id_negocio
   return res.rows[0];
 }
 
-export async function countActiveProductsByCategoryIdModel(id_categoria: string, id_negocio: string) {
+export async function countActiveProductsByCategoryIdModel(
+  id_categoria: string,
+  id_negocio: string
+) {
   const res = await pool.query(
     `
         SELECT COUNT(*)::integer as count FROM public.producto

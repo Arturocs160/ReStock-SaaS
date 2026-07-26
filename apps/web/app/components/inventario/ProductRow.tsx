@@ -131,6 +131,15 @@ export function ProductRow({
                                                             </span>
                                                         </td>
                                                         <td className="px-4 py-2.5 text-right space-x-1 whitespace-nowrap">
+                                                            {expStatus.level === "caducado" && (
+                                                                <button
+                                                                    onClick={() => onDeleteLote(l.id_lote)}
+                                                                    className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-xs transition inline-block cursor-pointer font-semibold shadow-sm"
+                                                                    title="Dar de baja por Merma"
+                                                                >
+                                                                    Dar de baja (Merma)
+                                                                </button>
+                                                            )}
                                                             <button
                                                                 onClick={() => onEditLote(l)}
                                                                 className="text-blue-600 hover:text-blue-800 p-1 rounded transition inline-block cursor-pointer"

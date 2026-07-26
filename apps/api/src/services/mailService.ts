@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 import "dotenv/config";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY || "re_dummy");
 
 interface SendOTPArgs {
   email: string;
@@ -124,7 +124,13 @@ export async function sendVerificationOTP({ email, otp, type }: SendOTPArgs): Pr
   });
 }
 
-export async function sendInvitationEmail({ email, invitationLink }: { email: string; invitationLink: string }): Promise<void> {
+export async function sendInvitationEmail({
+  email,
+  invitationLink,
+}: {
+  email: string;
+  invitationLink: string;
+}): Promise<void> {
   const subject = "Te han invitado a unirte a un negocio en ReStock";
   const html = getEmailWrapper(
     "Invitación a ReStock",
@@ -158,4 +164,3 @@ export async function sendInvitationEmail({ email, invitationLink }: { email: st
     html: html,
   });
 }
-

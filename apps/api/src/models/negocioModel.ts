@@ -35,9 +35,8 @@ export async function updateNegocioModel(
   return result.rows[0] || null;
 }
 
-
 export async function getFirstNegocioModel() {
   const query = "SELECT id_negocio FROM public.negocio LIMIT 1";
-  const result = await pool.query(query); 
+  const result = await pool.query(query);
   return result.rows[0] || null;
 }
