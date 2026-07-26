@@ -1,4 +1,6 @@
 import pool from "../config/db";
+import { randomUUID } from "node:crypto";
+import logger from "../utils/logger";
 
 export async function createLoteModel(
   id_lote: string,
@@ -31,7 +33,11 @@ export async function createLoteModel(
 export async function getLotesByProductIdModel(id_producto: string, id_negocio: string) {
   const res = await pool.query(
     `
-        SELECT l.* FROM public.lote_inventario l
+        SELECT l.*,
+            (l.cantidad_inicial - 
+             COALESCE((SELECT SUM(d.cantidad_sold) FROM public.detalle_va_venta d WHERE d.id_lote = l.id_lote), 0) - 
+             COALESCE((SELECT SUM(m.cantidad) FROM public.merma m WHERE m.id_lote = l.id_lote), 0))::integer AS cantidad_actual
+        FROM public.lote_inventario l
         INNER JOIN public.producto p ON l.id_producto = p.id_producto
         WHERE l.id_producto = $1 
           AND p.id_negocio = $2 
@@ -48,7 +54,11 @@ export async function getLotesByProductIdModel(id_producto: string, id_negocio: 
 export async function getLoteByIdModel(id_lote: string, id_negocio: string) {
   const res = await pool.query(
     `
-        SELECT l.* FROM public.lote_inventario l
+        SELECT l.*,
+            (l.cantidad_inicial - 
+             COALESCE((SELECT SUM(d.cantidad_sold) FROM public.detalle_va_venta d WHERE d.id_lote = l.id_lote), 0) - 
+             COALESCE((SELECT SUM(m.cantidad) FROM public.merma m WHERE m.id_lote = l.id_lote), 0))::integer AS cantidad_actual
+        FROM public.lote_inventario l
         INNER JOIN public.producto p ON l.id_producto = p.id_producto
         WHERE l.id_lote = $1 
           AND p.id_negocio = $2 
@@ -104,4 +114,85 @@ export async function deleteLoteModel(id_lote: string, id_negocio: string) {
   );
 
   return res.rowCount;
+}
+
+export async function createMermaTransactionModel(
+  id_lote: string,
+  id_negocio: string,
+  cantidad: number,
+  motivo: string,
+  id_usuario: string
+) {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+    // 1. Obtener lote locked FOR UPDATE y verificar negocio
+    const loteRes = await client.query(
+      `
+      SELECT l.*, p.id_negocio, p.nombre AS producto_nombre,
+          (l.cantidad_inicial - 
+           COALESCE((SELECT SUM(d.cantidad_sold) FROM public.detalle_va_venta d WHERE d.id_lote = l.id_lote), 0) - 
+           COALESCE((SELECT SUM(m.cantidad) FROM public.merma m WHERE m.id_lote = l.id_lote), 0))::integer AS cantidad_actual
+      FROM public.lote_inventario l
+      INNER JOIN public.producto p ON l.id_producto = p.id_producto
+      WHERE l.id_lote = $1 AND l.activo = true AND p.activo = true
+      FOR UPDATE;
+      `,
+      [id_lote]
+    );
+
+    if (loteRes.rowCount === 0) {
+      const error = new Error(
+        "El lote no existe o está inactivo o no pertenece a un producto activo."
+      );
+      (error as any).statusCode = 404;
+      throw error;
+    }
+
+    const lote = loteRes.rows[0];
+
+    // Verificar tenant isolation (Seguridad Multi-tenant)
+    if (lote.id_negocio !== id_negocio) {
+      const error = new Error("No tienes permisos para acceder a este lote.");
+      (error as any).statusCode = 403;
+      throw error;
+    }
+
+    // Validar stock disponible
+    if (cantidad <= 0 || cantidad > lote.cantidad_actual) {
+      const error = new Error("Cantidad de merma inválida o supera el stock disponible.");
+      (error as any).statusCode = 400;
+      throw error;
+    }
+
+    // 2. Insertar merma
+    const id_merma = randomUUID();
+    const insertMermaRes = await client.query(
+      `
+      INSERT INTO public.merma (id_merma, id_lote, id_producto, cantidad, motivo, id_usuario, fecha_creacion)
+      VALUES ($1, $2, $3, $4, $5, $6, NOW())
+      RETURNING *;
+      `,
+      [id_merma, id_lote, lote.id_producto, cantidad, motivo, id_usuario]
+    );
+
+    const newCantidadActual = lote.cantidad_actual - cantidad;
+
+    // 3. Bitácora si cantidad_actual llega a 0
+    if (newCantidadActual === 0) {
+      logger.warn(
+        { id_lote, codigo_lote: lote.codigo_lote, id_producto: lote.id_producto },
+        "El lote ha quedado sin existencias (cantidad_actual = 0) debido a un reporte de merma."
+      );
+    }
+
+    await client.query("COMMIT");
+    return insertMermaRes.rows[0];
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
 }

@@ -33,7 +33,9 @@ export async function createVentaTransactionModel(
             l.codigo_lote,
             l.cantidad_inicial,
             p.nombre AS producto_nombre,
-            (l.cantidad_inicial - COALESCE((SELECT SUM(d.cantidad_sold) FROM public.detalle_va_venta d WHERE d.id_lote = l.id_lote), 0))::integer AS cantidad_actual
+            (l.cantidad_inicial - 
+             COALESCE((SELECT SUM(d.cantidad_sold) FROM public.detalle_va_venta d WHERE d.id_lote = l.id_lote), 0) - 
+             COALESCE((SELECT SUM(m.cantidad) FROM public.merma m WHERE m.id_lote = l.id_lote), 0))::integer AS cantidad_actual
         FROM public.lote_inventario l
         INNER JOIN public.producto p ON l.id_producto = p.id_producto
         WHERE l.id_lote = $1 AND p.id_negocio = $2 AND l.activo = true AND p.activo = true
