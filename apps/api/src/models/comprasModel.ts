@@ -1,11 +1,6 @@
 import pool from "../config/db";
-import { randomUUID, randomBytes } from "node:crypto";
-import { PoolClient } from "pg";
-import { ItemOrdenCompraInput } from "../schemas/comprasSchema";
 
-export async function getStockConsolidadoPorProductoModel(id_negocio: string) {
-  const res = await pool.query(
-    `
+const STOCK_CONSOLIDADO_SELECT = `
         SELECT
             p.id_producto,
             p.nombre,
@@ -26,6 +21,12 @@ export async function getStockConsolidadoPorProductoModel(id_negocio: string) {
         LEFT JOIN public.lote_inventario l
             ON l.id_producto = p.id_producto
             AND l.activo = true
+`;
+
+export async function getStockConsolidadoPorProductoModel(id_negocio: string) {
+  const res = await pool.query(
+    `
+        ${STOCK_CONSOLIDADO_SELECT}
         WHERE p.id_negocio = $1
           AND p.activo = true
         GROUP BY p.id_producto, p.nombre, p.stock_minimo_sugerido
@@ -37,97 +38,21 @@ export async function getStockConsolidadoPorProductoModel(id_negocio: string) {
   return res.rows;
 }
 
-function generarCodigoLote(): string {
-  const fecha = new Date();
-  const yyyy = fecha.getFullYear();
-  const mm = String(fecha.getMonth() + 1).padStart(2, "0");
-  const dd = String(fecha.getDate()).padStart(2, "0");
-
-  const caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  const bytes = randomBytes(4);
-  let aleatorio = "";
-  for (let i = 0; i < 4; i++) {
-    aleatorio += caracteres[bytes[i] % caracteres.length];
-  }
-
-  return `LOTE-${yyyy}${mm}${dd}-${aleatorio}`;
-}
-
-async function generarCodigoLoteUnico(client: PoolClient): Promise<string> {
-  for (let intento = 0; intento < 5; intento++) {
-    const codigo_lote = generarCodigoLote();
-    const existeRes = await client.query(
-      `SELECT 1 FROM public.lote_inventario WHERE codigo_lote = $1 LIMIT 1;`,
-      [codigo_lote]
-    );
-    if (existeRes.rowCount === 0) {
-      return codigo_lote;
-    }
-  }
-  throw new Error("No se pudo generar un código de lote único.");
-}
-
-export async function createOrdenCompraTransactionModel(
+export async function getProductosReabastecimientoPorIdsModel(
   id_negocio: string,
-  items: ItemOrdenCompraInput[]
+  ids_producto: string[]
 ) {
-  const client = await pool.connect();
+  const res = await pool.query(
+    `
+        ${STOCK_CONSOLIDADO_SELECT}
+        WHERE p.id_negocio = $1
+          AND p.activo = true
+          AND p.id_producto = ANY($2::uuid[])
+        GROUP BY p.id_producto, p.nombre, p.stock_minimo_sugerido
+        ORDER BY p.nombre ASC;
+    `,
+    [id_negocio, ids_producto]
+  );
 
-  try {
-    await client.query("BEGIN");
-
-    const lotes = [];
-
-    for (const item of items) {
-      // 1. Verificar que el producto existe, está activo y pertenece al negocio (Multi-tenant)
-      const productoRes = await client.query(
-        `
-        SELECT id_producto, nombre
-        FROM public.producto
-        WHERE id_producto = $1 AND id_negocio = $2 AND activo = true
-        FOR UPDATE;
-        `,
-        [item.id_producto, id_negocio]
-      );
-
-      if (productoRes.rowCount === 0) {
-        const error = new Error(
-          `El producto con ID ${item.id_producto} no existe, está inactivo o no pertenece a tu negocio.`
-        );
-        (error as any).statusCode = 404;
-        throw error;
-      }
-
-      // 2. Crear el lote de inventario por el producto comprado
-      const id_lote = randomUUID();
-      const codigo_lote = await generarCodigoLoteUnico(client);
-
-      const insertLoteRes = await client.query(
-        `
-        INSERT INTO public.lote_inventario (
-            id_lote,
-            id_producto,
-            codigo_lote,
-            fecha_ingreso,
-            fecha_caducidad,
-            cantidad_inicial,
-            activo
-        )
-        VALUES ($1, $2, $3, CURRENT_DATE, NULL, $4, true)
-        RETURNING *;
-        `,
-        [id_lote, item.id_producto, codigo_lote, item.cantidad]
-      );
-
-      lotes.push(insertLoteRes.rows[0]);
-    }
-
-    await client.query("COMMIT");
-    return lotes;
-  } catch (error) {
-    await client.query("ROLLBACK");
-    throw error;
-  } finally {
-    client.release();
-  }
+  return res.rows;
 }
