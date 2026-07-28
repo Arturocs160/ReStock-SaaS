@@ -6,6 +6,7 @@ import routerNegocio from "./negocio";
 import routerCategories from "./categories";
 import routerInvitation from "./invitation.routes"; // IMPORTA TU ROUTER AQUÍ
 import routerSales from "./sales";
+import routerCompras from "./compras";
 
 export default function routes(app: Express) {
   app.use("/cta", routerCTA);
@@ -16,4 +17,5 @@ export default function routes(app: Express) {
   app.use("/categories", routerCategories);
   app.use("/invitations", routerInvitation);
   app.use("/sales", routerSales);
+  app.use("/compras", routerCompras);
 }
