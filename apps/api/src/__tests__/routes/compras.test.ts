@@ -124,40 +124,27 @@ describe("POST /compras/orden Route", () => {
     jest.clearAllMocks();
   });
 
-  it("should return 201 and the created lotes on a successful order", async () => {
+  it("should return 200 and the restock list PDF on a successful request", async () => {
     const payload = [
       { id_producto: validUUID, cantidad: 15 },
       { id_producto: validUUID2, cantidad: 10 },
     ];
+    const mockPdfBuffer = Buffer.from("%PDF-1.3 contenido-de-prueba");
 
-    const mockLotes = [
-      {
-        id_lote: "c3d4e5f6-a7b8-9c0d-1e2f-3a4b5c6d7e8f",
-        id_producto: validUUID,
-        codigo_lote: "LOTE-20260128-A1B2",
-        fecha_ingreso: "2026-01-28",
-        fecha_caducidad: null,
-        cantidad_inicial: 15,
-        activo: true,
-      },
-      {
-        id_lote: "d4e5f6a7-b8c9-0d1e-2f3a-4b5c6d7e8f9a",
-        id_producto: validUUID2,
-        codigo_lote: "LOTE-20260128-C3D4",
-        fecha_ingreso: "2026-01-28",
-        fecha_caducidad: null,
-        cantidad_inicial: 10,
-        activo: true,
-      },
-    ];
-
-    (comprasServices.createOrdenCompraService as jest.Mock).mockResolvedValue(mockLotes);
+    (comprasServices.generarListaReabastecimientoPdfService as jest.Mock).mockResolvedValue(
+      mockPdfBuffer
+    );
 
     const response = await request(app).post("/compras/orden").send(payload);
 
-    expect(response.status).toBe(201);
-    expect(response.body).toEqual({ lotes: mockLotes });
-    expect(comprasServices.createOrdenCompraService).toHaveBeenCalledWith("negocio-A", payload);
+    expect(response.status).toBe(200);
+    expect(response.headers["content-type"]).toContain("application/pdf");
+    expect(response.headers["content-disposition"]).toContain("lista-reabastecimiento");
+    expect(response.headers["content-disposition"]).toContain(".pdf");
+    expect(comprasServices.generarListaReabastecimientoPdfService).toHaveBeenCalledWith(
+      "negocio-A",
+      payload
+    );
   });
 
   it("should return 400 if the array is empty", async () => {
@@ -165,7 +152,7 @@ describe("POST /compras/orden Route", () => {
 
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty("error");
-    expect(comprasServices.createOrdenCompraService).not.toHaveBeenCalled();
+    expect(comprasServices.generarListaReabastecimientoPdfService).not.toHaveBeenCalled();
   });
 
   it("should return 400 if a quantity is less than or equal to 0", async () => {
@@ -175,7 +162,7 @@ describe("POST /compras/orden Route", () => {
 
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty("error");
-    expect(comprasServices.createOrdenCompraService).not.toHaveBeenCalled();
+    expect(comprasServices.generarListaReabastecimientoPdfService).not.toHaveBeenCalled();
   });
 
   it("should return 400 if a required field is missing", async () => {
@@ -185,7 +172,7 @@ describe("POST /compras/orden Route", () => {
 
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty("error");
-    expect(comprasServices.createOrdenCompraService).not.toHaveBeenCalled();
+    expect(comprasServices.generarListaReabastecimientoPdfService).not.toHaveBeenCalled();
   });
 
   it("should return 400 if id_producto is not a valid UUID", async () => {
@@ -195,48 +182,37 @@ describe("POST /compras/orden Route", () => {
 
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty("error");
-    expect(comprasServices.createOrdenCompraService).not.toHaveBeenCalled();
+    expect(comprasServices.generarListaReabastecimientoPdfService).not.toHaveBeenCalled();
   });
 
-  it("should return 404 if a product belongs to another business (multi-tenant insertion control)", async () => {
+  it("should return 404 if a product belongs to another business (multi-tenant control)", async () => {
     const payload = [{ id_producto: validUUID, cantidad: 15 }];
     const error = new Error(
-      `El producto con ID ${validUUID} no existe, está inactivo o no pertenece a tu negocio.`
+      "Uno o más productos no existen, están inactivos o no pertenecen a tu negocio."
     );
     (error as any).statusCode = 404;
 
-    (comprasServices.createOrdenCompraService as jest.Mock).mockRejectedValue(error);
+    (comprasServices.generarListaReabastecimientoPdfService as jest.Mock).mockRejectedValue(error);
 
     const response = await request(app).post("/compras/orden").send(payload);
 
     expect(response.status).toBe(404);
     expect(response.body.error).toBe(
-      `El producto con ID ${validUUID} no existe, está inactivo o no pertenece a tu negocio.`
+      "Uno o más productos no existen, están inactivos o no pertenecen a tu negocio."
     );
   });
 
-  it("should return an error and create no lote when one item fails (transactional all-or-nothing)", async () => {
-    const invalidUUID = "e5f6a7b8-c9d0-1e2f-8a4b-5c6d7e8f9a0b";
-    const payload = [
-      { id_producto: validUUID, cantidad: 15 },
-      { id_producto: validUUID2, cantidad: 10 },
-      { id_producto: invalidUUID, cantidad: 5 },
-    ];
+  it("should return 500 and no PDF if the generation fails unexpectedly", async () => {
+    const payload = [{ id_producto: validUUID, cantidad: 15 }];
 
-    // El servicio ejecuta la transacción completa; al fallar el tercer producto
-    // se hace ROLLBACK y no se inserta ningún lote.
-    const error = new Error(
-      `El producto con ID ${invalidUUID} no existe, está inactivo o no pertenece a tu negocio.`
+    (comprasServices.generarListaReabastecimientoPdfService as jest.Mock).mockRejectedValue(
+      new Error("Error generando el documento")
     );
-    (error as any).statusCode = 404;
-
-    (comprasServices.createOrdenCompraService as jest.Mock).mockRejectedValue(error);
 
     const response = await request(app).post("/compras/orden").send(payload);
 
-    expect(response.status).toBe(404);
-    expect(response.body).not.toHaveProperty("lotes");
-    expect(comprasServices.createOrdenCompraService).toHaveBeenCalledTimes(1);
+    expect(response.status).toBe(500);
+    expect(response.headers["content-type"]).not.toContain("application/pdf");
   });
 
   it("should return 401 if unauthenticated", async () => {
@@ -247,6 +223,6 @@ describe("POST /compras/orden Route", () => {
 
     expect(response.status).toBe(401);
     expect(response.body.error).toBe("Sesión inválida o expirada");
-    expect(comprasServices.createOrdenCompraService).not.toHaveBeenCalled();
+    expect(comprasServices.generarListaReabastecimientoPdfService).not.toHaveBeenCalled();
   });
 });

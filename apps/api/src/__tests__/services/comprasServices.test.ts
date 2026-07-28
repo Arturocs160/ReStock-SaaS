@@ -1,10 +1,12 @@
 import {
   getSugerenciasReabastecimientoService,
-  createOrdenCompraService,
+  generarListaReabastecimientoPdfService,
 } from "../../services/comprasServices";
 import * as comprasModel from "../../models/comprasModel";
+import * as negocioModel from "../../models/negocioModel";
 
 jest.mock("../../models/comprasModel");
+jest.mock("../../models/negocioModel");
 
 describe("Compras Services", () => {
   afterEach(() => {
@@ -177,40 +179,89 @@ describe("Compras Services", () => {
     });
   });
 
-  describe("createOrdenCompraService", () => {
-    it("should delegate the order creation to the transactional model with the user's business", async () => {
-      const items = [
-        { id_producto: "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d", cantidad: 15 },
-        { id_producto: "b2c3d4e5-f6a7-8b9c-0d1e-2f3a4b5c6d7e", cantidad: 10 },
-      ];
-      const mockLotes = [
-        { id_lote: "lote-1", id_producto: items[0].id_producto, cantidad_inicial: 15 },
-        { id_lote: "lote-2", id_producto: items[1].id_producto, cantidad_inicial: 10 },
-      ];
+  describe("generarListaReabastecimientoPdfService", () => {
+    const items = [
+      { id_producto: "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d", cantidad: 15 },
+      { id_producto: "b2c3d4e5-f6a7-8b9c-8d1e-2f3a4b5c6d7e", cantidad: 10 },
+    ];
 
-      (comprasModel.createOrdenCompraTransactionModel as jest.Mock).mockResolvedValue(mockLotes);
+    it("should query only the selected products scoped to the user's business", async () => {
+      (comprasModel.getProductosReabastecimientoPorIdsModel as jest.Mock).mockResolvedValue([
+        {
+          id_producto: items[0].id_producto,
+          nombre: "Producto A",
+          stock_actual: 3,
+          stock_minimo_sugerido: 10,
+          ventas_ultimos_7_dias: 5,
+        },
+        {
+          id_producto: items[1].id_producto,
+          nombre: "Producto B",
+          stock_actual: 0,
+          stock_minimo_sugerido: 20,
+          ventas_ultimos_7_dias: 12,
+        },
+      ]);
+      (negocioModel.getNegocioByIdModel as jest.Mock).mockResolvedValue({
+        id_negocio: "negocio-A",
+        nombre: "Negocio Demo",
+      });
 
-      const result = await createOrdenCompraService("negocio-A", items);
+      await generarListaReabastecimientoPdfService("negocio-A", items);
 
-      expect(comprasModel.createOrdenCompraTransactionModel).toHaveBeenCalledWith(
+      expect(comprasModel.getProductosReabastecimientoPorIdsModel).toHaveBeenCalledWith(
         "negocio-A",
-        items
+        [items[0].id_producto, items[1].id_producto]
       );
-      expect(result).toEqual(mockLotes);
+      expect(negocioModel.getNegocioByIdModel).toHaveBeenCalledWith("negocio-A");
     });
 
-    it("should propagate the model error when the transaction is rolled back", async () => {
-      const items = [{ id_producto: "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d", cantidad: 15 }];
-      const error = new Error(
-        "El producto con ID a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d no existe, está inactivo o no pertenece a tu negocio."
-      );
-      (error as any).statusCode = 404;
+    it("should return a valid PDF buffer with the business name and product rows", async () => {
+      (comprasModel.getProductosReabastecimientoPorIdsModel as jest.Mock).mockResolvedValue([
+        {
+          id_producto: items[0].id_producto,
+          nombre: "Producto A",
+          stock_actual: 3,
+          stock_minimo_sugerido: 10,
+          ventas_ultimos_7_dias: 5,
+        },
+        {
+          id_producto: items[1].id_producto,
+          nombre: "Producto B",
+          stock_actual: 0,
+          stock_minimo_sugerido: 20,
+          ventas_ultimos_7_dias: 12,
+        },
+      ]);
+      (negocioModel.getNegocioByIdModel as jest.Mock).mockResolvedValue({
+        id_negocio: "negocio-A",
+        nombre: "Negocio Demo",
+      });
 
-      (comprasModel.createOrdenCompraTransactionModel as jest.Mock).mockRejectedValue(error);
+      const pdfBuffer = await generarListaReabastecimientoPdfService("negocio-A", items);
 
-      await expect(createOrdenCompraService("negocio-A", items)).rejects.toThrow(
-        "no existe, está inactivo o no pertenece a tu negocio."
+      expect(Buffer.isBuffer(pdfBuffer)).toBe(true);
+      expect(pdfBuffer.subarray(0, 5).toString()).toBe("%PDF-");
+      expect(pdfBuffer.length).toBeGreaterThan(500);
+    });
+
+    it("should throw a 404 error if a selected product does not belong to the business (multi-tenant)", async () => {
+      // El modelo (filtrado por id_negocio) solo devuelve 1 de los 2 productos solicitados
+      (comprasModel.getProductosReabastecimientoPorIdsModel as jest.Mock).mockResolvedValue([
+        {
+          id_producto: items[0].id_producto,
+          nombre: "Producto A",
+          stock_actual: 3,
+          stock_minimo_sugerido: 10,
+          ventas_ultimos_7_dias: 5,
+        },
+      ]);
+
+      await expect(generarListaReabastecimientoPdfService("negocio-A", items)).rejects.toThrow(
+        "Uno o más productos no existen, están inactivos o no pertenecen a tu negocio."
       );
+
+      expect(negocioModel.getNegocioByIdModel).not.toHaveBeenCalled();
     });
   });
 });
