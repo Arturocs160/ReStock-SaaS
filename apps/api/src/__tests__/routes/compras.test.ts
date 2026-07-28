@@ -20,7 +20,7 @@ jest.mock("../../middlewares/requireAuth", () => ({
   },
 }));
 
-describe("GET /api/compras/sugerencias Route", () => {
+describe("GET /compras/sugerencias Route", () => {
   beforeEach(() => {
     mockUser = { id: "user-123", id_negocio: "negocio-A", role: "collaborator" };
     jest.clearAllMocks();
@@ -43,7 +43,7 @@ describe("GET /api/compras/sugerencias Route", () => {
       mockSugerencias
     );
 
-    const response = await request(app).get("/api/compras/sugerencias");
+    const response = await request(app).get("/compras/sugerencias");
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual(mockSugerencias);
@@ -57,7 +57,7 @@ describe("GET /api/compras/sugerencias Route", () => {
   it("should return 200 and an empty array when no product is in deficit", async () => {
     (comprasServices.getSugerenciasReabastecimientoService as jest.Mock).mockResolvedValue([]);
 
-    const response = await request(app).get("/api/compras/sugerencias");
+    const response = await request(app).get("/compras/sugerencias");
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual([]);
@@ -82,7 +82,7 @@ describe("GET /api/compras/sugerencias Route", () => {
       mockSugerencias
     );
 
-    const response = await request(app).get("/api/compras/sugerencias");
+    const response = await request(app).get("/compras/sugerencias");
 
     expect(response.status).toBe(200);
     expect(comprasServices.getSugerenciasReabastecimientoService).toHaveBeenCalledWith("negocio-A");
@@ -96,7 +96,7 @@ describe("GET /api/compras/sugerencias Route", () => {
   it("should return 401 if unauthenticated", async () => {
     mockUser = null;
 
-    const response = await request(app).get("/api/compras/sugerencias");
+    const response = await request(app).get("/compras/sugerencias");
 
     expect(response.status).toBe(401);
     expect(response.body.error).toBe("Sesión inválida o expirada");
@@ -108,14 +108,14 @@ describe("GET /api/compras/sugerencias Route", () => {
       new Error("Error de base de datos")
     );
 
-    const response = await request(app).get("/api/compras/sugerencias");
+    const response = await request(app).get("/compras/sugerencias");
 
     expect(response.status).toBe(500);
     expect(response.body).toHaveProperty("error");
   });
 });
 
-describe("POST /api/compras/orden Route", () => {
+describe("POST /compras/orden Route", () => {
   const validUUID = "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d";
   const validUUID2 = "b2c3d4e5-f6a7-8b9c-8d1e-2f3a4b5c6d7e";
 
@@ -153,7 +153,7 @@ describe("POST /api/compras/orden Route", () => {
 
     (comprasServices.createOrdenCompraService as jest.Mock).mockResolvedValue(mockLotes);
 
-    const response = await request(app).post("/api/compras/orden").send(payload);
+    const response = await request(app).post("/compras/orden").send(payload);
 
     expect(response.status).toBe(201);
     expect(response.body).toEqual({ lotes: mockLotes });
@@ -161,7 +161,7 @@ describe("POST /api/compras/orden Route", () => {
   });
 
   it("should return 400 if the array is empty", async () => {
-    const response = await request(app).post("/api/compras/orden").send([]);
+    const response = await request(app).post("/compras/orden").send([]);
 
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty("error");
@@ -171,7 +171,7 @@ describe("POST /api/compras/orden Route", () => {
   it("should return 400 if a quantity is less than or equal to 0", async () => {
     const payload = [{ id_producto: validUUID, cantidad: 0 }];
 
-    const response = await request(app).post("/api/compras/orden").send(payload);
+    const response = await request(app).post("/compras/orden").send(payload);
 
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty("error");
@@ -181,7 +181,7 @@ describe("POST /api/compras/orden Route", () => {
   it("should return 400 if a required field is missing", async () => {
     const payload = [{ cantidad: 15 }];
 
-    const response = await request(app).post("/api/compras/orden").send(payload);
+    const response = await request(app).post("/compras/orden").send(payload);
 
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty("error");
@@ -191,7 +191,7 @@ describe("POST /api/compras/orden Route", () => {
   it("should return 400 if id_producto is not a valid UUID", async () => {
     const payload = [{ id_producto: "no-es-un-uuid", cantidad: 15 }];
 
-    const response = await request(app).post("/api/compras/orden").send(payload);
+    const response = await request(app).post("/compras/orden").send(payload);
 
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty("error");
@@ -207,7 +207,7 @@ describe("POST /api/compras/orden Route", () => {
 
     (comprasServices.createOrdenCompraService as jest.Mock).mockRejectedValue(error);
 
-    const response = await request(app).post("/api/compras/orden").send(payload);
+    const response = await request(app).post("/compras/orden").send(payload);
 
     expect(response.status).toBe(404);
     expect(response.body.error).toBe(
@@ -232,7 +232,7 @@ describe("POST /api/compras/orden Route", () => {
 
     (comprasServices.createOrdenCompraService as jest.Mock).mockRejectedValue(error);
 
-    const response = await request(app).post("/api/compras/orden").send(payload);
+    const response = await request(app).post("/compras/orden").send(payload);
 
     expect(response.status).toBe(404);
     expect(response.body).not.toHaveProperty("lotes");
@@ -243,7 +243,7 @@ describe("POST /api/compras/orden Route", () => {
     mockUser = null;
     const payload = [{ id_producto: validUUID, cantidad: 15 }];
 
-    const response = await request(app).post("/api/compras/orden").send(payload);
+    const response = await request(app).post("/compras/orden").send(payload);
 
     expect(response.status).toBe(401);
     expect(response.body.error).toBe("Sesión inválida o expirada");
