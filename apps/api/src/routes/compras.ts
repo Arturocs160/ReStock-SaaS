@@ -4,7 +4,7 @@ import { checkRole } from "../middlewares/checkRole";
 import { validateDataBody } from "../middlewares/verifyData";
 import {
   getSugerenciasController,
-  createOrdenCompraController,
+  generarListaReabastecimientoController,
 } from "../controllers/comprasController";
 import { createOrdenCompraSchema } from "../schemas/comprasSchema";
 
@@ -16,7 +16,7 @@ routerCompras.post(
   requireAuth,
   checkRole(["admin", "collaborator"]),
   validateDataBody(createOrdenCompraSchema),
-  createOrdenCompraController
+  generarListaReabastecimientoController
 );
 
 export default routerCompras;
