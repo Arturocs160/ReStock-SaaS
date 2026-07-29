@@ -34,13 +34,13 @@ export const getExpirationStatus = (expiryDateStr: string | null) => {
       color: "bg-red-100 text-red-700 border border-red-200",
       level: "caducado" as const,
     };
-  } else if (diffDays <= 7) {
+  } else if (diffDays <= 30) {
     return {
       label: `Crítico (${diffDays}d)`,
       color: "bg-orange-100 text-orange-700 border border-orange-200",
       level: "critico" as const,
     };
-  } else if (diffDays <= 30) {
+  } else if (diffDays <= 90) {
     return {
       label: `Cercano (${diffDays}d)`,
       color: "bg-amber-100 text-amber-700 border border-amber-200",
@@ -60,9 +60,8 @@ type LoteWithProduct = LoteInventario & { producto: ProductoConStock };
 const FILTER_OPTIONS = [
   { key: "all", label: "Todos los lotes" },
   { key: "caducado", label: "Caducados" },
-  { key: "critico", label: "Críticos" },
-  { key: "cercano", label: "Cercanos" },
-  { key: "vigente", label: "Vigentes" },
+  { key: "critico", label: "Críticos (<30 días)" },
+  { key: "cercano", label: "Cercanos (<90 días)" },
 ] as const;
 
 export function ExpirationPanel() {
@@ -72,7 +71,7 @@ export function ExpirationPanel() {
   const [error, setError] = useState("");
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
   const [filter, setFilter] = useState<
-    "all" | "caducado" | "critico" | "cercano" | "vigente"
+    "all" | "caducado" | "critico" | "cercano"
   >("all");
 
   const [toast, setToast] = useState<{ show: boolean; message: string; type: "success" | "error" }>({
@@ -159,6 +158,34 @@ export function ExpirationPanel() {
     return `${day}/${month}/${year}`;
   };
 
+  const getFilterBtnStyles = (key: string, isSelected: boolean) => {
+    if (isSelected) {
+      switch (key) {
+        case "all":
+          return "bg-slate-900 text-white border-slate-900";
+        case "caducado":
+          return "bg-red-600 text-white border-red-600";
+        case "critico":
+          return "bg-orange-500 text-white border-orange-500";
+        case "cercano":
+          return "bg-amber-500 text-white border-amber-500";
+        default:
+          return "bg-slate-900 text-white border-slate-900";
+      }
+    }
+
+    switch (key) {
+      case "caducado":
+        return "bg-orange-50/50 text-red-600 border-transparent hover:bg-orange-100/50";
+      case "critico":
+        return "bg-orange-50/50 text-orange-700 border-transparent hover:bg-orange-100/50";
+      case "cercano":
+        return "bg-orange-50/50 text-amber-700 border-transparent hover:bg-orange-100/50";
+      default:
+        return "bg-white text-slate-600 border-slate-200 hover:bg-slate-50";
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -187,21 +214,32 @@ export function ExpirationPanel() {
         </div>
       )}
 
-      {/* Botones del filtro - Optimizado con scroll horizontal suave en móviles */}
+      {/* Botones del filtro */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none">
-        {FILTER_OPTIONS.map((item) => (
-          <button
-            key={item.key}
-            onClick={() => setFilter(item.key as typeof filter)}
-            className={`px-4 py-2 rounded-lg border text-sm font-medium transition-colors whitespace-nowrap shrink-0 ${
-              filter === item.key
-                ? "bg-[#07B474] text-white border-[#07B474]"
-                : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
-            }`}
-          >
-            {item.label}
-          </button>
-        ))}
+        {FILTER_OPTIONS.map((item) => {
+          const isSelected = filter === item.key;
+          return (
+            <button
+              key={item.key}
+              onClick={() => setFilter(item.key as typeof filter)}
+              className={`px-4 py-2 rounded-full border text-sm font-semibold transition-colors whitespace-nowrap shrink-0 flex items-center gap-2 ${getFilterBtnStyles(
+                item.key,
+                isSelected
+              )}`}
+            >
+              {!isSelected && item.key === "caducado" && (
+                <span className="w-2 h-2 rounded-full bg-red-600 shrink-0" />
+              )}
+              {!isSelected && item.key === "critico" && (
+                <span className="w-2 h-2 rounded-full bg-orange-500 shrink-0" />
+              )}
+              {!isSelected && item.key === "cercano" && (
+                <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+              )}
+              {item.label}
+            </button>
+          );
+        })}
       </div>
 
       {filteredLotes.length === 0 ? (
