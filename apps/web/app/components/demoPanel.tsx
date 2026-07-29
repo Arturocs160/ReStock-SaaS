@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { ReactNode } from "react";
 
@@ -12,29 +12,26 @@ interface DemoPanelProps {
 }
 
 export function DemoPanel({
-  title = 'Demo',
+  title = "Demo",
   subtitle = "Usa estas credenciales para probar la demo rápidamente.",
-  email = 'admin@demo.com',
-  password = 'Demo123@',
-  sectionTitle = 'Dashboard',
+  email = "admin@demo.com",
+  password = "Demo123@",
+  sectionTitle = "Dashboard",
   features = [
-    'Inventario de ejemplo con 8 productos.',
-    'Productos con precios, fechas de vencimiento por lote y stock.',
-    'Registro de nuevos productos.',
-    'Edición y eliminación de productos.',
+    "Inventario de ejemplo con 8 productos.",
+    "Productos con precios, fechas de vencimiento por lote y stock.",
+    "Registro de nuevos productos.",
+    "Edición y eliminación de productos.",
   ],
 }: DemoPanelProps) {
   return (
     <div className="bg-linear-to-b from-white/80 to-gray-50 dark:from-black/60 dark:to-black/40 border border-gray-100 rounded-2xl p-6 shadow-sm">
-
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
         <span className="text-sm text-gray-500">Vista previa</span>
       </div>
 
-      <p className="mt-3 text-sm text-gray-600">
-        {subtitle}
-      </p>
+      <p className="mt-3 text-sm text-gray-600">{subtitle}</p>
 
       <div className="mt-4 bg-white/80 dark:bg-black/50 border border-gray-100 rounded-lg p-4">
         <dl className="text-sm text-gray-700">
@@ -68,10 +65,8 @@ export function DemoPanel({
           onClick={() => {
             const detail = { email, password };
 
-            if (typeof window !== 'undefined') {
-              window.dispatchEvent(
-                new CustomEvent('fill-demo', { detail })
-              );
+            if (typeof window !== "undefined") {
+              window.dispatchEvent(new CustomEvent("fill-demo", { detail }));
             }
           }}
           className="inline-block rounded-full bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-hover"
@@ -79,7 +74,6 @@ export function DemoPanel({
           Rellenar formulario
         </button>
       </div>
-
     </div>
   );
 }

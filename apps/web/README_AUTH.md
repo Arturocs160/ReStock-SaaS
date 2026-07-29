@@ -59,11 +59,11 @@ export function MyComponent() {
 
 ```typescript
 interface AuthContextType {
-  user: User | null;           // Usuario autenticado o null
-  isLoading: boolean;          // Indica si se está procesando una solicitud
-  error: string | null;        // Mensaje de error si ocurre uno
-  isAuthenticated: boolean;    // true si el usuario está autenticado
-  login: (email, password) => Promise<void>;                    // Método para iniciar sesión
+  user: User | null; // Usuario autenticado o null
+  isLoading: boolean; // Indica si se está procesando una solicitud
+  error: string | null; // Mensaje de error si ocurre uno
+  isAuthenticated: boolean; // true si el usuario está autenticado
+  login: (email, password) => Promise<void>; // Método para iniciar sesión
   register: (name, email, password, businessName) => Promise<void>; // Método para registrarse
   logout: () => Promise<void>; // Método para cerrar sesión
   checkSession: () => Promise<void>; // Método para verificar sesión
@@ -98,14 +98,14 @@ export function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <input 
-        type="email" 
+      <input
+        type="email"
         value={formData.email}
         onChange={(e) => setFormData({...formData, email: e.target.value})}
         placeholder="tu@email.com"
       />
-      <input 
-        type="password" 
+      <input
+        type="password"
         value={formData.password}
         onChange={(e) => setFormData({...formData, password: e.target.value})}
         placeholder="••••••"
@@ -241,38 +241,39 @@ export function ProtectedComponent() {
 ### Esquemas disponibles
 
 ```typescript
-import { loginSchema, registerSchema } from '@/lib/validationsAuth';
+import { loginSchema, registerSchema } from "@/lib/validationsAuth";
 
 // Login
 const loginSchema = z.object({
-  email: z.string().email('Email inválido'),
-  password: z.string().min(6, 'Mínimo 6 caracteres'),
+  email: z.string().email("Email inválido"),
+  password: z.string().min(6, "Mínimo 6 caracteres"),
 });
 
 // Register
 const registerSchema = z.object({
-  name: z.string().min(2, 'Mínimo 2 caracteres'),
-  email: z.string().email('Email inválido'),
-  password: z.string()
-    .min(6, 'Mínimo 6 caracteres')
-    .regex(/[A-Z]/, 'Debe contener mayúscula')
-    .regex(/[0-9]/, 'Debe contener número'),
-  businessName: z.string().min(2, 'Mínimo 2 caracteres'),
+  name: z.string().min(2, "Mínimo 2 caracteres"),
+  email: z.string().email("Email inválido"),
+  password: z
+    .string()
+    .min(6, "Mínimo 6 caracteres")
+    .regex(/[A-Z]/, "Debe contener mayúscula")
+    .regex(/[0-9]/, "Debe contener número"),
+  businessName: z.string().min(2, "Mínimo 2 caracteres"),
 });
 ```
 
 ### Uso
 
 ```typescript
-import { loginSchema, type LoginFormData } from '@/lib/validationsAuth';
-import { ZodError } from 'zod';
+import { loginSchema, type LoginFormData } from "@/lib/validationsAuth";
+import { ZodError } from "zod";
 
 try {
   loginSchema.parse(formData);
   // Validación exitosa
 } catch (err) {
   if (err instanceof ZodError) {
-    err.errors.forEach(error => {
+    err.errors.forEach((error) => {
       console.log(error.path[0], error.message);
     });
   }
@@ -295,8 +296,8 @@ const { checkSession } = useAuth();
 
 useEffect(() => {
   // Verificar sesión cuando la ventana vuelve a tomar foco
-  window.addEventListener('focus', checkSession);
-  return () => window.removeEventListener('focus', checkSession);
+  window.addEventListener("focus", checkSession);
+  return () => window.removeEventListener("focus", checkSession);
 }, [checkSession]);
 ```
 
