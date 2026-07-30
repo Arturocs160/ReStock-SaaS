@@ -53,7 +53,7 @@ export async function handleUserCreation(user: User, context: any): Promise<void
   }
 }
 
-export const beforeAuthMiddleware = createAuthMiddleware(async (ctx) => {
+export const beforeAuthMiddleware: any = createAuthMiddleware(async (ctx) => {
   if (ctx.path === "/sign-in/email") {
     const body = ctx.body as any;
 

@@ -11,7 +11,7 @@ import { sendInvitationEmail } from "../services/mailService";
 import pool from "../config/db";
 import { verifyPassword } from "../utils/password";
 
-const router = Router();
+const router: Router = Router();
 
 // --- Crear invitación ---
 router.post(

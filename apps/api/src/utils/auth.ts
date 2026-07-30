@@ -11,7 +11,7 @@ import "dotenv/config";
 
 const secondaryStorage = redisClient ? redisStorage({ client: redisClient }) : undefined;
 
-export const auth = betterAuth({
+export const auth: any = betterAuth({
   database: pool,
   secondaryStorage,
   hooks: {

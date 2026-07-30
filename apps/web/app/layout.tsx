@@ -1,12 +1,6 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthInitializer } from "./components/authInitializer";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "ReStock - Inventario Inteligente para tu Negocio",
@@ -23,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased`}>
+    <html lang="es" className="h-full antialiased">
       <body className="min-h-full flex flex-col">
         <AuthInitializer>{children}</AuthInitializer>
       </body>
