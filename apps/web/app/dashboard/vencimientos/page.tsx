@@ -16,7 +16,8 @@ export default function VencimientosPage() {
               Control de Vencimientos
             </h1>
             <p className="text-gray-500 mt-2">
-              Supervisa el estado de caducidad de todos los lotes en tu inventario.
+              Supervisa el estado de caducidad de todos los lotes en tu
+              inventario.
             </p>
           </div>
 

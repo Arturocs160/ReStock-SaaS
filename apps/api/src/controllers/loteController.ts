@@ -3,6 +3,7 @@ import {
   createLoteService,
   deleteLoteService,
   getLoteByIdService,
+  getLotesExpiracionService,
   getLotesByProductIdService,
   updateLoteService,
   createMermaService,
@@ -36,6 +37,26 @@ export async function getLotesByProductIdController(req: Request, res: Response)
   } catch (error: any) {
     logger.error("Error al obtener lotes por producto" + error);
     res.status(500).json({ error: error.message });
+  }
+}
+
+export async function getLotesExpiracionController(req: Request, res: Response) {
+  try {
+    const id_negocio = req.user?.id_negocio;
+
+    if (!id_negocio) {
+      res.status(401).json({
+        error: "SesiÃ³n invÃ¡lida o expirada",
+        message: "No autorizado. Inicia sesiÃ³n primero.",
+      });
+      return;
+    }
+
+    const lotes = await getLotesExpiracionService(id_negocio);
+    res.status(200).json({ lotes });
+  } catch (error: any) {
+    logger.error({ err: error }, "Error al obtener lotes por expiracion");
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 }
 

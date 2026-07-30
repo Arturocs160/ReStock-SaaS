@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { CartStore, CartItem } from '../types/ventas';
+import { create } from "zustand";
+import { CartStore, CartItem } from "../types/ventas";
 
 const calculateTotal = (items: CartItem[]) => {
   return items.reduce((acc, item) => acc + item.subtotal, 0);
@@ -12,19 +12,19 @@ export const useCartStore = create<CartStore>((set) => ({
   addLote: (lote, producto) =>
     set((state) => {
       const existingItemIndex = state.items.findIndex(
-        (item) => item.loteId === lote.id_lote
+        (item) => item.loteId === lote.id_lote,
       );
 
       if (existingItemIndex >= 0) {
         // Lote ya existe, incrementar si hay stock
         const newItems = [...state.items];
         const item = newItems[existingItemIndex];
-        
+
         if (item.cantidad < item.stock_disponible) {
           item.cantidad += 1;
           item.subtotal = item.cantidad * item.precio_unitario;
         }
-        
+
         return {
           items: newItems,
           total: calculateTotal(newItems),

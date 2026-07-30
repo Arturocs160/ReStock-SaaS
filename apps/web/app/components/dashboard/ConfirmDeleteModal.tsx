@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState, useEffect } from "react";
 import { X, AlertTriangle, Loader2 } from "lucide-react";
@@ -16,7 +16,7 @@ export function ConfirmDeleteModal({
   onClose,
   onConfirm,
   memberName,
-  memberEmail
+  memberEmail,
 }: ConfirmDeleteModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -40,7 +40,10 @@ export function ConfirmDeleteModal({
       onClose();
     } catch (err: any) {
       console.error("Error al eliminar colaborador:", err);
-      setError(err.message || "Ocurrió un error inesperado al intentar eliminar al colaborador.");
+      setError(
+        err.message ||
+          "Ocurrió un error inesperado al intentar eliminar al colaborador.",
+      );
       setIsLoading(false);
     }
   };
@@ -48,7 +51,6 @@ export function ConfirmDeleteModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in">
       <div className="bg-white dark:bg-[#0f0f0f] border border-gray-150 dark:border-gray-800 rounded-[24px] w-full max-w-md overflow-hidden relative shadow-2xl transition-all scale-100">
-        
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -73,7 +75,8 @@ export function ConfirmDeleteModal({
               ¿Eliminar colaborador del equipo?
             </h3>
             <p className="text-gray-500 dark:text-gray-400 text-sm">
-              Esta acción revocará de forma inmediata todos los accesos del colaborador a tu negocio.
+              Esta acción revocará de forma inmediata todos los accesos del
+              colaborador a tu negocio.
             </p>
           </div>
 

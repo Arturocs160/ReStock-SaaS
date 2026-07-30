@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Producto, LoteInventario } from './inventario';
+import { z } from "zod";
+import { Producto, LoteInventario } from "./inventario";
 
 export const CartItemSchema = z.object({
   loteId: z.string(),
