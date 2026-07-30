@@ -13,88 +13,11 @@ import {
 } from "lucide-react";
 import { ProductoConStock } from "../../types/inventario";
 
-// Datos de prueba (Catálogo completo precargado)
-const MOCK_CATALOG: ProductoConStock[] = [
-  {
-    id_producto: "1",
-    id_negocio: "n1",
-    codigo_barras: "7501000111111",
-    nombre: "Leche Entera 1L",
-    categoria: "Lácteos",
-    precio_actual: 25.5,
-    stock_minimo_sugerido: 20,
-    stock_actual: 15,
-    lotes: [],
-  },
-  {
-    id_producto: "2",
-    id_negocio: "n1",
-    codigo_barras: "7501000222222",
-    nombre: "Queso Panela 400g",
-    categoria: "Lácteos",
-    precio_actual: 45.0,
-    stock_minimo_sugerido: 10,
-    stock_actual: 8,
-    lotes: [],
-  },
-  {
-    id_producto: "3",
-    id_negocio: "n1",
-    codigo_barras: "7501000333333",
-    nombre: "Yogurt Natural 1Kg",
-    categoria: "Lácteos",
-    precio_actual: 35.0,
-    stock_minimo_sugerido: 15,
-    stock_actual: 20,
-    lotes: [],
-  },
-  {
-    id_producto: "4",
-    id_negocio: "n1",
-    codigo_barras: "7501000444444",
-    nombre: "Pan de Caja Integral",
-    categoria: "Panadería",
-    precio_actual: 40.0,
-    stock_minimo_sugerido: 12,
-    stock_actual: 5,
-    lotes: [],
-  },
-  {
-    id_producto: "5",
-    id_negocio: "n1",
-    codigo_barras: "7501000555555",
-    nombre: "Galletas Marías",
-    categoria: "Abarrotes",
-    precio_actual: 18.0,
-    stock_minimo_sugerido: 30,
-    stock_actual: 45,
-    lotes: [],
-  },
-  {
-    id_producto: "6",
-    id_negocio: "n1",
-    codigo_barras: "7501000666666",
-    nombre: "Atún en Agua 140g",
-    categoria: "Abarrotes",
-    precio_actual: 20.0,
-    stock_minimo_sugerido: 25,
-    stock_actual: 10,
-    lotes: [],
-  },
-  {
-    id_producto: "7",
-    id_negocio: "n1",
-    codigo_barras: "7501000777777",
-    nombre: "Jugo de Naranja 1L",
-    categoria: "Bebidas",
-    precio_actual: 28.0,
-    stock_minimo_sugerido: 15,
-    stock_actual: 30,
-    lotes: [],
-  },
-];
+import { productsApi } from "../../lib/api";
 
 export function PurchasePlanningPanel() {
+  const [catalog, setCatalog] = useState<ProductoConStock[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [shoppingList, setShoppingList] = useState<
     { product: ProductoConStock; quantity: number }[]
@@ -105,6 +28,17 @@ export function PurchasePlanningPanel() {
   } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    productsApi
+      .getPosCatalog()
+      .then((data) => setCatalog(data || []))
+      .catch((err) => {
+        console.error("Error cargando catálogo", err);
+        showToast("Error cargando catálogo", "error");
+      })
+      .finally(() => setIsLoading(false));
+  }, []);
 
   // Helper para mostrar notificaciones
   const showToast = (
@@ -125,17 +59,17 @@ export function PurchasePlanningPanel() {
   const searchResults = useMemo(() => {
     if (!searchTerm.trim()) return null;
     const term = searchTerm.toLowerCase();
-    return MOCK_CATALOG.filter(
+    return catalog.filter(
       (p) =>
         p.nombre.toLowerCase().includes(term) ||
-        p.categoria.toLowerCase().includes(term) ||
+        (p.categoria && p.categoria.toLowerCase().includes(term)) ||
         (p.codigo_barras && p.codigo_barras.toLowerCase().includes(term)),
     );
-  }, [searchTerm]);
+  }, [searchTerm, catalog]);
 
   const lowStockProducts = useMemo(() => {
-    return MOCK_CATALOG.filter((p) => p.stock_actual < p.stock_minimo_sugerido);
-  }, []);
+    return catalog.filter((p) => p.stock_actual < p.stock_minimo_sugerido);
+  }, [catalog]);
 
   const handleAdd = (product: ProductoConStock, quantity = 5) => {
     if (
@@ -185,36 +119,65 @@ export function PurchasePlanningPanel() {
     setIsSubmitting(true);
 
     try {
-      const payload = {
-        id_negocio: "n1", // Asumido desde la sesión del usuario
-        productos: shoppingList.map((item) => ({
-          id_producto: item.product.id_producto,
-          cantidad: item.quantity,
-          costo_unitario: item.product.precio_actual,
-        })),
-      };
+      const payload = shoppingList.map((item) => ({
+        id_producto: item.product.id_producto,
+        cantidad: item.quantity,
+      }));
 
       const API_URL =
         process.env.NEXT_PUBLIC_API_URL || "http://localhost:3010";
-      const response = await fetch(`${API_URL}/api/compras/orden`, {
+      const response = await fetch(`${API_URL}/compras/orden`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
-        throw new Error("Error en el servidor");
+        // Intentar leer el mensaje de error del backend
+        let errorMessage = "Error en el servidor";
+        try {
+          const errorData = await response.json();
+          if (errorData.details && Array.isArray(errorData.details)) {
+            errorMessage = errorData.details
+              .map((d: any) => d.message)
+              .join(". ");
+          } else {
+            errorMessage = errorData.error || errorData.message || errorMessage;
+          }
+        } catch (e) {}
+        throw new Error(errorMessage);
       }
 
-      // Éxito: Vaciar carrito y notificar
+      // Éxito: Descargar el PDF generado
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+
+      // Obtener el nombre del archivo de los headers si es posible, o usar un default
+      const contentDisposition = response.headers.get("Content-Disposition");
+      let filename = "lista-reabastecimiento.pdf";
+      if (contentDisposition && contentDisposition.includes("filename=")) {
+        filename = contentDisposition.split("filename=")[1].replace(/"/g, "");
+      }
+
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+
+      // Vaciar carrito y notificar
       setShoppingList([]);
-      showToast("Orden de abastecimiento registrada correctamente.", "success");
-    } catch (error) {
+      showToast("Orden registrada y PDF descargado correctamente.", "success");
+    } catch (error: any) {
       console.error(error);
       showToast(
-        "Error al registrar la orden. Por favor intente más tarde.",
+        error.message ||
+          "Error al registrar la orden. Por favor intente más tarde.",
         "error",
       );
     } finally {
@@ -258,11 +221,15 @@ export function PurchasePlanningPanel() {
             <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
               Sugerencias de reabastecimiento
             </h2>
-            {lowStockProducts.length > 0 && (
-              <span className="flex items-center gap-1.5 bg-red-50 text-red-700 text-xs font-bold px-2.5 py-1 rounded-full border border-red-100">
-                <AlertTriangle className="w-3.5 h-3.5" />
-                {lowStockProducts.length} críticos
-              </span>
+            {isLoading ? (
+              <span className="text-sm text-gray-500">Cargando...</span>
+            ) : (
+              lowStockProducts.length > 0 && (
+                <span className="flex items-center gap-1.5 bg-red-50 text-red-700 text-xs font-bold px-2.5 py-1 rounded-full border border-red-100">
+                  <AlertTriangle className="w-3.5 h-3.5" />
+                  {lowStockProducts.length} críticos
+                </span>
+              )
             )}
           </div>
 
