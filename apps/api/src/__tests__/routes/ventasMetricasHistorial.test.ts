@@ -19,13 +19,13 @@ jest.mock("../../middlewares/requireAuth", () => ({
     }
 
     res.status(401).json({
-      error: "SesiÃ³n invÃ¡lida o expirada",
-      message: "No autorizado. Inicia sesiÃ³n primero.",
+      error: "Sesión inválida o expirada",
+      message: "No autorizado. Inicia sesión primero.",
     });
   },
 }));
 
-describe("GET /api/ventas/metricas Route", () => {
+describe("GET /ventas/metricas Route", () => {
   beforeEach(() => {
     mockUser = { id: "user-123", id_negocio: "negocio-A", role: "admin" };
     jest.clearAllMocks();
@@ -38,7 +38,7 @@ describe("GET /api/ventas/metricas Route", () => {
       ticket_promedio: "100.1666666667",
     });
 
-    const response = await request(app).get("/api/ventas/metricas");
+    const response = await request(app).get("/ventas/metricas");
 
     expect(response.status).toBe(200);
     expect(response.body.metricas).toEqual({
@@ -52,14 +52,14 @@ describe("GET /api/ventas/metricas Route", () => {
   it("should return 401 when metrics request has no valid token", async () => {
     mockUser = null;
 
-    const response = await request(app).get("/api/ventas/metricas");
+    const response = await request(app).get("/ventas/metricas");
 
     expect(response.status).toBe(401);
     expect(ventaModel.getVentasMetricasModel).not.toHaveBeenCalled();
   });
 });
 
-describe("GET /api/ventas/historial Route", () => {
+describe("GET /ventas/historial Route", () => {
   beforeEach(() => {
     mockUser = { id: "user-123", id_negocio: "negocio-A", role: "admin" };
     jest.clearAllMocks();
@@ -81,7 +81,7 @@ describe("GET /api/ventas/historial Route", () => {
       }),
     ]);
 
-    const response = await request(app).get("/api/ventas/historial");
+    const response = await request(app).get("/ventas/historial");
 
     expect(response.status).toBe(200);
     expect(response.body.ventas).toHaveLength(1);
@@ -101,7 +101,7 @@ describe("GET /api/ventas/historial Route", () => {
       createHistoryRow({ id_venta: "venta-filtrada", producto_nombre: "Arroz" }),
     ]);
 
-    const response = await request(app).get("/api/ventas/historial?q=arroz");
+    const response = await request(app).get("/ventas/historial?q=arroz");
 
     expect(response.status).toBe(200);
     expect(response.body.ventas[0].id_venta).toBe("venta-filtrada");
@@ -113,7 +113,7 @@ describe("GET /api/ventas/historial Route", () => {
       createHistoryRow({ id_negocio: "negocio-A" }),
     ]);
 
-    const response = await request(app).get("/api/ventas/historial");
+    const response = await request(app).get("/ventas/historial");
 
     expect(response.status).toBe(200);
     expect(response.body.ventas).toHaveLength(1);
@@ -124,7 +124,7 @@ describe("GET /api/ventas/historial Route", () => {
   it("should return 401 when history request has no valid token", async () => {
     mockUser = null;
 
-    const response = await request(app).get("/api/ventas/historial");
+    const response = await request(app).get("/ventas/historial");
 
     expect(response.status).toBe(401);
     expect(ventaModel.getVentasHistorialModel).not.toHaveBeenCalled();

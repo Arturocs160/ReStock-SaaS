@@ -17,13 +17,13 @@ jest.mock("../../middlewares/requireAuth", () => ({
     }
 
     res.status(401).json({
-      error: "SesiÃ³n invÃ¡lida o expirada",
-      message: "No autorizado. Inicia sesiÃ³n primero.",
+      error: "Sesión inválida o expirada",
+      message: "No autorizado. Inicia sesión primero.",
     });
   },
 }));
 
-describe("GET /api/lotes/expiracion Route", () => {
+describe("GET /lotes/expiracion Route", () => {
   beforeEach(() => {
     jest.useFakeTimers().setSystemTime(new Date("2026-07-26T12:00:00.000Z"));
     mockUser = { id: "user-123", id_negocio: "negocio-A", role: "admin" };
@@ -43,7 +43,7 @@ describe("GET /api/lotes/expiracion Route", () => {
       createRow({ id_lote: "lote-sin-fecha", fecha_caducidad: null }),
     ]);
 
-    const response = await request(app).get("/api/lotes/expiracion");
+    const response = await request(app).get("/lotes/expiracion");
 
     expect(response.status).toBe(200);
     expect(response.body.lotes).toEqual(
@@ -85,7 +85,7 @@ describe("GET /api/lotes/expiracion Route", () => {
       createRow({ id_lote: "lote-negocio-A", id_negocio: "negocio-A" }),
     ]);
 
-    const response = await request(app).get("/api/lotes/expiracion");
+    const response = await request(app).get("/lotes/expiracion");
 
     expect(response.status).toBe(200);
     expect(loteModel.getLotesExpiracionModel).toHaveBeenCalledWith("negocio-A");
@@ -100,7 +100,7 @@ describe("GET /api/lotes/expiracion Route", () => {
       createRow({ id_lote: "lote-sin-fecha", fecha_caducidad: null }),
     ]);
 
-    const response = await request(app).get("/api/lotes/expiracion");
+    const response = await request(app).get("/lotes/expiracion");
 
     expect(response.status).toBe(200);
     expect(response.body.lotes.map((lote: any) => lote.id_lote)).toEqual([
@@ -113,7 +113,7 @@ describe("GET /api/lotes/expiracion Route", () => {
   it("should return 401 when there is no valid token", async () => {
     mockUser = null;
 
-    const response = await request(app).get("/api/lotes/expiracion");
+    const response = await request(app).get("/lotes/expiracion");
 
     expect(response.status).toBe(401);
     expect(loteModel.getLotesExpiracionModel).not.toHaveBeenCalled();
