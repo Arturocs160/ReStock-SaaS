@@ -9,11 +9,11 @@ import { handleUserCreation, beforeAuthMiddleware } from "@/services/authHooks";
 
 import "dotenv/config";
 
-const secondaryStorage = redisClient ? redisStorage({ client: redisClient }) : undefined;
-
-export const auth: any = betterAuth({
+export const auth = betterAuth({
   database: pool,
-  secondaryStorage,
+  secondaryStorage: redisStorage({
+    client: redisClient,
+  }),
   hooks: {
     before: beforeAuthMiddleware,
   },
