@@ -51,6 +51,41 @@ export async function getLotesByProductIdModel(id_producto: string, id_negocio: 
   return res.rows;
 }
 
+export async function getLotesExpiracionModel(id_negocio: string) {
+  const res = await pool.query(
+    `
+        SELECT
+            l.id_lote,
+            l.id_producto,
+            l.codigo_lote,
+            l.fecha_ingreso::text AS fecha_ingreso,
+            l.fecha_caducidad::text AS fecha_caducidad,
+            l.cantidad_inicial,
+            (l.cantidad_inicial -
+             COALESCE((SELECT SUM(d.cantidad_sold) FROM public.detalle_va_venta d WHERE d.id_lote = l.id_lote), 0) -
+             COALESCE((SELECT SUM(m.cantidad) FROM public.merma m WHERE m.id_lote = l.id_lote), 0))::integer AS cantidad_actual,
+            p.id_negocio,
+            p.codigo_barras,
+            p.nombre AS producto_nombre,
+            p.precio_actual,
+            p.stock_minimo_sugerido,
+            p.id_categoria
+        FROM public.lote_inventario l
+        INNER JOIN public.producto p ON l.id_producto = p.id_producto
+        WHERE p.id_negocio = $1
+          AND p.activo = true
+          AND l.activo = true
+          AND (l.cantidad_inicial -
+               COALESCE((SELECT SUM(d.cantidad_sold) FROM public.detalle_va_venta d WHERE d.id_lote = l.id_lote), 0) -
+               COALESCE((SELECT SUM(m.cantidad) FROM public.merma m WHERE m.id_lote = l.id_lote), 0)) > 0
+        ORDER BY l.fecha_caducidad ASC NULLS LAST, l.fecha_ingreso ASC;
+    `,
+    [id_negocio]
+  );
+
+  return res.rows;
+}
+
 export async function getLoteByIdModel(id_lote: string, id_negocio: string) {
   const res = await pool.query(
     `

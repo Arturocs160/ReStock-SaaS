@@ -6,8 +6,8 @@ const nextConfig: NextConfig = {
     return {
       beforeFiles: [
         {
-          source: '/api/auth/:path*',
-          destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3010'}/auth/:path*`,
+          source: "/api/auth/:path*",
+          destination: `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3010"}/auth/:path*`,
         },
       ],
     };

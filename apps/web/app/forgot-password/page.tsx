@@ -1,9 +1,10 @@
-import { ForgotPassword } from '../components/forgotPassword';
-import { Logo } from '../components/logo';
+import { ForgotPassword } from "../components/forgotPassword";
+import { Logo } from "../components/logo";
 
 export const metadata = {
-  title: 'Recuperar Contraseña - ReStock',
-  description: 'Recupera el acceso a tu cuenta de ReStock de forma segura mediante un código de verificación.',
+  title: "Recuperar Contraseña - ReStock",
+  description:
+    "Recupera el acceso a tu cuenta de ReStock de forma segura mediante un código de verificación.",
 };
 
 export default function ForgotPasswordPage() {
@@ -15,7 +16,6 @@ export default function ForgotPasswordPage() {
 
       <main className="mx-auto w-full px-4 relative z-10 py-12">
         <div className="w-full max-w-md mx-auto flex flex-col items-center">
-          
           {/* Logo */}
           <div className="mb-8 flex justify-center">
             <Logo />
@@ -38,12 +38,14 @@ export default function ForgotPasswordPage() {
 
           {/* Pie de página con enlace de ayuda */}
           <div className="mt-8 text-center text-xs text-gray-500 dark:text-gray-400">
-            ¿Tienes problemas con la recuperación?{' '}
-            <a href="mailto:soporte@restock.com" className="text-primary hover:underline font-semibold">
+            ¿Tienes problemas con la recuperación?{" "}
+            <a
+              href="mailto:soporte@restock.com"
+              className="text-primary hover:underline font-semibold"
+            >
               Contactar a soporte
             </a>
           </div>
-          
         </div>
       </main>
     </div>
