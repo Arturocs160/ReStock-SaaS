@@ -13,7 +13,6 @@ export default function CollaboratorLoginPage() {
     <div className="min-h-screen bg-background flex items-center justify-center">
       <main className="mx-auto w-full px-4 py-6 sm:py-12">
         <div className="w-full max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-start py-6 sm:py-12 md:py-16 justify-items-center">
-
           <div className="col-span-full flex justify-center mb-2 animate-fade-in">
             <Logo />
           </div>
@@ -78,7 +77,6 @@ export default function CollaboratorLoginPage() {
               ]}
             />
           </aside>
-
         </div>
       </main>
     </div>

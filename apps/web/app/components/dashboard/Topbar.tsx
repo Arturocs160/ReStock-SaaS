@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { Menu } from 'lucide-react';
-import { useAuthStore } from '../../store/authStore';
-import { useUiStore } from '../../store/uiStore';
+import { useEffect } from "react";
+import { Menu } from "lucide-react";
+import { useAuthStore } from "../../store/authStore";
+import { useUiStore } from "../../store/uiStore";
 
 export function Topbar() {
   const { user, checkSession, isLoading } = useAuthStore();
@@ -32,8 +32,8 @@ export function Topbar() {
     );
   }
 
-  const storeName = user?.nombre || 'Mi Tienda';
-  const initial = (user?.name || 'M').charAt(0).toUpperCase();
+  const storeName = user?.nombre || "Mi Tienda";
+  const initial = (user?.name || "M").charAt(0).toUpperCase();
 
   return (
     <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 md:px-6">
@@ -47,13 +47,15 @@ export function Topbar() {
 
       <div className="flex items-center gap-4 ml-auto">
         <div className="text-right">
-          <p className="font-semibold text-sm">
-            {storeName}
-          </p>
+          <p className="font-semibold text-sm">{storeName}</p>
 
           <p className="text-[#07B474] text-sm flex items-center justify-end gap-1">
             <span className="h-2 w-2 rounded-full bg-[#07B474] inline-block"></span>
-            {user?.role === 'admin' ? 'Administrador' : user?.role === 'cashier' ? 'Cajero' : 'Empleado'}
+            {user?.role === "admin"
+              ? "Administrador"
+              : user?.role === "cashier"
+                ? "Cajero"
+                : "Empleado"}
           </p>
         </div>
 

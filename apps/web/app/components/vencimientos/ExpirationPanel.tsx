@@ -4,12 +4,22 @@ import { useState, useEffect, useMemo } from "react";
 import { productsApi, lotesApi } from "../../lib/api";
 import { useAuthStore } from "../../store/authStore";
 import { ProductoConStock, LoteInventario } from "../../types/inventario";
-import { AlertTriangle, Clock, CalendarDays, CheckCircle2, Package, Trash2, Box } from "lucide-react";
+import {
+  AlertTriangle,
+  Clock,
+  CalendarDays,
+  CheckCircle2,
+  Package,
+  Trash2,
+  Box,
+} from "lucide-react";
 
 // Normalización de la fecha actual a media noche UTC
 export const SIMULATED_TODAY = (() => {
   const today = new Date();
-  return new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+  return new Date(
+    Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()),
+  );
 })();
 
 export const getExpirationStatus = (expiryDateStr: string | null) => {
@@ -99,7 +109,7 @@ export function ExpirationPanel() {
             console.error("Error fetching lotes for product", p.id_producto, e);
           }
           return { ...p, lotes };
-        })
+        }),
       );
       setProductos(populated);
       setError("");
@@ -195,21 +205,25 @@ export function ExpirationPanel() {
   }
 
   if (error) {
-    return (
-      <div className="bg-red-50 text-red-600 p-4 rounded-lg">
-        {error}
-      </div>
-    );
+    return <div className="bg-red-50 text-red-600 p-4 rounded-lg">{error}</div>;
   }
 
   return (
     <div className="space-y-6">
       {/* Toast Notification */}
       {toast.show && (
-        <div className={`fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 z-50 animate-in slide-in-from-bottom-5 ${
-          toast.type === "success" ? "bg-emerald-50 text-emerald-800 border border-emerald-200" : "bg-red-50 text-red-800 border border-red-200"
-        }`}>
-          {toast.type === "success" ? <CheckCircle2 className="h-5 w-5 text-emerald-600" /> : <AlertTriangle className="h-5 w-5 text-red-600" />}
+        <div
+          className={`fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 z-50 animate-in slide-in-from-bottom-5 ${
+            toast.type === "success"
+              ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+              : "bg-red-50 text-red-800 border border-red-200"
+          }`}
+        >
+          {toast.type === "success" ? (
+            <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+          ) : (
+            <AlertTriangle className="h-5 w-5 text-red-600" />
+          )}
           <p className="font-medium text-sm">{toast.message}</p>
         </div>
       )}
