@@ -29,17 +29,6 @@ export function PurchasePlanningPanel() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    productsApi
-      .getPosCatalog()
-      .then((data) => setCatalog(data || []))
-      .catch((err) => {
-        console.error("Error cargando catálogo", err);
-        showToast("Error cargando catálogo", "error");
-      })
-      .finally(() => setIsLoading(false));
-  }, []);
-
   // Helper para mostrar notificaciones
   const showToast = (
     message: string,
@@ -50,6 +39,26 @@ export function PurchasePlanningPanel() {
       setToastMessage(null);
     }, 4000);
   };
+
+  useEffect(() => {
+    productsApi
+      .getPosCatalog()
+      .then((data) => {
+        const mapped = (data || []).map((p) => ({
+          ...p,
+          stock_actual: p.stock_actual !== undefined ? p.stock_actual : (p.lotes || []).reduce(
+            (sum, l) => sum + (l.cantidad_actual || 0),
+            0
+          ),
+        }));
+        setCatalog(mapped);
+      })
+      .catch((err) => {
+        console.error("Error cargando catálogo", err);
+        showToast("Error cargando catálogo", "error");
+      })
+      .finally(() => setIsLoading(false));
+  }, []);
 
   const handleClear = () => {
     setSearchTerm("");
@@ -319,7 +328,7 @@ export function PurchasePlanningPanel() {
                                 ${
                                   isInList
                                     ? "bg-amber-50 text-amber-700 border border-amber-200 cursor-default"
-                                    : "bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-md active:scale-[0.97]"
+                                    : "bg-[#00a365] text-white hover:bg-[#008c54] hover:shadow-md active:scale-[0.97]"
                                 }`}
                             >
                               {isInList ? (
@@ -353,7 +362,7 @@ export function PurchasePlanningPanel() {
           <input
             ref={inputRef}
             type="text"
-            className="block w-full pl-10 pr-10 py-3.5 border border-gray-200 rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all shadow-sm"
+            className="block w-full pl-10 pr-10 py-3.5 border border-gray-200 rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-[#00a365] focus:border-[#00a365] sm:text-sm transition-all shadow-sm"
             placeholder="Buscar manualmente por nombre, categoría o código de barras..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -391,10 +400,10 @@ export function PurchasePlanningPanel() {
                     return (
                       <div
                         key={product.id_producto}
-                        className="flex flex-col p-4 rounded-xl border border-gray-100 hover:border-indigo-100 hover:shadow-md transition-all bg-white relative group"
+                        className="flex flex-col p-4 rounded-xl border border-gray-100 hover:border-[#00a365]/30 hover:shadow-md transition-all bg-white relative group"
                       >
                         <div className="mb-2 flex items-start justify-between">
-                          <span className="text-xs font-medium px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-md">
+                          <span className="text-xs font-medium px-2.5 py-1 bg-[#00a365]/10 text-[#00a365] rounded-md">
                             {product.categoria}
                           </span>
                         </div>
@@ -419,7 +428,7 @@ export function PurchasePlanningPanel() {
                               ${
                                 isInList
                                   ? "bg-amber-50 text-amber-700 border border-amber-200 cursor-default"
-                                  : "bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-md active:scale-[0.98]"
+                                  : "bg-[#00a365] text-white hover:bg-[#008c54] hover:shadow-md active:scale-[0.98]"
                               }`}
                           >
                             {isInList ? (
@@ -460,9 +469,9 @@ export function PurchasePlanningPanel() {
           className="bg-white rounded-xl shadow-sm border border-gray-100 sticky top-6 overflow-hidden flex flex-col"
           style={{ maxHeight: "calc(100vh - 2rem)" }}
         >
-          <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between bg-indigo-50/30">
+          <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between bg-[#00a365]/5">
             <div className="flex items-center gap-2">
-              <ShoppingCart className="h-5 w-5 text-indigo-600" />
+              <ShoppingCart className="h-5 w-5 text-[#00a365]" />
               <h2 className="text-lg font-semibold text-gray-800">
                 Lista de compras
               </h2>
@@ -470,7 +479,7 @@ export function PurchasePlanningPanel() {
             <div className="flex items-center gap-3">
               {diferentesProductos > 0 && (
                 <>
-                  <span className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-full">
+                  <span className="bg-[#eafaf1] text-[#00a365] text-xs font-bold px-2.5 py-1 rounded-full">
                     {diferentesProductos} prod.
                   </span>
                   <button
@@ -577,7 +586,7 @@ export function PurchasePlanningPanel() {
                   <span className="text-gray-600 font-semibold">
                     Presupuesto total
                   </span>
-                  <span className="text-2xl font-black text-indigo-700">
+                  <span className="text-2xl font-black text-[#00a365]">
                     ${presupuestoTotal.toFixed(2)}{" "}
                     <span className="text-sm font-medium text-gray-500">
                       M.N.
@@ -599,7 +608,7 @@ export function PurchasePlanningPanel() {
             <button
               onClick={handleExecutePurchase}
               disabled={shoppingList.length === 0 || isSubmitting}
-              className="w-full bg-gray-900 text-white rounded-xl py-3 font-medium hover:bg-gray-800 disabled:opacity-50 disabled:hover:bg-gray-900 transition-colors shadow-sm active:scale-[0.98] flex items-center justify-center gap-2"
+              className="w-full bg-[#00a365] text-white rounded-xl py-3 font-medium hover:bg-[#008c54] disabled:opacity-50 disabled:hover:bg-[#00a365] transition-colors shadow-sm active:scale-[0.98] flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>
