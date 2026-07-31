@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
@@ -11,12 +11,7 @@ interface EditMemberModalProps {
   onSave: (id: string, newRole: string) => void;
 }
 
-export function EditMemberModal({
-  isOpen,
-  onClose,
-  member,
-  onSave,
-}: EditMemberModalProps) {
+export function EditMemberModal({ isOpen, onClose, member, onSave }: EditMemberModalProps) {
   const [role, setRole] = useState<string>("");
 
   useEffect(() => {
@@ -40,12 +35,8 @@ export function EditMemberModal({
         {/* Header */}
         <div className="flex items-start justify-between p-6 pb-2">
           <div>
-            <h2 className="text-[1.35rem] font-bold text-gray-900 dark:text-white leading-tight">
-              Editar Rol de Colaborador
-            </h2>
-            <p className="text-gray-500 text-[13px] mt-1">
-              Modifica el rol de acceso del usuario en tu negocio.
-            </p>
+            <h2 className="text-[1.35rem] font-bold text-gray-900 dark:text-white leading-tight">Editar Rol de Colaborador</h2>
+            <p className="text-gray-500 text-[13px] mt-1">Modifica el rol de acceso del usuario en tu negocio.</p>
           </div>
           <button
             onClick={onClose}
@@ -60,20 +51,12 @@ export function EditMemberModal({
           {/* Informacion del Usuario (Read Only) */}
           <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-4 border border-gray-100 dark:border-gray-900/50 space-y-2">
             <div>
-              <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wide">
-                Nombre
-              </span>
-              <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                {member.name || "Usuario Sin Nombre"}
-              </span>
+              <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wide">Nombre</span>
+              <span className="text-sm font-semibold text-gray-900 dark:text-white">{member.name || "Usuario Sin Nombre"}</span>
             </div>
             <div>
-              <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wide">
-                Correo Electrónico
-              </span>
-              <span className="text-sm text-gray-600 dark:text-gray-300 font-medium">
-                {member.email}
-              </span>
+              <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wide">Correo Electrónico</span>
+              <span className="text-sm text-gray-600 dark:text-gray-300 font-medium">{member.email}</span>
             </div>
           </div>
 
@@ -93,18 +76,8 @@ export function EditMemberModal({
                 <option value="Cajero">Cajero</option>
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-500">
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M19 9l-7 7-7-7"
-                  ></path>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
                 </svg>
               </div>
             </div>

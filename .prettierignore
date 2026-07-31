@@ -1,9 +1,0 @@
-node_modules
-dist
-.next
-coverage
-.git
-*.exe
-*.pdf
-package-lock.json
-pnpm-lock.yaml

@@ -38,9 +38,7 @@ export function InviteCollaboratorModal({ isOpen, onClose, onSuccess }: Props) {
 
     const validationResult = inviteSchema.safeParse({ email, role });
     if (!validationResult.success) {
-      setError(
-        validationResult.error.issues[0]?.message || "Error de validación",
-      );
+      setError(validationResult.error.issues[0]?.message || "Error de validación");
       return;
     }
 
@@ -81,13 +79,8 @@ export function InviteCollaboratorModal({ isOpen, onClose, onSuccess }: Props) {
         {/* Header */}
         <div className="flex items-start justify-between p-6 pb-2">
           <div>
-            <h2 className="text-[1.35rem] font-bold text-gray-900 leading-tight">
-              Invitar Colaborador
-            </h2>
-            <p className="text-gray-500 text-[13px] mt-1">
-              Envía una invitación por correo para sumar un nuevo miembro a tu
-              equipo.
-            </p>
+            <h2 className="text-[1.35rem] font-bold text-gray-900 leading-tight">Invitar Colaborador</h2>
+            <p className="text-gray-500 text-[13px] mt-1">Envía una invitación por correo para sumar un nuevo miembro a tu equipo.</p>
           </div>
           <button
             onClick={onClose}
@@ -104,13 +97,8 @@ export function InviteCollaboratorModal({ isOpen, onClose, onSuccess }: Props) {
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
                 <Check className="text-green-500 w-8 h-8" />
               </div>
-              <h3 className="text-xl font-medium text-gray-900 mb-2">
-                ¡Invitación enviada!
-              </h3>
-              <p className="text-gray-500">
-                Se ha enviado un correo a {email} con las instrucciones de
-                acceso.
-              </p>
+              <h3 className="text-xl font-medium text-gray-900 mb-2">¡Invitación enviada!</h3>
+              <p className="text-gray-500">Se ha enviado un correo a {email} con las instrucciones de acceso.</p>
               <p className="text-[11px] text-amber-650 dark:text-amber-400 font-medium mt-2">
                 Verificar en el correo spam o no deseado
               </p>
@@ -144,26 +132,14 @@ export function InviteCollaboratorModal({ isOpen, onClose, onSuccess }: Props) {
                     className="block w-full pl-3 pr-10 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#07B474] focus:border-[#07B474] transition-colors appearance-none bg-white text-gray-900 outline-none disabled:bg-gray-50 text-sm font-medium"
                     disabled={isLoading}
                   >
-                    <option value="" disabled>
-                      Selecciona un rol
-                    </option>
+                    <option value="" disabled>Selecciona un rol</option>
                     <option value="Admin">Admin</option>
                     <option value="Empleado">Empleado</option>
                     <option value="Cajero">Cajero</option>
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-500">
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M19 9l-7 7-7-7"
-                      ></path>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
                   </div>
                 </div>
@@ -171,15 +147,10 @@ export function InviteCollaboratorModal({ isOpen, onClose, onSuccess }: Props) {
 
               {/* Security info box */}
               <div className="bg-[#F8F9FA] rounded-xl p-4 border border-gray-100">
-                <p className="text-[13px] font-bold text-gray-800 mb-1">
-                  Detalles de Seguridad:
-                </p>
+                <p className="text-[13px] font-bold text-gray-800 mb-1">Detalles de Seguridad:</p>
                 <ul className="text-[13px] text-gray-600 space-y-0.5">
                   <li>• Se generará un token de seguridad único aleatorio.</li>
-                  <li>
-                    • La fecha de expiración se establecerá en 7 días a partir
-                    de hoy.
-                  </li>
+                  <li>• La fecha de expiración se establecerá en 7 días a partir de hoy.</li>
                 </ul>
               </div>
 

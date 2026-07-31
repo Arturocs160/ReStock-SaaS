@@ -5,13 +5,20 @@ interface ErrorStateProps {
   onRetry: () => void;
 }
 
-export default function ErrorState({ message, onRetry }: ErrorStateProps) {
+export default function ErrorState({
+  message,
+  onRetry,
+}: ErrorStateProps) {
   return (
     <div className="flex justify-center">
       <div className="w-full max-w-lg rounded-xl border border-red-200 bg-red-50 p-8 text-center shadow-sm">
-        <h2 className="text-xl font-semibold text-red-700">Ocurrió un error</h2>
+        <h2 className="text-xl font-semibold text-red-700">
+          Ocurrió un error
+        </h2>
 
-        <p className="mt-3 text-gray-700">{message}</p>
+        <p className="mt-3 text-gray-700">
+          {message}
+        </p>
 
         <button
           type="button"

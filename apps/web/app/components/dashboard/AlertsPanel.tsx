@@ -1,5 +1,9 @@
 import Link from "next/link";
-import { AlertTriangle, TrendingUp, CheckCircle2 } from "lucide-react";
+import {
+  AlertTriangle,
+  TrendingUp,
+  CheckCircle2,
+} from "lucide-react";
 import { ProductoConStock } from "../../types/inventario";
 
 export function AlertsPanel({ products }: { products: ProductoConStock[] }) {
@@ -11,9 +15,9 @@ export function AlertsPanel({ products }: { products: ProductoConStock[] }) {
   // 1. Calculate soon-to-expire metrics
   let warningQty = 0;
   const soonExpiringProducts: string[] = [];
-  products.forEach((p) => {
+  products.forEach(p => {
     let productExpiringQty = 0;
-    p.lotes.forEach((l) => {
+    p.lotes.forEach(l => {
       if (l.fecha_caducidad) {
         const expiry = new Date(l.fecha_caducidad);
         const diffTime = expiry.getTime() - today.getTime();
@@ -30,13 +34,11 @@ export function AlertsPanel({ products }: { products: ProductoConStock[] }) {
   });
 
   // 2. Calculate low stock metrics
-  const lowStockProds = products.filter(
-    (p) => p.stock_actual < p.stock_minimo_sugerido,
-  );
+  const lowStockProds = products.filter(p => p.stock_actual < p.stock_minimo_sugerido);
 
   // 3. Category distribution
   const categoryStock: Record<string, number> = {};
-  products.forEach((p) => {
+  products.forEach(p => {
     const cat = p.categoria || "General";
     categoryStock[cat] = (categoryStock[cat] || 0) + p.stock_actual;
   });
@@ -47,10 +49,9 @@ export function AlertsPanel({ products }: { products: ProductoConStock[] }) {
   }));
 
   // Render top 4 categories
-  const displayedCategories =
-    categoryItems.length > 0
-      ? categoryItems.slice(0, 4)
-      : [{ name: "General", stock: "0 uds." }];
+  const displayedCategories = categoryItems.length > 0 
+    ? categoryItems.slice(0, 4) 
+    : [{ name: "General", stock: "0 uds." }];
 
   return (
     <div className="bg-white border border-gray-200 rounded-2xl p-5 h-full flex flex-col justify-between">
@@ -72,7 +73,10 @@ export function AlertsPanel({ products }: { products: ProductoConStock[] }) {
           <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4 mb-3 animate-fade-in">
             <div className="flex gap-3">
               <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center shrink-0">
-                <AlertTriangle size={16} className="text-orange-500" />
+                <AlertTriangle
+                  size={16}
+                  className="text-orange-500"
+                />
               </div>
 
               <div>
@@ -81,13 +85,10 @@ export function AlertsPanel({ products }: { products: ProductoConStock[] }) {
                 </h3>
 
                 <p className="text-xs text-gray-600 mt-1">
-                  Tienes {warningQty} unidades de productos por caducar en los
-                  próximos 30 días (
-                  {soonExpiringProducts.slice(0, 2).join(", ")}
-                  {soonExpiringProducts.length > 2
-                    ? ` y ${soonExpiringProducts.length - 2} más`
-                    : ""}
-                  ). Sugerimos crear una promoción de venta rápida.
+                  Tienes {warningQty} unidades de productos por caducar
+                  en los próximos 30 días ({soonExpiringProducts.slice(0, 2).join(", ")}
+                  {soonExpiringProducts.length > 2 ? ` y ${soonExpiringProducts.length - 2} más` : ""}).
+                  Sugerimos crear una promoción de venta rápida.
                 </p>
 
                 <Link
@@ -102,15 +103,17 @@ export function AlertsPanel({ products }: { products: ProductoConStock[] }) {
         ) : (
           <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-4 mb-3 flex gap-3 items-center">
             <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
-              <CheckCircle2 size={16} className="text-[#00a365]" />
+              <CheckCircle2
+                size={16}
+                className="text-[#00a365]"
+              />
             </div>
             <div>
               <h3 className="font-semibold text-gray-800 text-sm">
                 Sin alertas de vencimiento
               </h3>
               <p className="text-xs text-gray-600">
-                No tienes productos programados para caducar en los siguientes
-                30 días. ¡Excelente gestión de inventario!
+                No tienes productos programados para caducar en los siguientes 30 días. ¡Excelente gestión de inventario!
               </p>
             </div>
           </div>
@@ -121,7 +124,10 @@ export function AlertsPanel({ products }: { products: ProductoConStock[] }) {
           <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-4">
             <div className="flex gap-3">
               <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center shrink-0">
-                <AlertTriangle size={16} className="text-red-500" />
+                <AlertTriangle
+                  size={16}
+                  className="text-red-500"
+                />
               </div>
 
               <div>
@@ -130,13 +136,9 @@ export function AlertsPanel({ products }: { products: ProductoConStock[] }) {
                 </h3>
 
                 <p className="text-xs text-gray-600 mt-1">
-                  Hay {lowStockProds.length} productos por debajo del stock
-                  mínimo recomendado para evitar quiebres de inventario (
-                  {lowStockProds
-                    .slice(0, 2)
-                    .map((p) => p.nombre)
-                    .join(" y ")}
-                  ). Te sugerimos realizar un pedido de reposición pronto.
+                  Hay {lowStockProds.length} productos por debajo del stock mínimo
+                  recomendado para evitar quiebres de inventario ({lowStockProds.slice(0, 2).map(p => p.nombre).join(" y ")}).
+                  Te sugerimos realizar un pedido de reposición pronto.
                 </p>
 
                 <Link
@@ -151,15 +153,17 @@ export function AlertsPanel({ products }: { products: ProductoConStock[] }) {
         ) : (
           <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-4 mb-4 flex gap-3 items-center">
             <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
-              <CheckCircle2 size={16} className="text-[#00a365]" />
+              <CheckCircle2
+                size={16}
+                className="text-[#00a365]"
+              />
             </div>
             <div>
               <h3 className="font-semibold text-gray-800 text-sm">
                 Stock balanceado
               </h3>
               <p className="text-xs text-gray-600">
-                Todos tus productos están por encima del stock mínimo
-                establecido. No requieres compras de urgencia.
+                Todos tus productos están por encima del stock mínimo establecido. No requieres compras de urgencia.
               </p>
             </div>
           </div>

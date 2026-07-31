@@ -1,41 +1,41 @@
-import http from "k6/http";
-import { check, sleep } from "k6";
-import { Rate, Trend } from "k6/metrics";
+import http from 'k6/http';
+import { check, sleep } from 'k6';
+import { Rate, Trend } from 'k6/metrics';
 // Importación necesaria para que textSummary funcione nativamente
-import { textSummary } from "https://jslib.k6.io/k6-summary/0.0.2/index.js";
+import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.2/index.js';
 
 // Custom metrics
-const ctaErrors = new Rate("cta_errors");
-const ctaLatency = new Trend("cta_latency");
+const ctaErrors = new Rate('cta_errors');
+const ctaLatency = new Trend('cta_latency');
 
 export const options = {
   stages: [
-    { duration: "5s", target: 10 },
-    { duration: "10s", target: 30 },
-    { duration: "15s", target: 50 },
-    { duration: "10s", target: 30 },
-    { duration: "5s", target: 0 },
+    { duration: '5s', target: 10 },
+    { duration: '10s', target: 30 },
+    { duration: '15s', target: 50 },
+    { duration: '10s', target: 30 },
+    { duration: '5s', target: 0 },
   ],
   thresholds: {
-    http_req_duration: ["p(95)<500", "p(99)<1000"],
-    http_req_failed: ["rate<0.05"],
-    cta_errors: ["rate<0.05"],
-    cta_latency: ["p(95)<500"],
+    http_req_duration: ['p(95)<500', 'p(99)<1000'],
+    http_req_failed: ['rate<0.05'],
+    cta_errors: ['rate<0.05'],
+    cta_latency: ['p(95)<500'],
   },
 };
 
-const BASE_URL = __ENV.BASE_URL || "http://localhost:3010";
+const BASE_URL = __ENV.BASE_URL || 'http://localhost:3010';
 
 export default function () {
   const payload = JSON.stringify({
     nombre: `TestUser${Math.floor(Math.random() * 10000)}`,
     negocio: `Negocio${Math.floor(Math.random() * 10000)}`,
-    telefono: "+52 5551234567",
+    telefono: '+52 5551234567',
   });
 
   const params = {
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   };
 
@@ -44,10 +44,10 @@ export default function () {
   ctaLatency.add(res.timings.duration);
 
   const success = check(res, {
-    "CTA: status is 200 or 201": (r) => r.status === 200 || r.status === 201,
-    "CTA: response time < 200ms": (r) => r.timings.duration < 200,
-    "CTA: response time < 500ms": (r) => r.timings.duration < 500,
-    "CTA: no 5xx errors": (r) => r.status < 500,
+    'CTA: status is 200 or 201': (r) => r.status === 200 || r.status === 201,
+    'CTA: response time < 200ms': (r) => r.timings.duration < 200,
+    'CTA: response time < 500ms': (r) => r.timings.duration < 500,
+    'CTA: no 5xx errors': (r) => r.status < 500,
   });
 
   ctaErrors.add(!success);
@@ -57,13 +57,13 @@ export default function () {
 
 export function handleSummary(data) {
   return {
-    stdout: customTextSummary(data, { indent: " ", enableColors: true }),
+    stdout: customTextSummary(data, { indent: ' ', enableColors: true }),
   };
 }
 
 // Cambiado el nombre a customTextSummary para usar internamente la librería oficial de k6 sin colisiones
 function customTextSummary(data, options) {
-  let summary = "\n=== CTA Endpoints Load Test Summary ===\n";
+  let summary = '\n=== CTA Endpoints Load Test Summary ===\n';
 
   summary += `\nHTTP Requests:\n`;
   summary += `  Total: ${data.metrics.http_reqs.value}\n`;
@@ -71,21 +71,19 @@ function customTextSummary(data, options) {
   summary += `  Success Rate: ${((1 - data.metrics.http_req_failed.value / data.metrics.http_reqs.value) * 100).toFixed(2)}%\n`;
 
   // Extracción e interpolación segura de objetos (Reemplazo de ?.)
-  const durationValues =
-    data.metrics.http_req_duration && data.metrics.http_req_duration.values;
+  const durationValues = data.metrics.http_req_duration && data.metrics.http_req_duration.values;
   summary += `\nResponse Times (ms):\n`;
-  summary += `  Min: ${durationValues && durationValues.min ? durationValues.min.toFixed(2) : "N/A"}\n`;
-  summary += `  Max: ${durationValues && durationValues.max ? durationValues.max.toFixed(2) : "N/A"}\n`;
-  summary += `  Avg: ${durationValues && durationValues.avg ? durationValues.avg.toFixed(2) : "N/A"}\n`;
-  summary += `  p95: ${durationValues && durationValues["p(95)"] ? durationValues["p(95)"].toFixed(2) : "N/A"}\n`;
-  summary += `  p99: ${durationValues && durationValues["p(99)"] ? durationValues["p(99)"].toFixed(2) : "N/A"}\n`;
+  summary += `  Min: ${durationValues && durationValues.min ? durationValues.min.toFixed(2) : 'N/A'}\n`;
+  summary += `  Max: ${durationValues && durationValues.max ? durationValues.max.toFixed(2) : 'N/A'}\n`;
+  summary += `  Avg: ${durationValues && durationValues.avg ? durationValues.avg.toFixed(2) : 'N/A'}\n`;
+  summary += `  p95: ${durationValues && durationValues['p(95)'] ? durationValues['p(95)'].toFixed(2) : 'N/A'}\n`;
+  summary += `  p99: ${durationValues && durationValues['p(99)'] ? durationValues['p(99)'].toFixed(2) : 'N/A'}\n`;
 
-  const latencyValues =
-    data.metrics.cta_latency && data.metrics.cta_latency.values;
+  const latencyValues = data.metrics.cta_latency && data.metrics.cta_latency.values;
   summary += `\nCTA Metrics:\n`;
   summary += `  Error Rate: ${(data.metrics.cta_errors.value * 100).toFixed(2)}%\n`;
-  summary += `  Avg Latency: ${latencyValues && latencyValues.avg ? latencyValues.avg.toFixed(2) : "N/A"}ms\n`;
-  summary += `  p95 Latency: ${latencyValues && latencyValues["p(95)"] ? latencyValues["p(95)"].toFixed(2) : "N/A"}ms\n`;
+  summary += `  Avg Latency: ${latencyValues && latencyValues.avg ? latencyValues.avg.toFixed(2) : 'N/A'}ms\n`;
+  summary += `  p95 Latency: ${latencyValues && latencyValues['p(95)'] ? latencyValues['p(95)'].toFixed(2) : 'N/A'}ms\n`;
 
   summary += `\n=====================================\n`;
 

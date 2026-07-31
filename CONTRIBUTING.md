@@ -11,6 +11,7 @@ Esta guía te ayudará a entender cómo participar en el proyecto.
 5. [Commits](#commits)
 6. [Pull Requests](#pull-requests)
 
+
 ## Cómo Reportar Problemas
 
 Si encuentras un bug o tienes un problema:
@@ -250,7 +251,6 @@ Closes #123
 ## Testing
 
 Se realizó prueba manual en:
-
 - Backend: [describe]
 - Frontend: [describe]
 
@@ -297,3 +297,4 @@ cd apps/api && npm run lint
 # Frontend
 cd apps/web && npm run lint
 ```
+

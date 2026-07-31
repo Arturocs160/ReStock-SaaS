@@ -1,16 +1,16 @@
-"use client";
-import { useState } from "react";
-import { authClient } from "../../lib/auth-client";
-import { Check } from "lucide-react";
-import { EmailStep } from "./EmailStep";
-import { OtpStep } from "./OtpStep";
-import { PasswordStep } from "./PasswordStep";
-import { SuccessStep } from "./SuccessStep";
+'use client';
+import { useState } from 'react';
+import { authClient } from '../../lib/auth-client';
+import { Check } from 'lucide-react';
+import { EmailStep } from './EmailStep';
+import { OtpStep } from './OtpStep';
+import { PasswordStep } from './PasswordStep';
+import { SuccessStep } from './SuccessStep';
 
 export function ForgotPassword() {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
-  const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
+  const [email, setEmail] = useState('');
+  const [otp, setOtp] = useState<string[]>(Array(6).fill(''));
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -28,18 +28,13 @@ export function ForgotPassword() {
       });
 
       if (error) {
-        setError(error.message || "Error al enviar el código de verificación.");
+        setError(error.message || 'Error al enviar el código de verificación.');
       } else {
         setStep(2);
-        setSuccessMsg(
-          `Hemos enviado un código de recuperación al correo: ${email}`,
-        );
+        setSuccessMsg(`Hemos enviado un código de recuperación al correo: ${email}`);
       }
     } catch (err) {
-      setError(
-        (err as { message?: string })?.message ||
-          "Ocurrió un error inesperado.",
-      );
+      setError((err as { message?: string })?.message || 'Ocurrió un error inesperado.');
     } finally {
       setIsLoading(false);
     }
@@ -49,10 +44,10 @@ export function ForgotPassword() {
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    const fullOtp = otp.join("");
-
+    const fullOtp = otp.join('');
+    
     if (fullOtp.length < 6) {
-      setError("Por favor, ingresa los 6 dígitos del código.");
+      setError('Por favor, ingresa los 6 dígitos del código.');
       return;
     }
 
@@ -66,18 +61,13 @@ export function ForgotPassword() {
       });
 
       if (error) {
-        setError(
-          error.message || "El código ingresado es incorrecto o ha expirado.",
-        );
+        setError(error.message || 'El código ingresado es incorrecto o ha expirado.');
       } else {
         setSuccessMsg(null);
         setStep(3);
       }
     } catch (err) {
-      setError(
-        (err as { message?: string })?.message ||
-          "Error al verificar el código.",
-      );
+      setError((err as { message?: string })?.message || 'Error al verificar el código.');
     } finally {
       setIsLoading(false);
     }
@@ -89,7 +79,7 @@ export function ForgotPassword() {
     setIsLoading(true);
 
     try {
-      const fullOtp = otp.join("");
+      const fullOtp = otp.join('');
       const { error } = await authClient.emailOtp.resetPassword({
         email,
         otp: fullOtp,
@@ -97,18 +87,12 @@ export function ForgotPassword() {
       });
 
       if (error) {
-        setError(
-          error.message ||
-            "Error al restablecer la contraseña. Verifica si el código expiró.",
-        );
+        setError(error.message || 'Error al restablecer la contraseña. Verifica si el código expiró.');
       } else {
         setStep(4);
       }
     } catch (err) {
-      setError(
-        (err as { message?: string })?.message ||
-          "Ocurrió un error al intentar restablecer la contraseña.",
-      );
+      setError((err as { message?: string })?.message || 'Ocurrió un error al intentar restablecer la contraseña.');
     } finally {
       setIsLoading(false);
     }
@@ -117,7 +101,7 @@ export function ForgotPassword() {
   // Manejar reenvío del código OTP
   const handleResendCode = async (): Promise<boolean> => {
     setError(null);
-    setOtp(Array(6).fill(""));
+    setOtp(Array(6).fill(''));
     setIsLoading(true);
 
     try {
@@ -127,17 +111,14 @@ export function ForgotPassword() {
       });
 
       if (error) {
-        setError(error.message || "Error al reenviar el código.");
+        setError(error.message || 'Error al reenviar el código.');
         return false;
       } else {
         setSuccessMsg("Código reenviado con éxito");
         return true;
       }
     } catch (err) {
-      setError(
-        (err as { message?: string })?.message ||
-          "Error al reenviar el código.",
-      );
+      setError((err as { message?: string })?.message || 'Error al reenviar el código.');
       return false;
     } finally {
       setIsLoading(false);
@@ -183,7 +164,9 @@ export function ForgotPassword() {
         />
       )}
 
-      {step === 4 && <SuccessStep />}
+      {step === 4 && (
+        <SuccessStep />
+      )}
 
       {/* Mensajes de estado */}
       {successMsg && step === 2 && (

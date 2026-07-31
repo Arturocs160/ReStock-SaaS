@@ -1,27 +1,27 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Loader2, AlertCircle, Check } from "lucide-react";
+import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Loader2, AlertCircle, Check } from 'lucide-react';
 
 import {
   invitationRegisterSchema,
   InvitationRegisterValues,
-} from "../lib/validationsAuth";
+} from '../lib/validationsAuth';
 
-import { invitationApi } from "../lib/invitationApi";
+import { invitationApi } from '../lib/invitationApi';
 
 export function InvitationRegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const token = searchParams.get("token") ?? "";
+  const token = searchParams.get('token') ?? '';
 
   const [form, setForm] = useState<InvitationRegisterValues>({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
     token,
   });
 
@@ -41,13 +41,15 @@ export function InvitationRegisterForm() {
 
       setFieldErrors((prev) => ({
         ...prev,
-        [key]: "",
+        [key]: '',
       }));
 
       setGeneralError(null);
     };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
 
     setFieldErrors({});
@@ -85,10 +87,11 @@ export function InvitationRegisterForm() {
       setIsSuccess(true);
 
       setTimeout(() => {
-        router.push("/login");
+        router.push('/login');
       }, 1500);
+
     } catch (err: any) {
-      setGeneralError(err.message ?? "Error al registrar.");
+      setGeneralError(err.message ?? 'Error al registrar.');
     } finally {
       setIsLoading(false);
     }
@@ -111,8 +114,13 @@ export function InvitationRegisterForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-4"
+    >
+
       <div className="flex flex-col gap-1.5">
+
         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
           Nombre
         </label>
@@ -120,11 +128,13 @@ export function InvitationRegisterForm() {
         <input
           type="text"
           value={form.name}
-          onChange={onChange("name")}
+          onChange={onChange('name')}
           placeholder="Tu nombre"
           disabled={isLoading || isSuccess}
           className={`w-full h-11 px-3 rounded-lg border ${
-            fieldErrors.name ? "border-red-500" : "border-gray-200"
+            fieldErrors.name
+              ? 'border-red-500'
+              : 'border-gray-200'
           }`}
         />
 
@@ -134,9 +144,11 @@ export function InvitationRegisterForm() {
             {fieldErrors.name}
           </p>
         )}
+
       </div>
 
       <div className="flex flex-col gap-1.5">
+
         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
           Correo electrónico
         </label>
@@ -144,11 +156,13 @@ export function InvitationRegisterForm() {
         <input
           type="email"
           value={form.email}
-          onChange={onChange("email")}
+          onChange={onChange('email')}
           placeholder="correo@ejemplo.com"
           disabled={isLoading || isSuccess}
           className={`w-full h-11 px-3 rounded-lg border ${
-            fieldErrors.email ? "border-red-500" : "border-gray-200"
+            fieldErrors.email
+              ? 'border-red-500'
+              : 'border-gray-200'
           }`}
         />
 
@@ -158,10 +172,13 @@ export function InvitationRegisterForm() {
             {fieldErrors.email}
           </p>
         )}
+
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
         <div className="flex flex-col gap-1.5">
+
           <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
             Contraseña
           </label>
@@ -169,48 +186,44 @@ export function InvitationRegisterForm() {
           <input
             type="password"
             value={form.password}
-            onChange={onChange("password")}
+            onChange={onChange('password')}
             placeholder="********"
             disabled={isLoading || isSuccess}
             className={`w-full h-11 px-3 rounded-lg border ${
-              fieldErrors.password ? "border-red-500" : "border-gray-200"
+              fieldErrors.password
+                ? 'border-red-500'
+                : 'border-gray-200'
             }`}
           />
 
           <div className="flex flex-wrap gap-2 text-xs mt-2">
-            <span
-              className={checks.length ? "text-green-600" : "text-gray-400"}
-            >
+
+            <span className={checks.length ? "text-green-600" : "text-gray-400"}>
               • 8 caracteres
             </span>
 
-            <span
-              className={checks.uppercase ? "text-green-600" : "text-gray-400"}
-            >
+            <span className={checks.uppercase ? "text-green-600" : "text-gray-400"}>
               • Mayúscula
             </span>
 
-            <span
-              className={checks.lowercase ? "text-green-600" : "text-gray-400"}
-            >
+            <span className={checks.lowercase ? "text-green-600" : "text-gray-400"}>
               • Minúscula
             </span>
 
-            <span
-              className={checks.number ? "text-green-600" : "text-gray-400"}
-            >
+            <span className={checks.number ? "text-green-600" : "text-gray-400"}>
               • Número
             </span>
 
-            <span
-              className={checks.special ? "text-green-600" : "text-gray-400"}
-            >
+            <span className={checks.special ? "text-green-600" : "text-gray-400"}>
               • Especial
             </span>
+
           </div>
+
         </div>
 
         <div className="flex flex-col gap-1.5">
+
           <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
             Confirmar contraseña
           </label>
@@ -218,11 +231,13 @@ export function InvitationRegisterForm() {
           <input
             type="password"
             value={form.confirmPassword}
-            onChange={onChange("confirmPassword")}
+            onChange={onChange('confirmPassword')}
             placeholder="********"
             disabled={isLoading || isSuccess}
             className={`w-full h-11 px-3 rounded-lg border ${
-              fieldErrors.confirmPassword ? "border-red-500" : "border-gray-200"
+              fieldErrors.confirmPassword
+                ? 'border-red-500'
+                : 'border-gray-200'
             }`}
           />
 
@@ -232,7 +247,9 @@ export function InvitationRegisterForm() {
               {fieldErrors.confirmPassword}
             </p>
           )}
+
         </div>
+
       </div>
 
       {generalError && (
@@ -254,17 +271,20 @@ export function InvitationRegisterForm() {
         disabled={isLoading || isSuccess}
         className="w-full h-12 rounded-full bg-primary text-white hover:bg-primary-hover transition"
       >
+
         {isLoading ? (
           <>
             <Loader2 className="w-4 h-4 animate-spin inline mr-2" />
             Registrando...
           </>
         ) : isSuccess ? (
-          "¡Listo!"
+          '¡Listo!'
         ) : (
-          "Aceptar invitación"
+          'Aceptar invitación'
         )}
+
       </button>
+
     </form>
   );
 }

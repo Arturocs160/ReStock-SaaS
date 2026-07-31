@@ -39,3 +39,4 @@ export const mapBackendRoleToFrontend = (role: string): string => {
       return role;
   }
 };
+

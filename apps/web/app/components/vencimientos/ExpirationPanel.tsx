@@ -4,22 +4,12 @@ import { useState, useEffect, useMemo } from "react";
 import { productsApi, lotesApi } from "../../lib/api";
 import { useAuthStore } from "../../store/authStore";
 import { ProductoConStock, LoteInventario } from "../../types/inventario";
-import {
-  AlertTriangle,
-  Clock,
-  CalendarDays,
-  CheckCircle2,
-  Package,
-  Trash2,
-  Box,
-} from "lucide-react";
+import { AlertTriangle, Clock, CalendarDays, CheckCircle2, Package, Trash2, Box } from "lucide-react";
 
 // Utilizamos la misma lógica de getExpirationStatus que en inventario
 export const SIMULATED_TODAY = (() => {
   const today = new Date();
-  return new Date(
-    Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()),
-  );
+  return new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
 })();
 
 export const getExpirationStatus = (expiryDateStr: string | null) => {
@@ -71,11 +61,7 @@ export function ExpirationPanel() {
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
 
   // Toast state
-  const [toast, setToast] = useState<{
-    show: boolean;
-    message: string;
-    type: "success" | "error";
-  }>({
+  const [toast, setToast] = useState<{ show: boolean; message: string; type: "success" | "error" }>({
     show: false,
     message: "",
     type: "success",
@@ -100,7 +86,7 @@ export function ExpirationPanel() {
             console.error("Error fetching lotes for product", p.id_producto);
           }
           return { ...p, lotes };
-        }),
+        })
       );
       setProductos(populated);
       setError("");
@@ -139,6 +125,7 @@ export function ExpirationPanel() {
   }, [productos]);
 
   const handleDeleteLote = async (id_lote: string) => {
+    
     setDeleteLoading(id_lote);
     try {
       await lotesApi.delete(id_lote);
@@ -161,16 +148,18 @@ export function ExpirationPanel() {
   }
 
   if (error) {
-    return <div className="bg-red-50 text-red-600 p-4 rounded-lg">{error}</div>;
+    return (
+      <div className="bg-red-50 text-red-600 p-4 rounded-lg">
+        {error}
+      </div>
+    );
   }
 
   if (allLotes.length === 0) {
     return (
       <div className="text-center py-12 bg-white rounded-xl shadow-sm border border-slate-200">
         <Package className="mx-auto h-12 w-12 text-slate-300 mb-3" />
-        <p className="text-slate-500 font-medium">
-          No hay lotes con fecha de caducidad en el inventario.
-        </p>
+        <p className="text-slate-500 font-medium">No hay lotes con fecha de caducidad en el inventario.</p>
       </div>
     );
   }
@@ -179,18 +168,10 @@ export function ExpirationPanel() {
     <div className="space-y-6">
       {/* Toast Notification */}
       {toast.show && (
-        <div
-          className={`fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 z-50 animate-in slide-in-from-bottom-5 ${
-            toast.type === "success"
-              ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
-              : "bg-red-50 text-red-800 border border-red-200"
-          }`}
-        >
-          {toast.type === "success" ? (
-            <CheckCircle2 className="h-5 w-5 text-emerald-600" />
-          ) : (
-            <AlertTriangle className="h-5 w-5 text-red-600" />
-          )}
+        <div className={`fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 z-50 animate-in slide-in-from-bottom-5 ${
+          toast.type === "success" ? "bg-emerald-50 text-emerald-800 border border-emerald-200" : "bg-red-50 text-red-800 border border-red-200"
+        }`}>
+          {toast.type === "success" ? <CheckCircle2 className="h-5 w-5 text-emerald-600" /> : <AlertTriangle className="h-5 w-5 text-red-600" />}
           <p className="font-medium text-sm">{toast.message}</p>
         </div>
       )}
@@ -198,16 +179,11 @@ export function ExpirationPanel() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {allLotes.map((lote) => {
           const status = getExpirationStatus(lote.fecha_caducidad);
-
+          
           return (
-            <div
-              key={lote.id_lote}
-              className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col transition-all hover:shadow-md"
-            >
+            <div key={lote.id_lote} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col transition-all hover:shadow-md">
               {/* Header Status Bar */}
-              <div
-                className={`px-4 py-2 flex items-center justify-between border-b ${status.color.replace("border", "border-b")} ${status.color.split(" ")[0]}`}
-              >
+              <div className={`px-4 py-2 flex items-center justify-between border-b ${status.color.replace('border', 'border-b')} ${status.color.split(' ')[0]}`}>
                 <div className="flex items-center gap-1.5 font-medium text-sm">
                   {status.level === "caducado" || status.level === "critico" ? (
                     <AlertTriangle className="h-4 w-4" />
@@ -217,20 +193,14 @@ export function ExpirationPanel() {
                   {status.label}
                 </div>
               </div>
-
+              
               <div className="p-4 flex-1 flex flex-col">
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <h3
-                      className="font-semibold text-slate-900 truncate"
-                      title={lote.producto.nombre}
-                    >
+                    <h3 className="font-semibold text-slate-900 truncate" title={lote.producto.nombre}>
                       {lote.producto.nombre}
                     </h3>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      Cód:{" "}
-                      {lote.producto.codigo_barras || lote.producto.id_producto}
-                    </p>
+                    <p className="text-xs text-slate-500 mt-0.5">Cód: {lote.producto.codigo_barras || lote.producto.id_producto}</p>
                   </div>
                 </div>
 
@@ -239,18 +209,14 @@ export function ExpirationPanel() {
                     <span className="text-slate-500 flex items-center gap-1.5">
                       <Box className="h-3.5 w-3.5" /> Lote
                     </span>
-                    <span className="font-medium text-slate-700">
-                      {lote.codigo_lote || "Sin código"}
-                    </span>
+                    <span className="font-medium text-slate-700">{lote.codigo_lote || "Sin código"}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-slate-500 flex items-center gap-1.5">
                       <CalendarDays className="h-3.5 w-3.5" /> Caducidad
                     </span>
                     <span className="font-medium text-slate-700">
-                      {new Date(lote.fecha_caducidad!).toLocaleDateString(
-                        "es-ES",
-                      )}
+                      {new Date(lote.fecha_caducidad!).toLocaleDateString('es-ES')}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
@@ -258,14 +224,11 @@ export function ExpirationPanel() {
                       <Package className="h-3.5 w-3.5" /> Cantidad
                     </span>
                     <span className="font-bold text-slate-900">
-                      {lote.cantidad_actual}{" "}
-                      <span className="text-xs font-normal text-slate-500">
-                        {lote.producto.categoria}
-                      </span>
+                      {lote.cantidad_actual} <span className="text-xs font-normal text-slate-500">{lote.producto.categoria}</span>
                     </span>
                   </div>
                 </div>
-
+                
                 {/* Botón de Merma (Solo para caducados) */}
                 {status.level === "caducado" && (
                   <button

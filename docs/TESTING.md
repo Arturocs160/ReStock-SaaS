@@ -24,21 +24,17 @@ Este documento describe cómo ejecutar y mantener todas las pruebas del proyecto
 El proyecto incluye todas las dependencias necesarias. Después de `npm install` en cada directorio, tienes:
 
 **Backend (apps/api):**
-
 - Jest, Supertest, ts-jest
 
 **Frontend (apps/web):**
-
 - Jest, @testing-library/react, babel presets
 
 **Performance:**
-
 - k6 (instalación separada recomendada)
 
 ### Instalar k6
 
 **Opción 1: Gestor de paquetes (Windows con Chocolatey)**
-
 ```powershell
 choco install k6
 ```
@@ -47,7 +43,6 @@ choco install k6
 Visita https://k6.io/docs/getting-started/installation/
 
 **Opción 3: Docker**
-
 ```powershell
 docker pull grafana/k6
 ```
@@ -101,7 +96,6 @@ RAMP_UP=10s
 ```
 
 **Nota:** k6 no lee .env automáticamente, usa:
-
 ```powershell
 $env:BASE_URL="http://localhost:3010"
 k6 run tests/k6/cta-endpoints.js
@@ -122,26 +116,22 @@ npm run test
 ### Paso a Paso: Ejecutar Jest Backend
 
 **Paso 1: Acceder al directorio**
-
 ```powershell
 cd apps/api
 ```
 
 **Paso 2: Verificar que Jest está instalado**
-
 ```powershell
 npm list jest
 # Debería mostrar: jest@X.X.X
 ```
 
 **Paso 3: Ejecutar todas las pruebas**
-
 ```powershell
 npm run test
 ```
 
 **Resultado esperado:**
-
 ```
  PASS  src/__tests__/routes/cta.test.ts
  PASS  src/__tests__/services/ctaServices.test.ts
@@ -156,19 +146,16 @@ Time:        2.345 s
 ### Opciones Adicionales
 
 **Modo watch (reinicia automáticamente en cambios):**
-
 ```powershell
 npm run test:watch
 ```
 
 **Ver cobertura de código:**
-
 ```powershell
 npm run test:coverage
 ```
 
 **Salida esperada:**
-
 ```
 ----------|---------|---------|---------|---------|---
 File      | % Stmts | % Branch | % Funcs | % Lines |
@@ -181,13 +168,11 @@ All files |   70.15 |   65.42  |   72.30 |   70.15 |
 ```
 
 **Solo un archivo específico:**
-
 ```powershell
 npm run test -- src/__tests__/routes/cta.test.ts
 ```
 
 **Modo verbose (más detalles):**
-
 ```powershell
 npm run test -- --verbose
 ```
@@ -195,20 +180,17 @@ npm run test -- --verbose
 ### Qué se prueba en Backend
 
 ✅ **Rutas (routes/cta.test.ts)**
-
 - POST /cta con datos válidos → Status 200
 - POST /cta con email inválido → Status 400
 - POST /cta con campos faltantes → Status 400
 - POST /cta con error de BD → Status 500
 
 ✅ **Servicios (services/ctaServices.test.ts)**
-
 - createInterest() exitoso → registra en BD
 - createInterest() con email duplicado → lanza error
 - createInterest() con error de BD → maneja excepción
 
 ✅ **Esquemas (schemas/ctaSchema.test.ts)**
-
 - Email válido pasa validación
 - Email inválido rechazado
 - Campos requeridos validados
@@ -228,26 +210,22 @@ npm run test
 ### Paso a Paso: Ejecutar Jest Frontend
 
 **Paso 1: Acceder al directorio**
-
 ```powershell
 cd apps/web
 ```
 
 **Paso 2: Verificar dependencias**
-
 ```powershell
 npm list jest @testing-library/react
 # Debe mostrar ambas instaladas
 ```
 
 **Paso 3: Ejecutar todas las pruebas**
-
 ```powershell
 npm run test
 ```
 
 **Resultado esperado:**
-
 ```
  PASS  __tests__/lib/validationsCTA.test.ts (2.145 s)
  PASS  __tests__/components/cta.test.tsx (3.021 s)
@@ -261,19 +239,16 @@ Time:        5.166 s
 ### Opciones Adicionales
 
 **Modo watch (desarrollo interactivo):**
-
 ```powershell
 npm run test:watch
 ```
 
 **Ver cobertura de código:**
-
 ```powershell
 npm run test:coverage
 ```
 
 **Salida esperada:**
-
 ```
 ----------|---------|---------|---------|---------|---
 File      | % Stmts | % Branch | % Funcs | % Lines |
@@ -285,19 +260,16 @@ All files |   65.40 |   58.20  |   70.10 |   65.40 |
 ```
 
 **Solo un componente específico:**
-
 ```powershell
 npm run test -- cta.test.tsx
 ```
 
 **Modo verbose:**
-
 ```powershell
 npm run test -- --verbose
 ```
 
 **Actualizar snapshots:**
-
 ```powershell
 npm run test -- -u
 ```
@@ -305,7 +277,6 @@ npm run test -- -u
 ### Qué se prueba en Frontend
 
 ✅ **Componentes (components/cta.test.tsx)**
-
 - Renderizado correcto del formulario CTA
 - Campos visibles: nombre, negocio, teléfono
 - Submit del formulario
@@ -313,7 +284,6 @@ npm run test -- -u
 - Manejo de errores y mensajes
 
 ✅ **Validaciones (lib/validationsCTA.test.ts)**
-
 - Nombre válido (2-100 caracteres, solo letras)
 - Nombre inválido (muy corto, caracteres especiales)
 - Negocio válido y validaciones
@@ -339,7 +309,6 @@ k6 run tests/k6/health-check.js
 ### Paso a Paso: Instalar k6
 
 **Opción 1: Windows con Chocolatey (Recomendado)**
-
 ```powershell
 # Si tienes Chocolatey instalado
 choco install k6
@@ -349,13 +318,11 @@ k6 version
 ```
 
 **Opción 2: Descarga directa**
-
 1. Visita https://k6.io/docs/getting-started/installation/
 2. Descarga el ejecutable Windows
 3. Agrega a PATH o usa ruta completa
 
 **Opción 3: Docker**
-
 ```powershell
 docker pull grafana/k6
 docker run --rm -i grafana/k6 version
@@ -364,7 +331,6 @@ docker run --rm -i grafana/k6 version
 ### Paso a Paso: Ejecutar Health Check
 
 **Paso 1: Verificar que el backend está corriendo**
-
 ```powershell
 # En una terminal nueva
 cd apps/api
@@ -374,19 +340,16 @@ npm run dev
 ```
 
 **Paso 2: Acceder al directorio del proyecto**
-
 ```powershell
 cd C:\Users\Usuario\OneDrive\Escritorio\ReStock-SaaS
 ```
 
 **Paso 3: Ejecutar el health check**
-
 ```powershell
 k6 run tests/k6/health-check.js
 ```
 
 **Salida esperada:**
-
 ```
      vus........: 10 (min: 0, max: 10)
      duration...: 40s
@@ -408,7 +371,6 @@ k6 run tests/k6/health-check.js
 ### Paso a Paso: Ejecutar CTA Endpoints Load Test
 
 **Paso 1: Asegúrate que el backend está corriendo**
-
 ```powershell
 # Terminal 1
 cd apps/api
@@ -416,7 +378,6 @@ npm run dev
 ```
 
 **Paso 2: Ejecutar el test de carga**
-
 ```powershell
 # Terminal 2
 cd C:\Users\Usuario\OneDrive\Escritorio\ReStock-SaaS
@@ -424,7 +385,6 @@ k6 run tests/k6/cta-endpoints.js
 ```
 
 **Salida esperada:**
-
 ```
      vus........: 50   (min: 0, max: 50)
      duration...: 45s
@@ -694,34 +654,31 @@ CTA Metrics:
 
 ### Métricas k6
 
-| Métrica             | Significado                                |
-| ------------------- | ------------------------------------------ |
-| `vus`               | Virtual Users (usuarios virtuales activos) |
-| `checks`            | Validaciones que pasaron/fallaron          |
-| `http_req_duration` | Tiempo total de respuesta                  |
-| `http_req_failed`   | Porcentaje de requests fallidos            |
-| `p(95)`             | Percentil 95 (95% de requests más rápidos) |
-| `p(99)`             | Percentil 99 (99% de requests más rápidos) |
-| `iterations`        | Número de veces que se ejecutó el script   |
+| Métrica | Significado |
+|---------|---|
+| `vus` | Virtual Users (usuarios virtuales activos) |
+| `checks` | Validaciones que pasaron/fallaron |
+| `http_req_duration` | Tiempo total de respuesta |
+| `http_req_failed` | Porcentaje de requests fallidos |
+| `p(95)` | Percentil 95 (95% de requests más rápidos) |
+| `p(99)` | Percentil 99 (99% de requests más rápidos) |
+| `iterations` | Número de veces que se ejecutó el script |
 
 ### Interpretación de Resultados
 
 **✅ BUENO:**
-
 - checks > 95%
 - http_req_failed < 1%
 - http_req_duration p(95) < 200ms
 - cta_errors < 1%
 
 **⚠️ ACEPTABLE:**
-
 - checks 90-95%
 - http_req_failed 1-5%
 - http_req_duration p(95) 200-500ms
 - cta_errors 1-5%
 
 **❌ MALO:**
-
 - checks < 90%
 - http_req_failed > 5%
 - http_req_duration p(95) > 1000ms
@@ -736,7 +693,6 @@ CTA Metrics:
 **Error:** `Cannot find module '@/...'`
 
 **Solución:**
-
 ```powershell
 # Verificar tsconfig.json tiene baseUrl y paths configurados
 cat apps/api/tsconfig.json
@@ -748,7 +704,6 @@ cat apps/web/tsconfig.json
 **Error:** `Support for experimental syntax 'jsx' isn't enabled`
 
 **Solución:**
-
 ```powershell
 cd apps/web
 npm install --save-dev @babel/preset-react babel-jest
@@ -761,7 +716,6 @@ cat babel.config.js
 **Error:** `No tests found matching /...`
 
 **Solución:**
-
 - Verificar archivos están en `__tests__/` y terminan en `.test.ts` o `.test.tsx`
 - Ejecutar: `npm run test -- --listTests`
 
@@ -770,7 +724,6 @@ cat babel.config.js
 **Error:** `dial tcp [::1]:3010: connect: connection refused`
 
 **Solución:**
-
 1. Asegúrate que el backend está corriendo: `npm run dev` en `apps/api`
 2. Verifica puerto 3010: `netstat -ano | findstr :3010` (Windows)
 3. Usa variable de entorno: `$env:BASE_URL="http://localhost:3010"`
@@ -780,7 +733,6 @@ cat babel.config.js
 **Error:** `No results received`
 
 **Solución:**
-
 ```powershell
 # Verificar k6 está instalado
 k6 version

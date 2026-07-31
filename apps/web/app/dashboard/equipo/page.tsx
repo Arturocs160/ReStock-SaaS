@@ -1,21 +1,13 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from "react";
 import { Sidebar } from "../../components/dashboard/Sidebar";
 import { Topbar } from "../../components/dashboard/Topbar";
-import {
-  InviteCollaboratorModal,
-  InvitationData,
-} from "../../components/dashboard/InviteCollaboratorModal";
+import { InviteCollaboratorModal, InvitationData } from "../../components/dashboard/InviteCollaboratorModal";
 import { EditMemberModal } from "../../components/dashboard/EditMemberModal";
 import { ConfirmDeleteModal } from "../../components/dashboard/ConfirmDeleteModal";
 import EquipoPanel from "../../components/dashboard/EquipoPanel";
-import {
-  UsuarioTeam,
-  InvitacionTeam,
-  mapBackendRoleToFrontend,
-  mapFrontendRoleToBackend,
-} from "../../types/team";
+import { UsuarioTeam, InvitacionTeam, mapBackendRoleToFrontend, mapFrontendRoleToBackend } from "../../types/team";
 import { useAuthStore } from "../../store/authStore";
 import { teamApi } from "../../lib/api";
 import { Loader2 } from "lucide-react";
@@ -24,27 +16,23 @@ export default function EquipoPage() {
   const { user, isLoading: authLoading } = useAuthStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedMember, setSelectedMember] = useState<UsuarioTeam | null>(
-    null,
-  );
+  const [selectedMember, setSelectedMember] = useState<UsuarioTeam | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [memberToDelete, setMemberToDelete] = useState<UsuarioTeam | null>(
-    null,
-  );
+  const [memberToDelete, setMemberToDelete] = useState<UsuarioTeam | null>(null);
 
   const [teamUsers, setTeamUsers] = useState<UsuarioTeam[]>([]);
   const [invitaciones, setInvitaciones] = useState<InvitacionTeam[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const hasAccess = user?.role === "admin";
+  const hasAccess = user?.role === 'admin';
 
   const fetchTeamData = async () => {
     if (!user?.id_negocio) return;
     try {
       setLoading(true);
       setError(null);
-
+      
       const members = await teamApi.getMembers(user.id_negocio);
       const mappedMembers: UsuarioTeam[] = members.map((m: any) => ({
         id: m.id,
@@ -85,9 +73,7 @@ export default function EquipoPage() {
   const handleDeleteInvite = async (id_invitacion: string) => {
     try {
       await teamApi.deleteInvitation(id_invitacion);
-      setInvitaciones((prev) =>
-        prev.filter((inv) => inv.id_invitacion !== id_invitacion),
-      );
+      setInvitaciones(prev => prev.filter(inv => inv.id_invitacion !== id_invitacion));
     } catch (err: any) {
       console.error("Error al eliminar la invitación:", err);
       alert(err.message || "No se pudo cancelar la invitación.");
@@ -95,7 +81,7 @@ export default function EquipoPage() {
   };
 
   const handleRemoveMemberClick = (id: string) => {
-    const member = teamUsers.find((m) => m.id === id);
+    const member = teamUsers.find(m => m.id === id);
     if (member) {
       setMemberToDelete(member);
       setIsDeleteModalOpen(true);
@@ -141,28 +127,17 @@ export default function EquipoPage() {
           {authLoading || loading ? (
             <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
               <Loader2 className="w-10 h-10 text-[#00a365] animate-spin" />
-              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
-                Cargando gestión de equipo...
-              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Cargando gestión de equipo...</p>
             </div>
           ) : !hasAccess ? (
             <div className="bg-red-50 border border-red-100 rounded-2xl p-6 text-center max-w-lg mx-auto mt-12">
-              <h3 className="text-red-800 font-bold text-lg mb-2">
-                Acceso Denegado
-              </h3>
-              <p className="text-red-600 text-sm">
-                Solo los usuarios con rol Admin pueden administrar el equipo de
-                la tienda.
-              </p>
+              <h3 className="text-red-800 font-bold text-lg mb-2">Acceso Denegado</h3>
+              <p className="text-red-600 text-sm">Solo los usuarios con rol Admin pueden administrar el equipo de la tienda.</p>
             </div>
           ) : error ? (
             <div className="bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 rounded-2xl p-6 text-center max-w-lg mx-auto mt-12">
-              <h3 className="text-red-800 dark:text-red-400 font-bold text-lg mb-2">
-                Error al cargar el panel
-              </h3>
-              <p className="text-red-600 dark:text-red-300 text-sm mb-4">
-                {error}
-              </p>
+              <h3 className="text-red-800 dark:text-red-400 font-bold text-lg mb-2">Error al cargar el panel</h3>
+              <p className="text-red-600 dark:text-red-300 text-sm mb-4">{error}</p>
               <button
                 onClick={fetchTeamData}
                 className="bg-red-600 hover:bg-red-700 text-white text-xs font-semibold px-4 py-2 rounded-xl transition cursor-pointer"

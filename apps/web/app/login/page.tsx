@@ -4,9 +4,8 @@ import { Logo } from "../components/logo";
 
 export const metadata = {
   title: "Inicio de Sesión - ReStock",
-  description:
-    "Inicia sesión en ReStock para gestionar tu inventario de forma inteligente.",
-};
+  description: "Inicia sesión en ReStock para gestionar tu inventario de forma inteligente.",
+}
 
 export default function LoginPage() {
   return (
@@ -18,27 +17,15 @@ export default function LoginPage() {
           </div>
 
           <section className="w-full max-w-md bg-white/90 dark:bg-black/60 border border-gray-100 dark:border-zinc-800/80 backdrop-blur-md rounded-2xl p-5 sm:p-8 shadow-md shadow-black/3 dark:shadow-none animate-fade-in">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-zinc-50">
-              Inicia sesión
-            </h1>
-            <p className="mt-2 text-sm text-gray-500 dark:text-zinc-400">
-              Accede a tu cuenta para probar ReStock.
-            </p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-zinc-50">Inicia sesión</h1>
+            <p className="mt-2 text-sm text-gray-500 dark:text-zinc-400">Accede a tu cuenta para probar ReStock.</p>
 
             <div className="mt-6">
               <LoginForm />
             </div>
 
             <div className="mt-6 text-sm text-gray-600 dark:text-zinc-400">
-              <p>
-                ¿No tienes cuenta?{" "}
-                <a
-                  href="/register"
-                  className="text-[#00a365] font-medium hover:underline"
-                >
-                  Regístrate gratis
-                </a>
-              </p>
+              <p>¿No tienes cuenta? <a href="/register" className="text-[#00a365] font-medium hover:underline">Regístrate gratis</a></p>
             </div>
           </section>
 

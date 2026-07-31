@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useRef } from "react";
-import { useRouter, usePathname } from "next/navigation";
-import { Loader2, AlertCircle, Eye, EyeOff } from "lucide-react";
-import { loginSchema } from "../lib/validationsAuth";
-import { useAuthStore } from "../store/authStore";
+import { useState, useEffect, useRef } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import { Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { loginSchema } from '../lib/validationsAuth';
+import { useAuthStore } from '../store/authStore';
 
 interface LoginFormProps {
   emailLabel?: string;
@@ -22,10 +22,10 @@ export function LoginForm({
   const router = useRouter();
   const pathname = usePathname();
   const { login } = useAuthStore();
-  const isCollaboratorPath = pathname?.includes("/collaborator");
+  const isCollaboratorPath = pathname?.includes('/collaborator');
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -63,10 +63,10 @@ export function LoginForm({
     try {
       await login(email, password);
       // Redirección exitosa al dashboard general (Criterio de Aceptación)
-      router.push("/dashboard");
+      router.push('/dashboard');
     } catch (err: any) {
       // 🔒 Mensaje genérico por motivos de seguridad: no revela si falló correo o contraseña
-      setGeneralError("El correo electrónico o la contraseña son incorrectos.");
+      setGeneralError('El correo electrónico o la contraseña son incorrectos.');
     } finally {
       setIsLoading(false);
     }
@@ -80,7 +80,7 @@ export function LoginForm({
         setEmail(detail.email);
         setFieldErrors((prev) => ({
           ...prev,
-          email: "",
+          email: '',
         }));
       }
 
@@ -88,17 +88,17 @@ export function LoginForm({
         setPassword(detail.password);
         setFieldErrors((prev) => ({
           ...prev,
-          password: "",
+          password: '',
         }));
       }
 
       emailRef.current?.focus();
     };
 
-    window.addEventListener("fill-demo", handler as EventListener);
+    window.addEventListener('fill-demo', handler as EventListener);
 
     return () => {
-      window.removeEventListener("fill-demo", handler as EventListener);
+      window.removeEventListener('fill-demo', handler as EventListener);
     };
   }, []);
 
@@ -120,13 +120,13 @@ export function LoginForm({
             setEmail(e.target.value);
             setFieldErrors((prev) => ({
               ...prev,
-              email: "",
+              email: '',
             }));
           }}
           className={`mt-1 block w-full rounded-lg border ${
             fieldErrors.email
-              ? "border-red-500 focus:ring-red-500 dark:border-red-500/50"
-              : "border-gray-200 dark:border-zinc-800 focus:ring-primary"
+              ? 'border-red-500 focus:ring-red-500 dark:border-red-500/50'
+              : 'border-gray-200 dark:border-zinc-800 focus:ring-primary'
           } bg-white dark:bg-zinc-900/50 text-gray-900 dark:text-zinc-100 px-3 py-3 text-sm shadow-sm placeholder-gray-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 disabled:opacity-50`}
         />
 
@@ -139,24 +139,22 @@ export function LoginForm({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300">
-          Contraseña
-        </label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300">Contraseña</label>
         <div className="relative mt-1">
           <input
-            type={showPassword ? "text" : "password"}
+            type={showPassword ? 'text' : 'password'}
             value={password}
             onChange={(e) => {
               setPassword(e.target.value);
-              setFieldErrors((prev) => ({ ...prev, password: "" }));
+              setFieldErrors((prev) => ({ ...prev, password: '' }));
             }}
             placeholder="Tu contraseña"
             required
             disabled={isLoading}
             className={`block w-full rounded-lg border ${
-              fieldErrors.password
-                ? "border-red-500 focus:ring-red-500 dark:border-red-500/50"
-                : "border-gray-200 dark:border-zinc-800 focus:ring-primary"
+              fieldErrors.password 
+                ? 'border-red-500 focus:ring-red-500 dark:border-red-500/50' 
+                : 'border-gray-200 dark:border-zinc-800 focus:ring-primary'
             } bg-white dark:bg-zinc-900/50 text-gray-900 dark:text-zinc-100 pl-3 pr-10 py-3 text-sm shadow-sm placeholder-gray-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 disabled:opacity-50`}
           />
           <button
@@ -226,7 +224,7 @@ export function LoginForm({
 
       {!isCollaboratorPath && (
         <div className="text-sm text-gray-600 dark:text-zinc-400 mt-2">
-          ¿Eres colaborador?{" "}
+          ¿Eres colaborador?{' '}
           <a
             href="/collaborator/login"
             className="text-primary font-semibold hover:underline"

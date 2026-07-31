@@ -1,7 +1,7 @@
-"use client";
-import { useRef, useEffect } from "react";
-import { Key, Loader2, AlertCircle } from "lucide-react";
-import { otpSchema } from "./schemas";
+'use client';
+import { useRef, useEffect } from 'react';
+import { Key, Loader2, AlertCircle } from 'lucide-react';
+import { otpSchema } from './schemas';
 
 interface OtpStepProps {
   email: string;
@@ -41,16 +41,13 @@ export function OtpStep({
     setOtp(newOtp);
 
     // Enfocar el siguiente campo al escribir
-    if (val !== "" && index < 5) {
+    if (val !== '' && index < 5) {
       otpRefs.current[index + 1]?.focus();
     }
   };
 
-  const handleOtpKeyDown = (
-    index: number,
-    e: React.KeyboardEvent<HTMLInputElement>,
-  ) => {
-    if (e.key === "Backspace" && otp[index] === "" && index > 0) {
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace' && otp[index] === '' && index > 0) {
       // Enfocar el campo anterior al borrar si el actual está vacío
       otpRefs.current[index - 1]?.focus();
     }
@@ -58,10 +55,10 @@ export function OtpStep({
 
   const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const pastedData = e.clipboardData.getData("text").trim();
+    const pastedData = e.clipboardData.getData('text').trim();
     if (!/^\d{6}$/.test(pastedData)) return; // Asegurar que sean exactamente 6 dígitos
 
-    const newOtp = pastedData.split("");
+    const newOtp = pastedData.split('');
     setOtp(newOtp);
     otpRefs.current[5]?.focus();
   };
@@ -77,7 +74,7 @@ export function OtpStep({
     e.preventDefault();
     setError(null);
 
-    const validation = otpSchema.safeParse(otp.join(""));
+    const validation = otpSchema.safeParse(otp.join(''));
     if (!validation.success) {
       setError(validation.error.issues[0].message);
       return;
@@ -93,10 +90,7 @@ export function OtpStep({
           <Key className="w-6 h-6" />
         </div>
         <p className="text-sm text-gray-600 dark:text-gray-300">
-          Hemos enviado un código a{" "}
-          <span className="font-semibold text-gray-900 dark:text-white">
-            {email}
-          </span>
+          Hemos enviado un código a <span className="font-semibold text-gray-900 dark:text-white">{email}</span>
         </p>
         <p className="text-[11px] text-amber-650 dark:text-amber-400 font-medium mt-1">
           Verificar en el correo spam o no deseado
@@ -116,9 +110,7 @@ export function OtpStep({
               onChange={(e) => handleOtpChange(idx, e.target.value)}
               onKeyDown={(e) => handleOtpKeyDown(idx, e)}
               onPaste={idx === 0 ? handleOtpPaste : undefined}
-              ref={(el) => {
-                otpRefs.current[idx] = el;
-              }}
+              ref={(el) => { otpRefs.current[idx] = el; }}
               className="w-12 h-14 sm:w-14 sm:h-16 text-center text-xl font-bold rounded-xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm"
             />
           ))}
@@ -135,7 +127,7 @@ export function OtpStep({
       <div className="space-y-4 pt-2">
         <button
           type="submit"
-          disabled={isLoading || otp.join("").length < 6}
+          disabled={isLoading || otp.join('').length < 6}
           className="w-full flex items-center justify-center gap-2 rounded-full bg-primary px-4 py-3 text-sm font-semibold text-white hover:bg-primary-hover shadow-sm hover:shadow transition disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
         >
           {isLoading ? (
@@ -144,14 +136,14 @@ export function OtpStep({
               Verificando...
             </>
           ) : (
-            "Verificar código"
+            'Verificar código'
           )}
         </button>
 
         <div className="text-center text-xs text-gray-500 dark:text-gray-400">
-          ¿No recibiste el código?{" "}
-          <button
-            type="button"
+          ¿No recibiste el código?{' '}
+          <button 
+            type="button" 
             disabled={isLoading}
             onClick={handleResendClick}
             className="text-primary hover:underline font-semibold cursor-pointer disabled:opacity-50"

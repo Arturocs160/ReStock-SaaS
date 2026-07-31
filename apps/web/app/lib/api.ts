@@ -5,19 +5,16 @@ import {
   CreateLoteInput,
   UpdateLoteInput,
   Categoria,
-  ProductoConStock,
+  ProductoConStock
 } from "../types/inventario";
 import { UsuarioTeam, InvitacionTeam } from "../types/team";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3010";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3010';
 
-async function apiFetch<T>(
-  path: string,
-  options: RequestInit = {},
-): Promise<T> {
+async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   const url = `${API_URL}${path}`;
   const defaultHeaders = {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   };
 
   const response = await fetch(url, {
@@ -26,11 +23,11 @@ async function apiFetch<T>(
       ...defaultHeaders,
       ...options.headers,
     },
-    credentials: "include",
+    credentials: 'include',
   });
 
   if (!response.ok) {
-    let errorMessage = "Ha ocurrido un error en el servidor";
+    let errorMessage = 'Ha ocurrido un error en el servidor';
     try {
       const errorData = await response.json();
       errorMessage = errorData.message || errorData.error || errorMessage;
@@ -48,77 +45,67 @@ async function apiFetch<T>(
 }
 
 export const productsApi = {
-  getAll: () => apiFetch<Producto[]>("/products"),
-  getCategories: (all?: boolean) =>
-    apiFetch<Categoria[]>(`/categories${all ? "?all=true" : ""}`),
+  getAll: () => apiFetch<Producto[]>('/products'),
+  getCategories: (all?: boolean) => apiFetch<Categoria[]>(`/categories${all ? '?all=true' : ''}`),
   createCategory: (data: { nombre: string; descripcion: string | null }) =>
-    apiFetch<Categoria>("/categories", {
-      method: "POST",
+    apiFetch<Categoria>('/categories', {
+      method: 'POST',
       body: JSON.stringify(data),
     }),
-  updateCategory: (
-    id: string,
-    data: { nombre: string; descripcion: string | null },
-  ) =>
+  updateCategory: (id: string, data: { nombre: string; descripcion: string | null }) =>
     apiFetch<Categoria>(`/categories/${id}`, {
-      method: "PUT",
+      method: 'PUT',
       body: JSON.stringify(data),
     }),
   toggleCategoryActive: (id: string) =>
     apiFetch<Categoria>(`/categories/${id}/toggle`, {
-      method: "PATCH",
+      method: 'PATCH',
     }),
   create: (data: CreateProductInput) =>
-    apiFetch<Producto>("/products", {
-      method: "POST",
+    apiFetch<Producto>('/products', {
+      method: 'POST',
       body: JSON.stringify(data),
     }),
   update: (id: string, data: CreateProductInput) =>
     apiFetch<Producto>(`/products/${id}`, {
-      method: "PUT",
+      method: 'PUT',
       body: JSON.stringify(data),
     }),
   delete: (id: string) =>
     apiFetch<void>(`/products/${id}`, {
-      method: "DELETE",
+      method: 'DELETE',
     }),
-  getPosCatalog: () => apiFetch<ProductoConStock[]>("/products/pos/catalog"),
+  getPosCatalog: () => apiFetch<ProductoConStock[]>('/products/pos/catalog'),
 };
 
 export const lotesApi = {
   getByProduct: (productId: string) =>
     apiFetch<LoteInventario[]>(`/lote/product/${productId}`),
   create: (data: CreateLoteInput) =>
-    apiFetch<LoteInventario>("/lote", {
-      method: "POST",
+    apiFetch<LoteInventario>('/lote', {
+      method: 'POST',
       body: JSON.stringify(data),
     }),
   update: (id: string, data: UpdateLoteInput) =>
     apiFetch<LoteInventario>(`/lote/${id}`, {
-      method: "PUT",
+      method: 'PUT',
       body: JSON.stringify(data),
     }),
   delete: (id: string) =>
     apiFetch<void>(`/lote/${id}`, {
-      method: "DELETE",
+      method: 'DELETE',
     }),
   reportMerma: (id: string, cantidad: number, motivo: string) =>
     apiFetch<any>(`/lote/${id}/merma`, {
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify({ cantidad, motivo }),
     }),
 };
 
 export const salesApi = {
-  create: (data: {
-    items: {
-      id_lote: string;
-      cantidad_sold: number;
-      precio_unitario: number;
-    }[];
-  }) =>
-    apiFetch<any>("/sales", {
-      method: "POST",
+  create: (data: { items: { id_lote: string; cantidad_sold: number; precio_unitario: number }[] }) =>
+    apiFetch<any>('/sales', {
+      method: 'POST',
       body: JSON.stringify(data),
     }),
 };
@@ -126,23 +113,25 @@ export const salesApi = {
 export const teamApi = {
   getMembers: (idNegocio: string) =>
     apiFetch<any[]>(`/negocio/${idNegocio}/usuarios`),
-  getInvitations: () => apiFetch<any[]>(`/invitations`),
+  getInvitations: () =>
+    apiFetch<any[]>(`/invitations`),
   createInvitation: (data: { email_invitado: string; role_asignado: string }) =>
-    apiFetch<any>("/invitations", {
-      method: "POST",
+    apiFetch<any>('/invitations', {
+      method: 'POST',
       body: JSON.stringify(data),
     }),
   deleteInvitation: (id: string) =>
     apiFetch<void>(`/invitations/${id}`, {
-      method: "DELETE",
+      method: 'DELETE',
     }),
   updateMemberRole: (idNegocio: string, idUsuario: string, role: string) =>
     apiFetch<void>(`/negocio/${idNegocio}/usuarios/${idUsuario}/role`, {
-      method: "PUT",
+      method: 'PUT',
       body: JSON.stringify({ role }),
     }),
   removeMember: (idNegocio: string, idUsuario: string) =>
     apiFetch<void>(`/negocio/${idNegocio}/usuarios/${idUsuario}`, {
-      method: "DELETE",
+      method: 'DELETE',
     }),
 };
+

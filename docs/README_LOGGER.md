@@ -17,31 +17,28 @@ El logger está centralizado en `src/utils/logger.ts` y se exporta como una inst
 ## Uso básico
 
 ```typescript
-import logger from "../utils/logger";
+import logger from '../utils/logger';
 
 // Información general
-logger.info("Usuario registrado correctamente");
+logger.info('Usuario registrado correctamente');
 
 // Información con contexto
-logger.info({ userId: 123, email: "user@example.com" }, "Usuario creado");
+logger.info({ userId: 123, email: 'user@example.com' }, 'Usuario creado');
 
 // Advertencias
-logger.warn({ userId }, "Intento de acceso no autorizado");
+logger.warn({ userId }, 'Intento de acceso no autorizado');
 
 // Errores
-logger.error(err, "Error crítico en servicio de inventario");
+logger.error(err, 'Error crítico en servicio de inventario');
 
 // Errores con contexto adicional
-logger.error(
-  { err, productId: 456, action: "update" },
-  "Fallo al actualizar producto",
-);
+logger.error({ err, productId: 456, action: 'update' }, 'Fallo al actualizar producto');
 
 // Debug (útil en desarrollo)
-logger.debug({ data }, "Datos procesados");
+logger.debug({ data }, 'Datos procesados');
 
 // Trace (información más detallada)
-logger.trace({ requestBody }, "Request recibido");
+logger.trace({ requestBody }, 'Request recibido');
 ```
 
 ## Niveles de logging
@@ -70,19 +67,19 @@ LOG_LEVEL=trace npm run dev
 
 ```typescript
 // src/services/ctaServices.ts
-import logger from "../utils/logger";
+import logger from '../utils/logger';
 
 export const createCTA = async (data: any) => {
   try {
-    logger.info({ data }, "Iniciando creación de CTA");
-
+    logger.info({ data }, 'Iniciando creación de CTA');
+    
     // Lógica del servicio
     const result = await db.create(data);
-
-    logger.info({ ctaId: result.id }, "CTA creado exitosamente");
+    
+    logger.info({ ctaId: result.id }, 'CTA creado exitosamente');
     return result;
   } catch (error) {
-    logger.error({ error, data }, "Error al crear CTA");
+    logger.error({ error, data }, 'Error al crear CTA');
     throw error;
   }
 };
@@ -92,19 +89,19 @@ export const createCTA = async (data: any) => {
 
 ```typescript
 // src/controllers/ctaController.ts
-import logger from "../utils/logger";
+import logger from '../utils/logger';
 
 export const handleCreateCTA = async (req: any, res: any) => {
   try {
-    logger.info({ body: req.body }, "CTA create request recibido");
-
+    logger.info({ body: req.body }, 'CTA create request recibido');
+    
     const result = await createCTA(req.body);
-
-    logger.info({ ctaId: result.id }, "CTA creado y retornado al cliente");
+    
+    logger.info({ ctaId: result.id }, 'CTA creado y retornado al cliente');
     res.json(result);
   } catch (error) {
-    logger.error({ error, url: req.url }, "Error en handleCreateCTA");
-    res.status(500).json({ error: "Internal Server Error" });
+    logger.error({ error, url: req.url }, 'Error en handleCreateCTA');
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 ```
@@ -113,18 +110,18 @@ export const handleCreateCTA = async (req: any, res: any) => {
 
 ```typescript
 // src/middlewares/verifyData.ts
-import logger from "../utils/logger";
+import logger from '../utils/logger';
 
 export const verifyData = (req: any, res: any, next: any) => {
   try {
-    logger.debug({ headers: req.headers }, "Verificando datos de request");
-
+    logger.debug({ headers: req.headers }, 'Verificando datos de request');
+    
     // Lógica de verificación
-
+    
     next();
   } catch (error) {
-    logger.warn({ error, url: req.url }, "Verificación de datos falló");
-    res.status(400).json({ error: "Invalid data" });
+    logger.warn({ error, url: req.url }, 'Verificación de datos falló');
+    res.status(400).json({ error: 'Invalid data' });
   }
 };
 ```

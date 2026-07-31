@@ -1,5 +1,10 @@
 import Link from "next/link";
-import { DollarSign, Layers3, AlertTriangle, Clock3 } from "lucide-react";
+import {
+  DollarSign,
+  Layers3,
+  AlertTriangle,
+  Clock3,
+} from "lucide-react";
 import { ProductoConStock } from "../../types/inventario";
 
 export function MetricsCards({ products }: { products: ProductoConStock[] }) {
@@ -10,10 +15,7 @@ export function MetricsCards({ products }: { products: ProductoConStock[] }) {
 
   // 1. inventoryValue: Sum of (product.precio_actual * lote.cantidad_actual)
   const inventoryValue = products.reduce((totalVal, p) => {
-    const pValue = p.lotes.reduce(
-      (sum, l) => sum + p.precio_actual * l.cantidad_actual,
-      0,
-    );
+    const pValue = p.lotes.reduce((sum, l) => sum + (p.precio_actual * l.cantidad_actual), 0);
     return totalVal + pValue;
   }, 0);
 
@@ -21,9 +23,7 @@ export function MetricsCards({ products }: { products: ProductoConStock[] }) {
   const totalItems = products.reduce((sum, p) => sum + p.stock_actual, 0);
 
   // 3. lowStock: Count of products where stock_actual < stock_minimo_sugerido
-  const lowStock = products.filter(
-    (p) => p.stock_actual < p.stock_minimo_sugerido,
-  ).length;
+  const lowStock = products.filter(p => p.stock_actual < p.stock_minimo_sugerido).length;
 
   // 4. expiredProducts: Sum of cantidad_actual of expired lotes
   const expiredProducts = products.reduce((sum, p) => {
@@ -42,7 +42,7 @@ export function MetricsCards({ products }: { products: ProductoConStock[] }) {
   const metrics = [
     {
       title: "VALOR DE INVENTARIO",
-      value: `$${inventoryValue.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      value: `$${inventoryValue.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       subtitle: "Valorizado a precio actual de venta",
       icon: DollarSign,
       iconBg: "bg-green-100",
@@ -104,9 +104,8 @@ export function MetricsCards({ products }: { products: ProductoConStock[] }) {
               </h3>
 
               <p
-                className={`text-[10px] md:text-[11px] mt-1 font-medium ${metric.subtitleColor} ${
-                  isClickable ? "group-hover:underline" : ""
-                }`}
+                className={`text-[10px] md:text-[11px] mt-1 font-medium ${metric.subtitleColor} ${isClickable ? "group-hover:underline" : ""
+                  }`}
               >
                 {metric.subtitle}
               </p>
@@ -125,7 +124,10 @@ export function MetricsCards({ products }: { products: ProductoConStock[] }) {
                 ${metric.iconBg}
               `}
             >
-              <Icon size={22} className={metric.iconColor} />
+              <Icon
+                size={22}
+                className={metric.iconColor}
+              />
             </div>
           </>
         );

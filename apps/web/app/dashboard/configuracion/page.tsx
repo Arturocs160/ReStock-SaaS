@@ -1,56 +1,44 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  businessFormSchema,
-  BusinessFormValues,
-} from "../../lib/businessValidation";
-import { useAuthStore } from "../../store/authStore";
+import React, { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { businessFormSchema, BusinessFormValues } from '../../lib/businessValidation';
+import { useAuthStore } from '../../store/authStore'; 
 import { Sidebar } from "../../components/dashboard/Sidebar";
 import { Topbar } from "../../components/dashboard/Topbar";
 
 export default function ConfiguracionPage() {
-  const { user, isLoading: authLoading } = useAuthStore() as {
-    user: { role: string } | null;
-    isLoading: boolean;
-  };
-  const [feedback, setFeedback] = useState<{
-    type: "success" | "error";
-    message: string;
-  } | null>(null);
+  
+  const { user, isLoading: authLoading } = useAuthStore() as { user: { role: string } | null; isLoading: boolean }; 
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [loadingData, setLoadingData] = useState(true);
-  const [negocioId, setNegocioId] = useState<string>("");
+  const [negocioId, setNegocioId] = useState<string>('');
 
-  const hasAccess = user?.role === "admin";
+  
+  const hasAccess = user?.role === 'admin';
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isSubmitting },
-  } = useForm<BusinessFormValues>({
+  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<BusinessFormValues>({
     resolver: zodResolver(businessFormSchema),
     defaultValues: {
-      name: "",
-      subdomain: "",
+      name: '',
+      subdomain: '',
       status: true,
-      phone: "",
-      email: "",
-    },
+      phone: '',
+      email: ''
+    }
   });
 
+  
   useEffect(() => {
     const fetchNegocio = async () => {
       try {
-        const apiUrl =
-          process.env.NEXT_PUBLIC_API_URL || "http://localhost:3010";
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3010';
         const response = await fetch(`${apiUrl}/negocio`, {
-          credentials: "include",
+          credentials: 'include',
         });
         if (!response.ok) {
-          throw new Error("Error al obtener la información del negocio");
+          throw new Error('Error al obtener la información del negocio');
         }
         const data = await response.json();
         setNegocioId(data.id_negocio);
@@ -58,14 +46,11 @@ export default function ConfiguracionPage() {
           name: data.nombre,
           subdomain: data.subdominio,
           status: data.activo,
-          phone: data.telefono || "",
-          email: data.email_comercial || "",
+          phone: data.telefono || '',
+          email: data.email_comercial || '',
         });
       } catch (error: any) {
-        setFeedback({
-          type: "error",
-          message: error.message || "Error al cargar los datos del negocio",
-        });
+        setFeedback({ type: 'error', message: error.message || 'Error al cargar los datos del negocio' });
       } finally {
         setLoadingData(false);
       }
@@ -83,7 +68,7 @@ export default function ConfiguracionPage() {
   const onSubmit = async (data: BusinessFormValues) => {
     setFeedback(null);
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3010";
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3010';
       const mappedData = {
         nombre: data.name,
         subdominio: data.subdomain,
@@ -92,45 +77,37 @@ export default function ConfiguracionPage() {
       };
 
       const response = await fetch(`${apiUrl}/negocio`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(mappedData),
-        credentials: "include",
+        credentials: 'include',
       });
 
       const result = await response.json();
 
       if (!response.ok) {
+        
         if (result.details && Array.isArray(result.details)) {
-          const errorMessage = result.details
-            .map((issue: any) => issue.message)
-            .join(", ");
+          const errorMessage = result.details.map((issue: any) => issue.message).join(', ');
           throw new Error(errorMessage);
         }
-        throw new Error(
-          result.message || "El subdominio ya no está disponible.",
-        );
+        throw new Error(result.message || 'El subdominio ya no está disponible.');
       }
 
       reset({
         name: result.nombre,
         subdomain: result.subdominio,
         status: result.activo,
-        phone: result.telefono || "",
-        email: result.email_comercial || "",
+        phone: result.telefono || '',
+        email: result.email_comercial || '',
       });
 
-      setFeedback({
-        type: "success",
-        message: "¡Identidad del negocio actualizada con éxito!",
-      });
+      setFeedback({ type: 'success', message: '¡Identidad del negocio actualizada con éxito!' });
     } catch (error: any) {
-      setFeedback({
-        type: "error",
-        message: error.message || "Ocurrió un error al guardar.",
-      });
+      setFeedback({ type: 'error', message: error.message || 'Ocurrió un error al guardar.' });
     }
   };
+
 
   return (
     <div className="flex min-h-screen bg-slate-50">
@@ -141,7 +118,9 @@ export default function ConfiguracionPage() {
 
         <main className="p-4 md:p-6 max-w-4xl">
           <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">Configuración</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Configuración
+            </h1>
             <p className="text-gray-500 mt-2">
               Administra la identidad de tu tienda en el sistema.
             </p>
@@ -155,10 +134,7 @@ export default function ConfiguracionPage() {
             /* Criterio de Aceptación: Validación y renderizado condicional de rol */
             <div className="p-6 bg-red-50 text-red-600 rounded-md border border-red-200">
               <h2 className="text-lg font-semibold mb-1">Acceso Denegado</h2>
-              <p className="text-sm">
-                Solo los usuarios con rol Admin pueden administrar la identidad
-                de la tienda.
-              </p>
+              <p className="text-sm">Solo los usuarios con rol Admin pueden administrar la identidad de la tienda.</p>
             </div>
           ) : (
             <div className="p-8 bg-white rounded-[20px] shadow-sm border border-slate-100/80 max-w-xl">
@@ -170,15 +146,13 @@ export default function ConfiguracionPage() {
                   Esta apartado es para editar la informacion de su negocio.
                 </p>
               </div>
-
+              
               {feedback && (
-                <div
-                  className={`p-4 mb-5 rounded-md text-sm font-medium ${
-                    feedback.type === "success"
-                      ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                      : "bg-rose-50 text-rose-700 border border-rose-200"
-                  }`}
-                >
+                <div className={`p-4 mb-5 rounded-md text-sm font-medium ${
+                  feedback.type === 'success' 
+                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                    : 'bg-rose-50 text-rose-700 border border-rose-200'
+                }`}>
                   {feedback.message}
                 </div>
               )}
@@ -204,18 +178,14 @@ export default function ConfiguracionPage() {
                   </label>
                   <input
                     type="text"
-                    {...register("name")}
+                    {...register('name')}
                     className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:border-slate-300 focus:ring-2 focus:ring-slate-100 transition-all text-sm font-medium"
                   />
-                  {errors.name && (
-                    <p className="text-rose-600 text-xs mt-1 font-medium">
-                      {errors.name.message}
-                    </p>
-                  )}
+                  {errors.name && <p className="text-rose-600 text-xs mt-1 font-medium">{errors.name.message}</p>}
                 </div>
 
                 {/* Subdominio Oculto */}
-                <input type="hidden" {...register("subdomain")} />
+                <input type="hidden" {...register('subdomain')} />
 
                 {/* Campo Teléfono */}
                 <div>
@@ -224,15 +194,11 @@ export default function ConfiguracionPage() {
                   </label>
                   <input
                     type="text"
-                    {...register("phone")}
+                    {...register('phone')}
                     placeholder="Ej. +52 55 1234 5678"
                     className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:border-slate-300 focus:ring-2 focus:ring-slate-100 transition-all text-sm font-medium"
                   />
-                  {errors.phone && (
-                    <p className="text-rose-600 text-xs mt-1 font-medium">
-                      {errors.phone.message}
-                    </p>
-                  )}
+                  {errors.phone && <p className="text-rose-600 text-xs mt-1 font-medium">{errors.phone.message}</p>}
                 </div>
 
                 {/* Campo Correo Comercial */}
@@ -242,15 +208,11 @@ export default function ConfiguracionPage() {
                   </label>
                   <input
                     type="email"
-                    {...register("email")}
+                    {...register('email')}
                     placeholder="contacto@minegocio.com"
                     className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:border-slate-300 focus:ring-2 focus:ring-slate-100 transition-all text-sm font-medium"
                   />
-                  {errors.email && (
-                    <p className="text-rose-600 text-xs mt-1 font-medium">
-                      {errors.email.message}
-                    </p>
-                  )}
+                  {errors.email && <p className="text-rose-600 text-xs mt-1 font-medium">{errors.email.message}</p>}
                 </div>
 
                 {/* Campo Estado - Ocultado
@@ -282,7 +244,7 @@ export default function ConfiguracionPage() {
                     disabled={isSubmitting}
                     className="w-full py-3.5 bg-[#00a86b] hover:bg-[#00965e] text-white font-semibold rounded-xl transition-all duration-200 shadow-sm disabled:opacity-50 text-sm cursor-pointer"
                   >
-                    {isSubmitting ? "Guardando Cambios..." : "Guardar Cambios"}
+                    {isSubmitting ? 'Guardando Cambios...' : 'Guardar Cambios'}
                   </button>
                 </div>
               </form>
