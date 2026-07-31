@@ -5,6 +5,7 @@ import {
   createLoteController,
   deleteLoteController,
   getLoteByIdController,
+  getLotesExpiracionController,
   getLotesByProductIdController,
   updateLoteController,
   createMermaController,
@@ -27,6 +28,7 @@ routerLote.post(
   validateDataBody(createLoteSchema),
   createLoteController
 );
+routerLote.get("/expiracion", requireAuth, getLotesExpiracionController);
 routerLote.get(
   "/product/:id_producto",
   requireAuth,
