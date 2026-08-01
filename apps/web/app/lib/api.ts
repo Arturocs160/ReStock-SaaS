@@ -121,6 +121,29 @@ export const salesApi = {
       method: "POST",
       body: JSON.stringify(data),
     }),
+
+  getMetrics: () =>
+    apiFetch<{
+      metricas: {
+        ingresos: number;
+        transacciones: number;
+        ticket_promedio: number;
+      };
+    }>("/sales/metricas"),
+
+  getHistory: async () => {
+    const res = await apiFetch<any>("/sales/historial");
+    
+    // Log para depuración directa en consola
+    console.log("Respuesta cruda de GET /sales/historial:", res);
+
+    if (Array.isArray(res)) {
+      return { ventas: res };
+    }
+    
+    const ventas = res?.ventas || res?.historial || res?.data || res?.result || [];
+    return { ventas };
+  },
 };
 
 export const teamApi = {
