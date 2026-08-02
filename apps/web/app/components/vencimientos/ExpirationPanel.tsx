@@ -145,7 +145,11 @@ export function ExpirationPanel() {
   const handleDeleteLote = async (id_lote: string) => {
     setDeleteLoading(id_lote);
     try {
-      await lotesApi.delete(id_lote);
+      const targetLote = allLotes.find((l) => l.id_lote === id_lote);
+      if (!targetLote) {
+        throw new Error("No se encontró el lote especificado.");
+      }
+      await lotesApi.reportMerma(id_lote, targetLote.cantidad_actual, "merma_caducidad");
       globalToast.success("Lote dado de baja (Merma) correctamente", { title: "LOTE DADO DE BAJA" });
       await loadData();
     } catch (err: any) {

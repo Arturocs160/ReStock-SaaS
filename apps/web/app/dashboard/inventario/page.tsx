@@ -18,6 +18,7 @@ import { AddLoteModal } from "../../components/inventario/AddLoteModal";
 import { EditLoteModal } from "../../components/inventario/EditLoteModal";
 import { DeleteProductModal } from "../../components/inventario/DeleteProductModal";
 import { DeleteLoteModal } from "../../components/inventario/DeleteLoteModal";
+import { ReportMermaModal } from "../../components/inventario/ReportMermaModal";
 
 import {
   LoteInventario,
@@ -120,7 +121,7 @@ export default function LotesPage() {
 
   // Estados para Modal de Confirmación de Eliminación
   const [activeModal, setActiveModal] = useState<
-    "deleteProduct" | "deleteLote" | null
+    "deleteProduct" | "deleteLote" | "reportMerma" | null
   >(null);
   const [selectedProduct, setSelectedProduct] =
     useState<ProductoConStock | null>(null);
@@ -432,6 +433,40 @@ export default function LotesPage() {
     }
   };
 
+  // Reportar Merma de un Lote Específico (Abre el modal de confirmación de merma)
+  const handleReportMerma = (productId: string, loteId: string, cantidad: number) => {
+    const targetProd = productos.find((p) => p.id_producto === productId);
+    const targetLote = targetProd?.lotes.find((l) => l.id_lote === loteId);
+    if (targetProd && targetLote) {
+      setSelectedProduct(targetProd);
+      setSelectedLote(targetLote);
+      setActiveModal("reportMerma");
+    }
+  };
+
+  const handleReportMermaConfirm = async () => {
+    if (selectedProduct && selectedLote) {
+      try {
+        await lotesApi.reportMerma(
+          selectedLote.id_lote,
+          selectedLote.cantidad_actual,
+          "merma_caducidad"
+        );
+        globalToast.success("Merma registrada exitosamente.", { title: "MERMA REGISTRADA" });
+        setActiveModal(null);
+        setSelectedLote(null);
+        setSelectedProduct(null);
+        await fetchInventory();
+      } catch (err) {
+        console.error(err);
+        globalToast.error(
+          err instanceof Error ? err.message : "Error al registrar la merma.",
+          { title: "ERROR" }
+        );
+      }
+    }
+  };
+
   return (
     <div className="flex min-h-screen bg-slate-50 text-gray-900">
       <Sidebar />
@@ -492,6 +527,7 @@ export default function LotesPage() {
                 onDeleteProduct={handleDeleteProduct}
                 onEditLote={openEditLoteModal}
                 onDeleteLote={handleDeleteLote}
+                onReportMerma={handleReportMerma}
               />
             )}
           </div>
@@ -560,6 +596,18 @@ export default function LotesPage() {
               loteCode={selectedLote.codigo_lote}
               productName={selectedProduct.nombre}
               onConfirm={handleDeleteLoteConfirm}
+            />
+          )}
+
+          {/* MODAL: REPORTAR MERMA */}
+          {activeModal === "reportMerma" && selectedLote && selectedProduct && (
+            <ReportMermaModal
+              isOpen={activeModal === "reportMerma"}
+              onClose={() => setActiveModal(null)}
+              loteCode={selectedLote.codigo_lote}
+              productName={selectedProduct.nombre}
+              cantidad={selectedLote.cantidad_actual}
+              onConfirm={handleReportMermaConfirm}
             />
           )}
         </main>
