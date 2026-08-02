@@ -20,7 +20,7 @@ jest.mock("../../middlewares/requireAuth", () => ({
   },
 }));
 
-describe("POST /api/lotes/:id_lote/merma Route", () => {
+describe("POST /lotes/:id_lote/merma Route", () => {
   const validUUID = "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d";
 
   beforeEach(() => {
@@ -42,7 +42,7 @@ describe("POST /api/lotes/:id_lote/merma Route", () => {
 
     (loteServices.createMermaService as jest.Mock).mockResolvedValue(mockMermaResponse);
 
-    const response = await request(app).post(`/api/lotes/${validUUID}/merma`).send(payload);
+    const response = await request(app).post(`/lotes/${validUUID}/merma`).send(payload);
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual(mockMermaResponse);
@@ -62,7 +62,7 @@ describe("POST /api/lotes/:id_lote/merma Route", () => {
 
     (loteServices.createMermaService as jest.Mock).mockRejectedValue(error);
 
-    const response = await request(app).post(`/api/lotes/${validUUID}/merma`).send(payload);
+    const response = await request(app).post(`/lotes/${validUUID}/merma`).send(payload);
 
     expect(response.status).toBe(403);
     expect(response.body.error).toBe("No tienes permisos para acceder a este lote.");
@@ -71,7 +71,7 @@ describe("POST /api/lotes/:id_lote/merma Route", () => {
   it("should return 400 if validation fails due to negative quantity", async () => {
     const payload = { cantidad: -3, motivo: "merma_caducidad" };
 
-    const response = await request(app).post(`/api/lotes/${validUUID}/merma`).send(payload);
+    const response = await request(app).post(`/lotes/${validUUID}/merma`).send(payload);
 
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty("error");
@@ -84,7 +84,7 @@ describe("POST /api/lotes/:id_lote/merma Route", () => {
 
     (loteServices.createMermaService as jest.Mock).mockRejectedValue(error);
 
-    const response = await request(app).post(`/api/lotes/${validUUID}/merma`).send(payload);
+    const response = await request(app).post(`/lotes/${validUUID}/merma`).send(payload);
 
     expect(response.status).toBe(400);
     expect(response.body.error).toBe("Cantidad de merma inválida o supera el stock disponible.");
@@ -94,7 +94,7 @@ describe("POST /api/lotes/:id_lote/merma Route", () => {
     mockUser = null;
     const payload = { cantidad: 5, motivo: "merma_caducidad" };
 
-    const response = await request(app).post(`/api/lotes/${validUUID}/merma`).send(payload);
+    const response = await request(app).post(`/lotes/${validUUID}/merma`).send(payload);
 
     expect(response.status).toBe(401);
     expect(response.body.error).toBe("Sesión inválida o expirada");

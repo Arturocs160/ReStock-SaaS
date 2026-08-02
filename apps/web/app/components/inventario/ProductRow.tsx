@@ -13,6 +13,7 @@ interface ProductRowProps {
   onDeleteProduct: () => void;
   onEditLote: (lote: LoteInventario) => void;
   onDeleteLote: (loteId: string) => void;
+  onReportMerma: (loteId: string, cantidad: number) => void;
 }
 
 export function ProductRow({
@@ -24,6 +25,7 @@ export function ProductRow({
   onDeleteProduct,
   onEditLote,
   onDeleteLote,
+  onReportMerma,
 }: ProductRowProps) {
   const isLowStock = producto.stock_actual < producto.stock_minimo_sugerido;
 
@@ -179,7 +181,7 @@ export function ProductRow({
                             <td className="px-4 py-2.5 text-right space-x-1 whitespace-nowrap">
                               {expStatus.level === "caducado" && (
                                 <button
-                                  onClick={() => onDeleteLote(l.id_lote)}
+                                  onClick={() => onReportMerma(l.id_lote, l.cantidad_actual)}
                                   className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-xs transition inline-block cursor-pointer font-semibold shadow-sm"
                                   title="Dar de baja por Merma"
                                 >

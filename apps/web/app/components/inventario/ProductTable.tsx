@@ -13,6 +13,7 @@ interface ProductTableProps {
   onDeleteProduct: (productId: string) => void;
   onEditLote: (productId: string, lote: LoteInventario) => void;
   onDeleteLote: (productId: string, loteId: string) => void;
+  onReportMerma: (productId: string, loteId: string, cantidad: number) => void;
 }
 
 export function ProductTable({
@@ -24,6 +25,7 @@ export function ProductTable({
   onDeleteProduct,
   onEditLote,
   onDeleteLote,
+  onReportMerma,
 }: ProductTableProps) {
   return (
     <div className="bg-white dark:bg-[#0f0f0f] border border-gray-100 dark:border-gray-900 rounded-2xl shadow-sm overflow-hidden">
@@ -51,6 +53,7 @@ export function ProductTable({
                   onDeleteProduct={() => onDeleteProduct(p.id_producto)}
                   onEditLote={(lote) => onEditLote(p.id_producto, lote)}
                   onDeleteLote={(loteId) => onDeleteLote(p.id_producto, loteId)}
+                  onReportMerma={(loteId, cantidad) => onReportMerma(p.id_producto, loteId, cantidad)}
                 />
               ))
             ) : (
