@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Search, Plus, CheckCircle2, X } from "lucide-react";
 import { useCartStore } from "../../store/cartStore";
+import { useToastStore } from "../../store/toastStore";
 import { Producto, LoteInventario } from "../../types/inventario";
 
 // Extended mock to include category just for UI demonstration
@@ -145,20 +146,13 @@ const MOCK_LOTES: LoteInventario[] = [
 export function ProductCatalog() {
   const { addLote, items } = useCartStore();
   const [searchTerm, setSearchTerm] = useState("");
-  const [toastMsg, setToastMsg] = useState<{
-    title: string;
-    visible: boolean;
-  } | null>(null);
+  const toast = useToastStore();
 
   const handleAdd = (lote: LoteInventario, producto: MockProducto) => {
     addLote(lote, producto);
-    setToastMsg({
-      title: `Añadido al carrito: ${producto.nombre} (${lote.codigo_lote})`,
-      visible: true,
+    toast.success(`Añadido al carrito: ${producto.nombre} (${lote.codigo_lote})`, {
+      title: "CARRITO",
     });
-    setTimeout(() => {
-      setToastMsg((prev) => (prev ? { ...prev, visible: false } : null));
-    }, 3000);
   };
 
   const getLotsForProduct = (productId: string) => {
@@ -173,21 +167,7 @@ export function ProductCatalog() {
 
   return (
     <div className="flex-1 overflow-y-auto pb-20 relative">
-      {/* Toast Notification */}
-      {toastMsg && toastMsg.visible && (
-        <div className="fixed top-4 right-4 z-50 animate-in fade-in slide-in-from-top-5 duration-300">
-          <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-lg shadow-lg flex items-center space-x-3">
-            <CheckCircle2 size={18} className="text-emerald-600" />
-            <span className="font-medium text-sm">{toastMsg.title}</span>
-            <button
-              onClick={() => setToastMsg(null)}
-              className="text-emerald-600 hover:text-emerald-800 ml-2"
-            >
-              <X size={16} />
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Toast Notification centralized */}
 
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-slate-800 mb-1">

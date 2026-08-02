@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { productsApi, lotesApi } from "../../lib/api";
 import { useAuthStore } from "../../store/authStore";
+import { useToastStore } from "../../store/toastStore";
 import { ProductoConStock, LoteInventario } from "../../types/inventario";
 import {
   AlertTriangle,
@@ -44,13 +45,13 @@ export const getExpirationStatus = (expiryDateStr: string | null) => {
       color: "bg-red-100 text-red-700 border border-red-200",
       level: "caducado" as const,
     };
-  } else if (diffDays <= 30) {
+  } else if (diffDays <= 10) {
     return {
       label: `Crítico (${diffDays}d)`,
       color: "bg-orange-100 text-orange-700 border border-orange-200",
       level: "critico" as const,
     };
-  } else if (diffDays <= 90) {
+  } else if (diffDays <= 20) {
     return {
       label: `Cercano (${diffDays}d)`,
       color: "bg-amber-100 text-amber-700 border border-amber-200",
@@ -70,8 +71,8 @@ type LoteWithProduct = LoteInventario & { producto: ProductoConStock };
 const FILTER_OPTIONS = [
   { key: "all", label: "Todos los lotes" },
   { key: "caducado", label: "Caducados" },
-  { key: "critico", label: "Críticos (<30 días)" },
-  { key: "cercano", label: "Cercanos (<90 días)" },
+  { key: "critico", label: "Críticos (≤10 días)" },
+  { key: "cercano", label: "Cercanos (≤20 días)" },
 ] as const;
 
 export function ExpirationPanel() {
@@ -84,16 +85,7 @@ export function ExpirationPanel() {
     "all" | "caducado" | "critico" | "cercano"
   >("all");
 
-  const [toast, setToast] = useState<{ show: boolean; message: string; type: "success" | "error" }>({
-    show: false,
-    message: "",
-    type: "success",
-  });
-
-  const showToast = (message: string, type: "success" | "error") => {
-    setToast({ show: true, message, type });
-    setTimeout(() => setToast({ show: false, message: "", type }), 3000);
-  };
+  const globalToast = useToastStore();
 
   const loadData = async () => {
     if (!user?.id_negocio) return;
@@ -154,10 +146,10 @@ export function ExpirationPanel() {
     setDeleteLoading(id_lote);
     try {
       await lotesApi.delete(id_lote);
-      showToast("Lote dado de baja (Merma) correctamente", "success");
+      globalToast.success("Lote dado de baja (Merma) correctamente", { title: "LOTE DADO DE BAJA" });
       await loadData();
     } catch (err: any) {
-      showToast(err.message || "Error al dar de baja el lote", "error");
+      globalToast.error(err.message || "Error al dar de baja el lote", { title: "ERROR" });
     } finally {
       setDeleteLoading(null);
     }
@@ -210,23 +202,7 @@ export function ExpirationPanel() {
 
   return (
     <div className="space-y-6">
-      {/* Toast Notification */}
-      {toast.show && (
-        <div
-          className={`fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 z-50 animate-in slide-in-from-bottom-5 ${
-            toast.type === "success"
-              ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
-              : "bg-red-50 text-red-800 border border-red-200"
-          }`}
-        >
-          {toast.type === "success" ? (
-            <CheckCircle2 className="h-5 w-5 text-emerald-600" />
-          ) : (
-            <AlertTriangle className="h-5 w-5 text-red-600" />
-          )}
-          <p className="font-medium text-sm">{toast.message}</p>
-        </div>
-      )}
+      {/* Toast Notification centralized */}
 
       {/* Botones del filtro */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none">
