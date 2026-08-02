@@ -245,6 +245,35 @@ describe("Compras Services", () => {
       expect(pdfBuffer.length).toBeGreaterThan(500);
     });
 
+    it("should generate a multi-page PDF successfully when there are many items", async () => {
+      // Create 50 mock items to trigger page breaks
+      const manyItems = [];
+      const mockDatabaseProducts = [];
+      for (let i = 1; i <= 50; i++) {
+        const id_producto = `prod-${i}`;
+        manyItems.push({ id_producto, cantidad: i });
+        mockDatabaseProducts.push({
+          id_producto,
+          nombre: `Producto ${i}`,
+          stock_actual: 2,
+          stock_minimo_sugerido: 10,
+          ventas_ultimos_7_dias: i,
+        });
+      }
+
+      (comprasModel.getProductosReabastecimientoPorIdsModel as jest.Mock).mockResolvedValue(mockDatabaseProducts);
+      (negocioModel.getNegocioByIdModel as jest.Mock).mockResolvedValue({
+        id_negocio: "negocio-A",
+        nombre: "Negocio con Muchos Productos",
+      });
+
+      const pdfBuffer = await generarListaReabastecimientoPdfService("negocio-A", manyItems);
+
+      expect(Buffer.isBuffer(pdfBuffer)).toBe(true);
+      expect(pdfBuffer.subarray(0, 5).toString()).toBe("%PDF-");
+      expect(pdfBuffer.length).toBeGreaterThan(5000); // Larger PDF size due to multiple pages and drawings
+    });
+
     it("should throw a 404 error if a selected product does not belong to the business (multi-tenant)", async () => {
       // El modelo (filtrado por id_negocio) solo devuelve 1 de los 2 productos solicitados
       (comprasModel.getProductosReabastecimientoPorIdsModel as jest.Mock).mockResolvedValue([
