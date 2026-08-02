@@ -76,7 +76,7 @@ export function InviteCollaboratorModal({ isOpen, onClose, onSuccess }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 animate-fade-in">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in">
       <div className="bg-white rounded-[20px] w-full max-w-lg overflow-hidden relative">
         {/* Header */}
         <div className="flex items-start justify-between p-6 pb-2">
