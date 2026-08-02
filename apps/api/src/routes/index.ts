@@ -6,13 +6,17 @@ import routerNegocio from "./negocio";
 import routerCategories from "./categories";
 import routerInvitation from "./invitation.routes"; // IMPORTA TU ROUTER AQUÍ
 import routerSales from "./sales";
+import routerCompras from "./compras";
 
 export default function routes(app: Express) {
   app.use("/cta", routerCTA);
   app.use("/products", routerProducts);
   app.use("/lote", routerLote);
+  app.use("/lotes", routerLote);
   app.use("/negocio", routerNegocio);
   app.use("/categories", routerCategories);
   app.use("/invitations", routerInvitation);
   app.use("/sales", routerSales);
+  app.use("/ventas", routerSales);
+  app.use("/compras", routerCompras);
 }

@@ -29,7 +29,13 @@ export async function updateNegocioController(req: Request, res: Response) {
     }
 
     const { nombre, subdominio, telefono, email_comercial } = req.body;
-    const result = await updateNegocioService(id_negocio, nombre, subdominio, telefono, email_comercial);
+    const result = await updateNegocioService(
+      id_negocio,
+      nombre,
+      subdominio,
+      telefono,
+      email_comercial
+    );
 
     res.status(200).json(result);
   } catch (error: any) {
@@ -40,4 +46,3 @@ export async function updateNegocioController(req: Request, res: Response) {
     res.status(500).json({ message: "Error interno del servidor" });
   }
 }
-

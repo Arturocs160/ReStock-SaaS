@@ -1,6 +1,6 @@
-'use client';
-import { Mail, AlertCircle, ArrowLeft, Loader2 } from 'lucide-react';
-import { emailSchema } from './schemas';
+"use client";
+import { Mail, AlertCircle, ArrowLeft, Loader2 } from "lucide-react";
+import { emailSchema } from "./schemas";
 
 interface EmailStepProps {
   email: string;
@@ -53,7 +53,8 @@ export function EmailStep({
           />
         </div>
         <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-          Ingresa la dirección de correo asociada a tu cuenta para recibir un código de verificación.
+          Ingresa la dirección de correo asociada a tu cuenta para recibir un
+          código de verificación.
         </p>
         <p className="text-[11px] text-amber-650 dark:text-amber-400 font-medium mt-1">
           Verificar en el correo spam o no deseado
@@ -68,14 +69,14 @@ export function EmailStep({
       )}
 
       <div className="pt-2 flex flex-col sm:flex-row gap-3">
-        <a 
+        <a
           href="/login"
           className="flex-1 flex items-center justify-center gap-2 rounded-full border border-gray-200 dark:border-zinc-800 px-4 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-900 transition cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
           Volver al inicio
         </a>
-        
+
         <button
           type="submit"
           disabled={isLoading || !email}
@@ -87,7 +88,7 @@ export function EmailStep({
               Enviando código...
             </>
           ) : (
-            'Enviar código'
+            "Enviar código"
           )}
         </button>
       </div>

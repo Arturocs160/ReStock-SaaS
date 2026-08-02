@@ -40,6 +40,10 @@ export async function handleUserCreation(user: User, context: any): Promise<void
     await client.query(updateUserQuery, [idNegocio, user.id]);
 
     await client.query("COMMIT");
+
+    // Mutate the user object so better-auth session creation picks up the new fields
+    (user as any).id_negocio = idNegocio;
+    (user as any).role = "admin";
   } catch (error) {
     logger.error("Error en la transacción de registro automatizado:" + error);
 
@@ -88,7 +92,7 @@ export const beforeAuthMiddleware = createAuthMiddleware(async (ctx) => {
       return new Response(
         JSON.stringify({
           error: "UNAUTHORIZED",
-          message: "Correo o contraseña incorrectos"
+          message: "Correo o contraseña incorrectos",
         }),
         {
           status: 401,
@@ -104,7 +108,7 @@ export const beforeAuthMiddleware = createAuthMiddleware(async (ctx) => {
       return new Response(
         JSON.stringify({
           error: "UNAUTHORIZED",
-          message: "Correo o contraseña incorrectos"
+          message: "Correo o contraseña incorrectos",
         }),
         {
           status: 401,
@@ -122,7 +126,7 @@ export const beforeAuthMiddleware = createAuthMiddleware(async (ctx) => {
       return new Response(
         JSON.stringify({
           error: "UNAUTHORIZED",
-          message: "Correo o contraseña incorrectos"
+          message: "Correo o contraseña incorrectos",
         }),
         {
           status: 401,

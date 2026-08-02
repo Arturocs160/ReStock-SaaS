@@ -1,7 +1,15 @@
-'use client';
-import { useState } from 'react';
-import { Lock, Eye, EyeOff, Check, X, AlertCircle, Loader2 } from 'lucide-react';
-import { passwordResetSchema } from './schemas';
+"use client";
+import { useState } from "react";
+import {
+  Lock,
+  Eye,
+  EyeOff,
+  Check,
+  X,
+  AlertCircle,
+  Loader2,
+} from "lucide-react";
+import { passwordResetSchema } from "./schemas";
 
 interface PasswordStepProps {
   isLoading: boolean;
@@ -16,8 +24,8 @@ export function PasswordStep({
   setError,
   onSubmit,
 }: PasswordStepProps) {
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -28,22 +36,25 @@ export function PasswordStep({
     hasLowercase: /[a-z]/.test(password),
     hasNumber: /[0-9]/.test(password),
     hasSpecial: /[^A-Za-z0-9]/.test(password),
-    match: password !== '' && password === confirmPassword,
+    match: password !== "" && password === confirmPassword,
   };
 
-  const isPasswordValid = 
-    passwordValidations.length && 
-    passwordValidations.hasUppercase && 
-    passwordValidations.hasLowercase && 
-    passwordValidations.hasNumber && 
-    passwordValidations.hasSpecial && 
+  const isPasswordValid =
+    passwordValidations.length &&
+    passwordValidations.hasUppercase &&
+    passwordValidations.hasLowercase &&
+    passwordValidations.hasNumber &&
+    passwordValidations.hasSpecial &&
     passwordValidations.match;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    const validation = passwordResetSchema.safeParse({ password, confirmPassword });
+    const validation = passwordResetSchema.safeParse({
+      password,
+      confirmPassword,
+    });
     if (!validation.success) {
       setError(validation.error.issues[0].message);
       return;
@@ -65,7 +76,7 @@ export function PasswordStep({
               <Lock className="w-5 h-5 text-gray-400 dark:text-gray-600" />
             </span>
             <input
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               required
               disabled={isLoading}
               value={password}
@@ -78,7 +89,11 @@ export function PasswordStep({
               onClick={() => setShowPassword(!showPassword)}
               className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
             >
-              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              {showPassword ? (
+                <EyeOff className="w-5 h-5" />
+              ) : (
+                <Eye className="w-5 h-5" />
+              )}
             </button>
           </div>
         </div>
@@ -93,7 +108,7 @@ export function PasswordStep({
               <Lock className="w-5 h-5 text-gray-400 dark:text-gray-600" />
             </span>
             <input
-              type={showConfirmPassword ? 'text' : 'password'}
+              type={showConfirmPassword ? "text" : "password"}
               required
               disabled={isLoading}
               value={confirmPassword}
@@ -106,7 +121,11 @@ export function PasswordStep({
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
             >
-              {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              {showConfirmPassword ? (
+                <EyeOff className="w-5 h-5" />
+              ) : (
+                <Eye className="w-5 h-5" />
+              )}
             </button>
           </div>
         </div>
@@ -128,7 +147,13 @@ export function PasswordStep({
                 <X className="w-2.5 h-2.5" />
               </span>
             )}
-            <span className={passwordValidations.length ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-500 dark:text-gray-400'}>
+            <span
+              className={
+                passwordValidations.length
+                  ? "text-emerald-600 dark:text-emerald-400"
+                  : "text-gray-500 dark:text-gray-400"
+              }
+            >
               Entre 8 y 50 caracteres
             </span>
           </li>
@@ -142,7 +167,13 @@ export function PasswordStep({
                 <X className="w-2.5 h-2.5" />
               </span>
             )}
-            <span className={passwordValidations.hasUppercase ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-500 dark:text-gray-400'}>
+            <span
+              className={
+                passwordValidations.hasUppercase
+                  ? "text-emerald-600 dark:text-emerald-400"
+                  : "text-gray-500 dark:text-gray-400"
+              }
+            >
               Al menos una letra mayúscula (A-Z)
             </span>
           </li>
@@ -156,7 +187,13 @@ export function PasswordStep({
                 <X className="w-2.5 h-2.5" />
               </span>
             )}
-            <span className={passwordValidations.hasLowercase ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-500 dark:text-gray-400'}>
+            <span
+              className={
+                passwordValidations.hasLowercase
+                  ? "text-emerald-600 dark:text-emerald-400"
+                  : "text-gray-500 dark:text-gray-400"
+              }
+            >
               Al menos una letra minúscula (a-z)
             </span>
           </li>
@@ -170,7 +207,13 @@ export function PasswordStep({
                 <X className="w-2.5 h-2.5" />
               </span>
             )}
-            <span className={passwordValidations.hasNumber ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-500 dark:text-gray-400'}>
+            <span
+              className={
+                passwordValidations.hasNumber
+                  ? "text-emerald-600 dark:text-emerald-400"
+                  : "text-gray-500 dark:text-gray-400"
+              }
+            >
               Al menos un número (0-9)
             </span>
           </li>
@@ -184,7 +227,13 @@ export function PasswordStep({
                 <X className="w-2.5 h-2.5" />
               </span>
             )}
-            <span className={passwordValidations.hasSpecial ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-500 dark:text-gray-400'}>
+            <span
+              className={
+                passwordValidations.hasSpecial
+                  ? "text-emerald-600 dark:text-emerald-400"
+                  : "text-gray-500 dark:text-gray-400"
+              }
+            >
               Al menos un carácter especial (ej: @, $, !, #, %, *)
             </span>
           </li>
@@ -198,7 +247,13 @@ export function PasswordStep({
                 <X className="w-2.5 h-2.5" />
               </span>
             )}
-            <span className={passwordValidations.match ? 'text-emerald-600 dark:text-emerald-400 font-medium' : 'text-gray-500 dark:text-gray-400'}>
+            <span
+              className={
+                passwordValidations.match
+                  ? "text-emerald-600 dark:text-emerald-400 font-medium"
+                  : "text-gray-500 dark:text-gray-400"
+              }
+            >
               Las contraseñas coinciden
             </span>
           </li>
@@ -223,7 +278,7 @@ export function PasswordStep({
             Restableciendo contraseña...
           </>
         ) : (
-          'Restablecer contraseña'
+          "Restablecer contraseña"
         )}
       </button>
     </form>

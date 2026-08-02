@@ -25,7 +25,7 @@ export const requireTenantAccess = (req: Request, res: Response, next: NextFunct
   if (targetTenantId && String(targetTenantId) !== String(userTenantId)) {
     return res.status(403).json({
       error: "FORBIDDEN_TENANT_ACCESS",
-      message: "No tienes acceso a los recursos de este negocio."
+      message: "No tienes acceso a los recursos de este negocio.",
     });
   }
 

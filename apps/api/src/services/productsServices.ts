@@ -113,11 +113,13 @@ export async function getPosCatalogService(id_negocio: string) {
         activo: row.producto_activo,
         id_categoria: row.id_categoria,
         categoria: row.categoria || "General",
+        stock_actual: 0,
         lotes: [],
       });
     }
 
     if (row.id_lote) {
+      const cantidad_actual = Number(row.cantidad_actual);
       productsMap.get(row.id_producto).lotes.push({
         id_lote: row.id_lote,
         id_producto: row.id_producto,
@@ -125,9 +127,10 @@ export async function getPosCatalogService(id_negocio: string) {
         fecha_ingreso: row.fecha_ingreso,
         fecha_caducidad: row.fecha_caducidad,
         cantidad_inicial: row.cantidad_inicial,
-        cantidad_actual: Number(row.cantidad_actual),
+        cantidad_actual,
         activo: row.lote_activo,
       });
+      productsMap.get(row.id_producto).stock_actual += cantidad_actual;
     }
   }
 

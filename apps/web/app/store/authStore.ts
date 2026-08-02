@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { User } from '../types/auth';
-import { authClient } from '../lib/auth-client';
+import { create } from "zustand";
+import { User } from "../types/auth";
+import { authClient } from "../lib/auth-client";
 
 interface AuthState {
   user: User | null;
@@ -8,7 +8,12 @@ interface AuthState {
   error: string | null;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string, businessName: string) => Promise<void>;
+  register: (
+    name: string,
+    email: string,
+    password: string,
+    businessName: string,
+  ) => Promise<void>;
   logout: () => Promise<void>;
   checkSession: () => Promise<void>;
 }
@@ -32,9 +37,11 @@ export const useAuthStore = create<AuthState>((set) => ({
             id: data.user.id,
             email: data.user.email,
             name: data.user.name,
-            role: (data.user as { role?: string }).role || 'user',
+            role: (data.user as { role?: string }).role || "user",
             nombre: (data.user as { nombre?: string }).nombre,
-            createdAt: data.user.createdAt ? new Date(data.user.createdAt).toISOString() : undefined,
+            createdAt: data.user.createdAt
+              ? new Date(data.user.createdAt).toISOString()
+              : undefined,
             id_negocio: (data.user as { id_negocio?: string }).id_negocio,
           },
           isAuthenticated: true,
@@ -43,7 +50,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         set({ user: null, isAuthenticated: false });
       }
     } catch (err) {
-      console.error('Session check error in store:', err);
+      console.error("Session check error in store:", err);
       set({ user: null, isAuthenticated: false });
     } finally {
       set({ isLoading: false });
@@ -59,7 +66,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       });
 
       if (loginError) {
-        throw new Error(loginError.message || 'Error al iniciar sesión');
+        throw new Error(loginError.message || "Error al iniciar sesión");
       }
 
       if (data?.user) {
@@ -68,16 +75,19 @@ export const useAuthStore = create<AuthState>((set) => ({
             id: data.user.id,
             email: data.user.email,
             name: data.user.name,
-            role: (data.user as { role?: string }).role || 'user',
+            role: (data.user as { role?: string }).role || "user",
             nombre: (data.user as { nombre?: string }).nombre,
-            createdAt: data.user.createdAt ? new Date(data.user.createdAt).toISOString() : undefined,
+            createdAt: data.user.createdAt
+              ? new Date(data.user.createdAt).toISOString()
+              : undefined,
             id_negocio: (data.user as { id_negocio?: string }).id_negocio,
           },
           isAuthenticated: true,
         });
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
+      const errorMessage =
+        err instanceof Error ? err.message : "Error desconocido";
       set({ error: errorMessage });
       throw err;
     } finally {
@@ -96,7 +106,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       } as Parameters<typeof authClient.signUp.email>[0]);
 
       if (signUpError) {
-        throw new Error(signUpError.message || 'Error al registrar');
+        throw new Error(signUpError.message || "Error al registrar");
       }
 
       if (data?.user) {
@@ -105,16 +115,19 @@ export const useAuthStore = create<AuthState>((set) => ({
             id: data.user.id,
             email: data.user.email,
             name: data.user.name,
-            role: (data.user as { role?: string }).role || 'user',
+            role: (data.user as { role?: string }).role || "user",
             nombre: (data.user as { nombre?: string }).nombre,
-            createdAt: data.user.createdAt ? new Date(data.user.createdAt).toISOString() : undefined,
+            createdAt: data.user.createdAt
+              ? new Date(data.user.createdAt).toISOString()
+              : undefined,
             id_negocio: (data.user as { id_negocio?: string }).id_negocio,
           },
           isAuthenticated: true,
         });
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
+      const errorMessage =
+        err instanceof Error ? err.message : "Error desconocido";
       set({ error: errorMessage });
       throw err;
     } finally {
@@ -128,7 +141,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       await authClient.signOut();
       set({ user: null, isAuthenticated: false });
     } catch (err) {
-      console.error('Logout error in store:', err);
+      console.error("Logout error in store:", err);
       set({ user: null, isAuthenticated: false });
     } finally {
       set({ isLoading: false });

@@ -1,19 +1,34 @@
 import { Router } from "express";
 import { requireAuth } from "../middlewares/requireAuth";
+import { checkRole } from "../middlewares/checkRole";
 import {
   createLoteController,
   deleteLoteController,
   getLoteByIdController,
+  getLotesExpiracionController,
   getLotesByProductIdController,
   updateLoteController,
+  createMermaController,
 } from "../controllers/loteController";
 import { validateDataBody, validateDataParams } from "../middlewares/verifyData";
-import { createLoteSchema, updateLoteSchema, loteIdParamSchema } from "../schemas/lotesSchema";
+import {
+  createLoteSchema,
+  updateLoteSchema,
+  loteIdParamSchema,
+  createMermaSchema,
+} from "../schemas/lotesSchema";
 import { productoIdParamSchema } from "../schemas/productsSchema";
 
 const routerLote: Router = Router();
 
-routerLote.post("/", requireAuth, validateDataBody(createLoteSchema), createLoteController);
+routerLote.post(
+  "/",
+  requireAuth,
+  checkRole(["admin", "collaborator"]),
+  validateDataBody(createLoteSchema),
+  createLoteController
+);
+routerLote.get("/expiracion", requireAuth, getLotesExpiracionController);
 routerLote.get(
   "/product/:id_producto",
   requireAuth,
@@ -29,6 +44,7 @@ routerLote.get(
 routerLote.put(
   "/:id_lote",
   requireAuth,
+  checkRole(["admin", "collaborator"]),
   validateDataParams(loteIdParamSchema),
   validateDataBody(updateLoteSchema),
   updateLoteController
@@ -36,8 +52,17 @@ routerLote.put(
 routerLote.delete(
   "/:id_lote",
   requireAuth,
+  checkRole(["admin", "collaborator"]),
   validateDataParams(loteIdParamSchema),
   deleteLoteController
+);
+routerLote.post(
+  "/:id_lote/merma",
+  requireAuth,
+  checkRole(["admin", "collaborator"]),
+  validateDataParams(loteIdParamSchema),
+  validateDataBody(createMermaSchema),
+  createMermaController
 );
 
 export default routerLote;

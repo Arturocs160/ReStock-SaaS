@@ -26,77 +26,137 @@ ReStock-SaaS es una solución integral que resuelve estos problemas proporcionan
 | **Pruebas (Testing)**              | Jest (Unitarias/Integración), Cypress (E2E), K6 (Carga) |
 | **CI/CD**                          | GitHub Actions                                          |
 
-## Instalación
+## Instalación y Ejecución
 
 ### Requisitos Previos
 
-- Docker y Docker Compose instalados
-- Git
-- Node.js 24+
+- **Git**
+- **Node.js 24+** y **npm** (para ejecución local y hooks de commits)
+- **Docker y Docker Compose** (para ejecución mediante contenedores, recomendado)
+- **PostgreSQL 18+** y **Redis** (solo si se prefiere ejecución local nativa sin contenedores)
 
-### Opción 1: Docker (Recomendado)
+---
 
-1. Clona el repositorio:
+### Opción 1: Docker (Recomendado para Desarrollo Rápido)
 
-```bash
-git clone https://github.com/Arturocs160/ReStock-SaaS.git
-cd ReStock-SaaS
-```
+Esta opción es la más sencilla y recomendada, ya que levanta todos los servicios (frontend, backend, base de datos e in-memory store) con soporte para recarga en vivo (hot-reload) e inicializa la base de datos automáticamente mediante el archivo `init.sql`.
 
-2. Configura `.env` con tus valores:
+1. **Clonar el repositorio:**
+   ```bash
+   git clone https://github.com/Arturocs160/ReStock-SaaS.git
+   cd ReStock-SaaS
+   ```
 
-```env
+2. **Configurar el archivo de entorno raíz:**
+   Copia el archivo de ejemplo de la raíz a `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+   *(Este archivo define la contraseña de desarrollo de la base de datos `DATABASE_PASSWORD_DEV`, requerida por `docker-compose.dev.yml`)*.
 
-# --- Variables de Entorno del Sistema ---
-# Conexión a la base de datos (PostgreSQL / Supabase)
-DATABASE_URL=postgresql://restock:restock123@localhost:5432/restock
+3. **Configurar variables de entorno de las aplicaciones:**
+   Dado que los archivos `.env` reales están en `.gitignore`, copia los archivos `.env.example` provistos para habilitar el enlace interno en Docker:
+   - **Backend:** Copia [apps/api/.env.example](./apps/api/.env.example) a `apps/api/.env.development`:
+     ```bash
+     cp apps/api/.env.example apps/api/.env.development
+     ```
+     *(Por defecto ya viene configurado para conectarse con los contenedores `postgres` y `redis`)*:
+     ```env
+     FRONTEND_URL=http://localhost:3000
+     DATABASE_URL=postgresql://postgres:examplePassword@postgres:5432/postgres
+     BETTER_AUTH_SECRET=MopgvE2RRzk5IGFld8n2FxulVAbMfphi # Generar con: openssl rand -base64 32
+     BETTER_AUTH_URL=http://localhost:3010
+     RESEND_API_KEY=tu_api_key_de_resend
+     REDIS_URL=redis://redis:6379
+     ```
+   - **Frontend:** Copia [apps/web/.env.example](./apps/web/.env.example) a `apps/web/.env.development`:
+     ```bash
+     cp apps/web/.env.example apps/web/.env.development
+     ```
+     *(Por defecto ya viene configurado para conectarse con la API REST)*:
+     ```env
+     NEXT_PUBLIC_API_URL=http://localhost:3010
+     ```
 
-# Conexión a Redis
-REDIS_URL=redis://localhost:6379
+4. **Levantar el entorno de desarrollo:**
+   Ejecuta Docker Compose indicando el archivo de desarrollo para compilar e iniciar los contenedores:
+   ```bash
+   docker compose -f docker-compose.dev.yml up --build
+   ```
 
-# URLs de los servicios
-FRONTEND_URL=http://localhost:3000
-NEXT_PUBLIC_API_URL=http://localhost:3010
+5. **Acceso a los servicios:**
+   - **Frontend (Interfaz Web):** [http://localhost:3000](http://localhost:3000)
+   - **Backend (API REST):** [http://localhost:3010](http://localhost:3010) (Verificar estado en: [http://localhost:3010/health](http://localhost:3010/health))
+   - **Base de datos (PostgreSQL):** Conexión en `localhost:5432` (Usuario: `postgres`, Contraseña: la definida en `.env` (ej. `examplePassword`), BD: `postgres`)
+   - **Redis (Caché):** Conexión en `localhost:6379`
 
-```
+---
 
-4. Inicia los servicios:
+### Opción 2: Instalación Local (Directamente en la Máquina Host)
 
-```bash
-docker-compose up --build
-```
+Si deseas levantar únicamente las bases de datos en contenedores Docker y ejecutar las aplicaciones de Node.js y Next.js de manera nativa:
 
-5. Accede a la aplicación:
+1. **Instalar dependencias y activar Git Hooks (Husky):**
+   Desde la raíz del proyecto, instala para configurar commitlint y hooks:
+   ```bash
+   npm install
+   ```
 
-- Interfaz web: http://localhost:3000
-- API: http://localhost:3010
+2. **Instalar dependencias de cada aplicación:**
+   ```bash
+   # Instalar dependencias del backend
+   cd apps/api && npm install
+   
+   # Instalar dependencias del frontend
+   cd ../web && npm install
+   
+   # Regresar a la raíz
+   cd ../..
+   ```
 
-### Opción 2: Instalación Local
+3. **Iniciar Base de Datos y Redis usando Docker:**
+   Puedes iniciar solo los contenedores de PostgreSQL y Redis utilizando la configuración de desarrollo:
+   ```bash
+   docker compose -f docker-compose.dev.yml up -d postgres redis
+   ```
+   *Esto inicializará automáticamente el esquema de tablas usando el archivo [init.sql](./init.sql) en el puerto `5432` y levantará Redis en el `6379` de localhost.*
 
-1. Instala las dependencias raíz para activar Husky y la validación de commits:
+4. **Configurar las variables de entorno locales:**
+   Como la API correrá de forma nativa en tu máquina host (fuera de la red virtual de Docker), debes crear el archivo de entorno y configurarlo para apuntar a `localhost` en lugar de a los alias internos de Docker (`postgres` y `redis`).
 
-```bash
-npm install
-```
+   - **Backend (`apps/api/.env.development`):**
+     Copia el archivo de ejemplo:
+     ```bash
+     cp apps/api/.env.example apps/api/.env.development
+     ```
+     Y edítalo en [apps/api/.env.development](./apps/api/.env.development) para usar las rutas locales en localhost:
+     ```env
+     FRONTEND_URL=http://localhost:3000
+     DATABASE_URL=postgresql://postgres:examplePassword@localhost:5432/postgres
+     BETTER_AUTH_SECRET=MopgvE2RRzk5IGFld8n2FxulVAbMfphi # Generar con: openssl rand -base64 32
+     BETTER_AUTH_URL=http://localhost:3010
+     RESEND_API_KEY=tu_api_key_de_resend
+     REDIS_URL=redis://localhost:6379
+     ```
 
-2. Instala dependencias de cada aplicación:
+   - **Frontend (`apps/web/.env.development`):**
+     Copia el archivo de ejemplo:
+     ```bash
+     cp apps/web/.env.example apps/web/.env.development
+     ```
+     *(Por defecto ya viene configurado apuntando a la API en `http://localhost:3010`)*.
 
-```bash
-cd apps/api && npm install
-cd ../web && npm install
-```
+5. **Ejecutar los servidores en modo desarrollo:**
+   - **Backend (API):**
+     ```bash
+     cd apps/api && npm run dev
+     ```
+   - **Frontend (Web):**
+     ```bash
+     cd apps/web && npm run dev
+     ```
 
-3. Configura PostgreSQL y crea la base de datos
-
-4. Inicia los servidores en desarrollo:
-
-```bash
-# Terminal 1 - Backend
-cd apps/api && npm run dev
-
-# Terminal 2 - Frontend
-cd apps/web && npm run dev
-```
+---
 
 ## Husky y Conventional Commits
 
@@ -141,41 +201,30 @@ ReStock-SaaS/
 
 - API REST en Node.js
 - Manejo de inventario, ventas y alertas
-- Integración con PostgreSQL
+- Integración con PostgreSQL y Redis
 
 **apps/web**
 
-- Interfaz de usuario con Next.js
+- Interfaz de usuario interactiva en Next.js
 - Dashboard y gestión de inventario
 - Consumo de API REST
 
-## Configuración
+## Pruebas y Control de Calidad
 
-### Variables de Entorno
-
-| Variable              | Descripción                                | Requerida |
-| --------------------- | ------------------------------------------ | --------- |
-| `DATABASE_URL`        | URL de conexión para PostgreSQL / Supabase | Sí        |
-| `REDIS_URL`           | URL de conexión para Redis                 | Sí        |
-| `FRONTEND_URL`        | URL del frontend (CORS y Auth)             | Sí        |
-| `NEXT_PUBLIC_API_URL` | URL del API consumida por el frontend      | Sí        |
-
-## Desarrollo
-
-### Comandos Disponibles
+El repositorio incluye comandos centralizados en la raíz para facilitar las pruebas y validación del código:
 
 ```bash
-# Backend
-cd apps/api
-npm run dev        # Inicia en modo desarrollo
-npm run build      # Compila para producción
-npm test           # Ejecuta pruebas
+# Ejecutar pruebas unitarias/integración del backend
+npm run test:backend
 
-# Frontend
-cd apps/web
-npm run dev        # Inicia en modo desarrollo
-npm run build      # Compila para producción
-npm test           # Ejecuta pruebas
+# Ejecutar pruebas unitarias/integración del frontend
+npm run test:frontend
+
+# Ejecutar todas las pruebas del proyecto
+npm run test:all
+
+# Validar linting y compilación (mismo chequeo ejecutado en CI y pre-commits)
+npm run check
 ```
 
 ## Contribución

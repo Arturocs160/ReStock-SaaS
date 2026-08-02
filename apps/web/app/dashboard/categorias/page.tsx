@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "../../store/authStore";
 import { Sidebar } from "../../components/dashboard/Sidebar";
 import { Topbar } from "../../components/dashboard/Topbar";
 import CategoriasPanel from "../../components/dashboard/CategoriasPanel";
@@ -8,16 +10,28 @@ import { productsApi } from "../../lib/api";
 import { Categoria } from "../../types/inventario";
 import { CheckCircle2, AlertTriangle, X } from "lucide-react";
 import { categoriaSchema } from "../../lib/validationsInventario";
+import { useToastStore } from "../../store/toastStore";
 
 export default function CategoriasPage() {
+  const { user } = useAuthStore();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user?.role === "cashier") {
+      router.replace("/dashboard/ventas");
+    }
+  }, [user, router]);
+
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [loading, setLoading] = useState(true);
-  const [toast, setToast] = useState<{ message: string; type: "success" | "info" | "error" } | null>(null);
+  const globalToast = useToastStore();
 
   // Estados para Modales
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
   const [showEditCategoryModal, setShowEditCategoryModal] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<Categoria | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<Categoria | null>(
+    null,
+  );
 
   // Campos de formulario
   const [newCatNombre, setNewCatNombre] = useState("");
@@ -28,10 +42,7 @@ export default function CategoriasPage() {
   // Errores de validación de campos
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
-  const showToastMsg = (message: string, type: "success" | "info" | "error" = "success") => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
-  };
+  // showToastMsg is centralized via globalToast
 
   // Inicialización y sincronización con el backend
   useEffect(() => {
@@ -43,7 +54,7 @@ export default function CategoriasPage() {
         setCategorias(apiCats);
       } catch (err) {
         console.warn("Error al obtener categorías de la API:", err);
-        showToastMsg("Error al cargar las categorías", "error");
+        globalToast.error("Error al cargar las categorías", { title: "ERROR" });
       } finally {
         setLoading(false);
       }
@@ -84,10 +95,10 @@ export default function CategoriasPage() {
       setNewCatDescripcion("");
       setFieldErrors({});
       setShowAddCategoryModal(false);
-      showToastMsg("Categoría creada con éxito", "success");
+      globalToast.success("Categoría creada con éxito", { title: "CATEGORÍA CREADA" });
     } catch (err: any) {
-      console.warn(err);
-      showToastMsg(err.message || "Error al crear la categoría", "error");
+      console.error(err);
+      globalToast.error(err.message || "Error al crear la categoría", { title: "ERROR" });
     }
   };
 
@@ -123,23 +134,28 @@ export default function CategoriasPage() {
     }
 
     try {
-      const updatedCategory = await productsApi.updateCategory(selectedCategory.id_categoria, {
-        nombre: editCatNombre.trim(),
-        descripcion: editCatDescripcion.trim() || null,
-      });
+      const updatedCategory = await productsApi.updateCategory(
+        selectedCategory.id_categoria,
+        {
+          nombre: editCatNombre.trim(),
+          descripcion: editCatDescripcion.trim() || null,
+        },
+      );
 
       setCategorias(
         categorias.map((cat) =>
-          cat.id_categoria === selectedCategory.id_categoria ? updatedCategory : cat
-        )
+          cat.id_categoria === selectedCategory.id_categoria
+            ? updatedCategory
+            : cat,
+        ),
       );
       setShowEditCategoryModal(false);
       setSelectedCategory(null);
       setFieldErrors({});
-      showToastMsg("Categoría actualizada con éxito", "success");
+      globalToast.success("Categoría actualizada con éxito", { title: "CATEGORÍA ACTUALIZADA" });
     } catch (err: any) {
-      console.warn(err);
-      showToastMsg(err.message || "Error al actualizar la categoría", "error");
+      console.error(err);
+      globalToast.error(err.message || "Error al actualizar la categoría", { title: "ERROR" });
     }
   };
 
@@ -151,17 +167,22 @@ export default function CategoriasPage() {
     try {
       const updatedCategory = await productsApi.toggleCategoryActive(id);
       setCategorias(
-        categorias.map((cat) => (cat.id_categoria === id ? updatedCategory : cat))
+        categorias.map((cat) =>
+          cat.id_categoria === id ? updatedCategory : cat,
+        ),
       );
 
       if (target.activo) {
-        showToastMsg("Categoría eliminada con éxito (Soft Delete)", "success");
+        globalToast.success("Categoría eliminada con éxito (Soft Delete)", { title: "CATEGORÍA ELIMINADA" });
       } else {
-        showToastMsg("Categoría restaurada con éxito", "success");
+        globalToast.success("Categoría restaurada con éxito", { title: "CATEGORÍA RESTAURADA" });
       }
     } catch (err: any) {
       console.warn(err);
-      showToastMsg(err.message || "Error al cambiar el estado de la categoría", "error");
+      globalToast.error(
+        err.message || "Error al cambiar el estado de la categoría",
+        { title: "ERROR" }
+      );
     }
   };
 
@@ -173,27 +194,7 @@ export default function CategoriasPage() {
         <Topbar />
 
         <main className="p-4 md:p-6">
-          {/* Toast Notification */}
-          {toast && (
-            <div className="fixed top-5 right-5 z-[100] animate-scale-up">
-              <div
-                className={`flex items-center gap-3 px-5 py-4 rounded-xl shadow-lg border backdrop-blur-md ${
-                  toast.type === "success"
-                    ? "bg-[#eafaf1]/95 text-[#00a365] border-[#00a365]/30"
-                    : toast.type === "error"
-                    ? "bg-red-50/95 text-red-700 border-red-200"
-                    : "bg-blue-50/95 text-blue-700 border-blue-200"
-                }`}
-              >
-                {toast.type === "success" && <CheckCircle2 className="w-5 h-5 shrink-0" />}
-                {toast.type === "error" && <AlertTriangle className="w-5 h-5 shrink-0" />}
-                <span className="text-sm font-semibold">{toast.message}</span>
-                <button onClick={() => setToast(null)} className="ml-2 hover:opacity-70 cursor-pointer">
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          )}
+          {/* Toast Notification centralized */}
 
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20 bg-white border border-gray-100 rounded-2xl shadow-sm space-y-4">
@@ -201,7 +202,9 @@ export default function CategoriasPage() {
                 <div className="absolute inset-0 border-4 border-gray-100 rounded-full"></div>
                 <div className="absolute inset-0 border-4 border-t-[#00a365] rounded-full animate-spin"></div>
               </div>
-              <p className="text-sm text-gray-500 font-medium animate-pulse">Cargando categorías...</p>
+              <p className="text-sm text-gray-500 font-medium animate-pulse">
+                Cargando categorías...
+              </p>
             </div>
           ) : (
             <CategoriasPanel
@@ -220,7 +223,9 @@ export default function CategoriasPage() {
             <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
               <div className="bg-white border border-gray-100 rounded-[24px] w-full max-w-md p-6 shadow-xl space-y-4 animate-scale-up">
                 <div className="flex items-center justify-between border-b pb-3">
-                  <h3 className="text-lg font-bold text-gray-900">Nueva Categoría</h3>
+                  <h3 className="text-lg font-bold text-gray-900">
+                    Nueva Categoría
+                  </h3>
                   <button
                     onClick={() => {
                       setShowAddCategoryModal(false);
@@ -244,11 +249,15 @@ export default function CategoriasPage() {
                       value={newCatNombre}
                       onChange={(e) => setNewCatNombre(e.target.value)}
                       className={`w-full px-4 py-2.5 bg-gray-50 border ${
-                        fieldErrors.nombre ? "border-red-500 focus:ring-red-200" : "border-gray-200 focus:ring-primary"
+                        fieldErrors.nombre
+                          ? "border-red-500 focus:ring-red-200"
+                          : "border-gray-200 focus:ring-primary"
                       } rounded-xl text-sm focus:outline-none focus:ring-2 focus:bg-white`}
                     />
                     {fieldErrors.nombre && (
-                      <p className="text-xs text-red-500 font-semibold mt-1">{fieldErrors.nombre}</p>
+                      <p className="text-xs text-red-500 font-semibold mt-1">
+                        {fieldErrors.nombre}
+                      </p>
                     )}
                   </div>
                   <div className="space-y-1.5">
@@ -260,11 +269,15 @@ export default function CategoriasPage() {
                       value={newCatDescripcion}
                       onChange={(e) => setNewCatDescripcion(e.target.value)}
                       className={`w-full px-4 py-2.5 bg-gray-50 border ${
-                        fieldErrors.descripcion ? "border-red-500 focus:ring-red-200" : "border-gray-200 focus:ring-primary"
+                        fieldErrors.descripcion
+                          ? "border-red-500 focus:ring-red-200"
+                          : "border-gray-200 focus:ring-primary"
                       } rounded-xl text-sm focus:outline-none focus:ring-2 focus:bg-white min-h-[100px] resize-none`}
                     />
                     {fieldErrors.descripcion && (
-                      <p className="text-xs text-red-500 font-semibold mt-1">{fieldErrors.descripcion}</p>
+                      <p className="text-xs text-red-500 font-semibold mt-1">
+                        {fieldErrors.descripcion}
+                      </p>
                     )}
                   </div>
                   <div className="flex justify-end gap-3 pt-2">
@@ -297,7 +310,9 @@ export default function CategoriasPage() {
             <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
               <div className="bg-white border border-gray-100 rounded-[24px] w-full max-w-md p-6 shadow-xl space-y-4 animate-scale-up">
                 <div className="flex items-center justify-between border-b pb-3">
-                  <h3 className="text-lg font-bold text-gray-900">Editar Categoría</h3>
+                  <h3 className="text-lg font-bold text-gray-900">
+                    Editar Categoría
+                  </h3>
                   <button
                     onClick={() => {
                       setShowEditCategoryModal(false);
@@ -320,11 +335,15 @@ export default function CategoriasPage() {
                       value={editCatNombre}
                       onChange={(e) => setEditCatNombre(e.target.value)}
                       className={`w-full px-4 py-2.5 bg-gray-50 border ${
-                        fieldErrors.nombre ? "border-red-500 focus:ring-red-200" : "border-gray-200 focus:ring-primary"
+                        fieldErrors.nombre
+                          ? "border-red-500 focus:ring-red-200"
+                          : "border-gray-200 focus:ring-primary"
                       } rounded-xl text-sm focus:outline-none focus:ring-2 focus:bg-white`}
                     />
                     {fieldErrors.nombre && (
-                      <p className="text-xs text-red-500 font-semibold mt-1">{fieldErrors.nombre}</p>
+                      <p className="text-xs text-red-500 font-semibold mt-1">
+                        {fieldErrors.nombre}
+                      </p>
                     )}
                   </div>
                   <div className="space-y-1.5">
@@ -336,11 +355,15 @@ export default function CategoriasPage() {
                       value={editCatDescripcion}
                       onChange={(e) => setEditCatDescripcion(e.target.value)}
                       className={`w-full px-4 py-2.5 bg-gray-50 border ${
-                        fieldErrors.descripcion ? "border-red-500 focus:ring-red-200" : "border-gray-200 focus:ring-primary"
+                        fieldErrors.descripcion
+                          ? "border-red-500 focus:ring-red-200"
+                          : "border-gray-200 focus:ring-primary"
                       } rounded-xl text-sm focus:outline-none focus:ring-2 focus:bg-white min-h-[100px] resize-none`}
                     />
                     {fieldErrors.descripcion && (
-                      <p className="text-xs text-red-500 font-semibold mt-1">{fieldErrors.descripcion}</p>
+                      <p className="text-xs text-red-500 font-semibold mt-1">
+                        {fieldErrors.descripcion}
+                      </p>
                     )}
                   </div>
                   <div className="flex justify-end gap-3 pt-2">

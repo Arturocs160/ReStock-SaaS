@@ -1,73 +1,55 @@
-version: '3.8'
-
 services:
-  postgres:
-    image: postgres:18.4-alpine3.23
-    container_name: restock-db
-    environment:
-      POSTGRES_USER: ${DB_USER:-restock}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-restock123}
-      POSTGRES_DB: ${DB_NAME:-restock}
-    ports:
-      - "${DB_PORT:-5432}:5432"
+
+  redis:
+    image: redis:8.8.0-alpine
+    container_name: restock-redis
     volumes:
-      - postgres_data:/var/lib/postgresql
+      - restock_redis:/data
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-restock}" ]
+      test: [ "CMD-SHELL", "redis-cli ping" ]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
-      - restock-network
+      - restock_network
 
-  api:
+  backend:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
-      target: ${NODE_ENV:-development}
-    container_name: restock-api
-    environment:
-      NODE_ENV: ${NODE_ENV:-development}
-      DATABASE_URL: postgresql://${DB_USER:-restock}:${DB_PASSWORD:-restock123}@postgres:5432/${DB_NAME:-restock}
-      JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
-      PORT: 3010
+      target: production
+    env_file:
+      - ./apps/api/.env.production
+    container_name: restock-backend
     ports:
-      - "${API_PORT:-3010}:3010"
+      - "3010:3010"
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - restock_network
     depends_on:
-      postgres:
+      redis:
         condition: service_healthy
-    volumes:
-      - ${NODE_ENV:-development}:/app/apps/api/node_modules
-      - ./apps/api/src:/app/apps/api/src
-    networks:
-      - restock-network
-    restart: unless-stopped
-
-  web:
-    build:
-      context: .
-      dockerfile: apps/web/Dockerfile
-      target: ${NODE_ENV:-development}
-    container_name: restock-web
-    environment:
-      NODE_ENV: ${NODE_ENV:-development}
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3010}
-    ports:
-      - "${WEB_PORT:-3000}:3000"
-    depends_on:
-      - api
-    volumes:
-      - ${NODE_ENV:-development}:/app/apps/web/node_modules
-      - ./apps/web/app:/app/apps/web/app
-      - ./apps/web/public:/app/apps/web/public
-    networks:
-      - restock-network
-    restart: unless-stopped
-
-volumes:
-  postgres_data:
-  development:
+    healthcheck:
+      test: [ "CMD-SHELL", 'node -e "fetch(''http://127.0.0.1:3010/health'').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))"' ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
-  restock-network:
+  restock_network:
     driver: bridge
+
+volumes:
+  restock_redis:
+

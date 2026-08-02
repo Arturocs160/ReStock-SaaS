@@ -12,7 +12,6 @@ const routerNegocio: Router = Router();
 routerNegocio.get("/", requireAuth, getNegocioController);
 routerNegocio.put("/", requireAuth, validateDataBody(updateNegocioSchema), updateNegocioController);
 
-
 // GET /negocio/:id_negocio/usuarios
 routerNegocio.get(
   "/:id_negocio/usuarios",
@@ -26,7 +25,8 @@ routerNegocio.get(
       // Impedir fuga de datos / validar multi-tenant
       if (sessionTenantId !== id_negocio) {
         return res.status(403).json({
-          message: "Acceso denegado. No tienes permisos para consultar la información de este negocio."
+          message:
+            "Acceso denegado. No tienes permisos para consultar la información de este negocio.",
         });
       }
 
@@ -54,7 +54,7 @@ routerNegocio.put(
 
       if (sessionTenantId !== id_negocio || !requestorId) {
         return res.status(403).json({
-          message: "Acceso denegado. No tienes permisos para este negocio."
+          message: "Acceso denegado. No tienes permisos para este negocio.",
         });
       }
 
@@ -85,7 +85,7 @@ routerNegocio.delete(
 
       if (sessionTenantId !== id_negocio || !requestorId) {
         return res.status(403).json({
-          message: "Acceso denegado. No tienes permisos para este negocio."
+          message: "Acceso denegado. No tienes permisos para este negocio.",
         });
       }
 
@@ -99,4 +99,3 @@ routerNegocio.delete(
 );
 
 export default routerNegocio;
-

@@ -33,17 +33,21 @@ export async function createVentaTransactionModel(
             l.codigo_lote,
             l.cantidad_inicial,
             p.nombre AS producto_nombre,
-            (l.cantidad_inicial - COALESCE((SELECT SUM(d.cantidad_sold) FROM public.detalle_va_venta d WHERE d.id_lote = l.id_lote), 0))::integer AS cantidad_actual
+            (l.cantidad_inicial - 
+             COALESCE((SELECT SUM(d.cantidad_sold) FROM public.detalle_va_venta d WHERE d.id_lote = l.id_lote), 0) - 
+             COALESCE((SELECT SUM(m.cantidad) FROM public.merma m WHERE m.id_lote = l.id_lote), 0))::integer AS cantidad_actual
         FROM public.lote_inventario l
         INNER JOIN public.producto p ON l.id_producto = p.id_producto
         WHERE l.id_lote = $1 AND p.id_negocio = $2 AND l.activo = true AND p.activo = true
         FOR UPDATE;
       `;
-      
+
       const stockRes = await client.query(stockQuery, [item.id_lote, id_negocio]);
 
       if (stockRes.rowCount === 0) {
-        throw new Error(`El lote con ID ${item.id_lote} no existe, está inactivo o no pertenece a tu negocio.`);
+        throw new Error(
+          `El lote con ID ${item.id_lote} no existe, está inactivo o no pertenece a tu negocio.`
+        );
       }
 
       const lote = stockRes.rows[0];
@@ -89,4 +93,86 @@ export async function createVentaTransactionModel(
   } finally {
     client.release();
   }
+}
+
+export async function getVentasMetricasModel(id_negocio: string, userId?: string) {
+  const params = userId ? [id_negocio, userId] : [id_negocio];
+  const res = await pool.query(
+    `
+      SELECT
+        COALESCE(SUM(d.cantidad_sold * d.precio_unitario), 0)::float AS ingresos,
+        COUNT(DISTINCT v.id_venta)::integer AS transacciones,
+        COALESCE(
+          SUM(d.cantidad_sold * d.precio_unitario) / NULLIF(COUNT(DISTINCT v.id_venta), 0),
+          0
+        )::float AS ticket_promedio
+      FROM public.venta v
+      LEFT JOIN public.detalle_va_venta d ON d.id_venta = v.id_venta
+      WHERE v.id_negocio = $1
+        ${userId ? "AND v.userid = $2" : ""};
+      `,
+    params
+  );
+
+  return res.rows[0];
+}
+
+export async function getVentasHistorialModel(id_negocio: string, q?: string, userId?: string) {
+  const search = q?.trim();
+  const params: any[] = [id_negocio];
+  let searchParamIndex = 0;
+  let userIdParamIndex = 0;
+
+  if (search) {
+    params.push(`%${search}%`);
+    searchParamIndex = params.length;
+  }
+  if (userId) {
+    params.push(userId);
+    userIdParamIndex = params.length;
+  }
+
+  const res = await pool.query(
+    `
+      SELECT
+        v.id_venta,
+        v.id_negocio,
+        v.userid,
+        v.fecha_transaccion,
+        u.name AS cajero_nombre,
+        u.email AS cajero_email,
+        d.id_detalle,
+        d.id_lote,
+        d.cantidad_sold,
+        d.precio_unitario,
+        (d.cantidad_sold * d.precio_unitario)::float AS subtotal,
+        l.codigo_lote,
+        p.id_producto,
+        p.nombre AS producto_nombre,
+        p.codigo_barras
+      FROM public.venta v
+      INNER JOIN public."user" u ON u.id = v.userid
+      INNER JOIN public.detalle_va_venta d ON d.id_venta = v.id_venta
+      INNER JOIN public.lote_inventario l ON l.id_lote = d.id_lote
+      INNER JOIN public.producto p ON p.id_producto = l.id_producto
+      WHERE v.id_negocio = $1
+        AND p.id_negocio = $1
+        ${userIdParamIndex ? `AND v.userid = $${userIdParamIndex}` : ""}
+        ${
+          searchParamIndex
+            ? `AND (
+                v.id_venta::text ILIKE $${searchParamIndex}
+                OR u.name ILIKE $${searchParamIndex}
+                OR u.email ILIKE $${searchParamIndex}
+                OR p.nombre ILIKE $${searchParamIndex}
+                OR p.codigo_barras ILIKE $${searchParamIndex}
+              )`
+            : ""
+        }
+      ORDER BY v.fecha_transaccion DESC, v.id_venta, d.id_detalle;
+      `,
+    params
+  );
+
+  return res.rows;
 }

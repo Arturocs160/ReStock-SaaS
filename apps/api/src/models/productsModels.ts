@@ -177,13 +177,17 @@ export async function getPosCatalogModel(id_negocio: string) {
             l.fecha_ingreso::text AS fecha_ingreso,
             l.fecha_caducidad::text AS fecha_caducidad,
             l.cantidad_inicial,
-            (l.cantidad_inicial - COALESCE((SELECT SUM(d.cantidad_sold) FROM public.detalle_va_venta d WHERE d.id_lote = l.id_lote), 0)) AS cantidad_actual,
+            (l.cantidad_inicial - 
+             COALESCE((SELECT SUM(d.cantidad_sold) FROM public.detalle_va_venta d WHERE d.id_lote = l.id_lote), 0) - 
+             COALESCE((SELECT SUM(m.cantidad) FROM public.merma m WHERE m.id_lote = l.id_lote), 0)) AS cantidad_actual,
             l.activo AS lote_activo
         FROM public.producto p
         LEFT JOIN public.categoria c ON p.id_categoria = c.id_categoria
         LEFT JOIN public.lote_inventario l ON p.id_producto = l.id_producto 
             AND l.activo = true 
-            AND (l.cantidad_inicial - COALESCE((SELECT SUM(d.cantidad_sold) FROM public.detalle_va_venta d WHERE d.id_lote = l.id_lote), 0)) > 0
+            AND (l.cantidad_inicial - 
+                 COALESCE((SELECT SUM(d.cantidad_sold) FROM public.detalle_va_venta d WHERE d.id_lote = l.id_lote), 0) - 
+                 COALESCE((SELECT SUM(m.cantidad) FROM public.merma m WHERE m.id_lote = l.id_lote), 0)) > 0
         WHERE p.id_negocio = $1 AND p.activo = true
         ORDER BY p.nombre ASC, l.fecha_caducidad ASC NULLS LAST;
     `,
@@ -192,4 +196,3 @@ export async function getPosCatalogModel(id_negocio: string) {
 
   return res.rows;
 }
-

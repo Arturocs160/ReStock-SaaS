@@ -1,5 +1,6 @@
 import { Sidebar } from "../../components/dashboard/Sidebar";
 import { Topbar } from "../../components/dashboard/Topbar";
+import { HistoryPanel } from "./components/HistoryPanel";
 
 export default function HistorialPage() {
   return (
@@ -10,13 +11,7 @@ export default function HistorialPage() {
         <Topbar />
 
         <main className="p-4 md:p-6">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Historial de Ventas
-          </h1>
-
-          <p className="text-gray-500 mt-2">
-            Página simulada para el historial de ventas.
-          </p>
+          <HistoryPanel />
         </main>
       </div>
     </div>
