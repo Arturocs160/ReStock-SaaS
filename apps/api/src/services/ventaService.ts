@@ -13,8 +13,8 @@ export async function createVentaService(
   return await createVentaTransactionModel(id_negocio, userid, data.items);
 }
 
-export async function getVentasMetricasService(id_negocio: string) {
-  const metricas = await getVentasMetricasModel(id_negocio);
+export async function getVentasMetricasService(id_negocio: string, userId?: string) {
+  const metricas = await getVentasMetricasModel(id_negocio, userId);
 
   return {
     ingresos: Number(metricas.ingresos),
@@ -23,8 +23,8 @@ export async function getVentasMetricasService(id_negocio: string) {
   };
 }
 
-export async function getVentasHistorialService(id_negocio: string, q?: string) {
-  const rows = await getVentasHistorialModel(id_negocio, q);
+export async function getVentasHistorialService(id_negocio: string, q?: string, userId?: string) {
+  const rows = await getVentasHistorialModel(id_negocio, q, userId);
   const ventasMap = new Map<string, any>();
 
   for (const row of rows) {
