@@ -7,6 +7,7 @@ import { Plus, CheckCircle2, X, Clock, AlertTriangle } from "lucide-react";
 import { Sidebar } from "../../components/dashboard/Sidebar";
 import { Topbar } from "../../components/dashboard/Topbar";
 import { productsApi, lotesApi } from "../../lib/api";
+import { useToastStore } from "../../store/toastStore";
 
 // Import components
 import { Filters } from "../../components/inventario/Filters";
@@ -89,10 +90,7 @@ export default function LotesPage() {
   const [productos, setProductos] = useState<ProductoConStock[]>([]);
   const [categories, setCategories] = useState<Categoria[]>([]);
   const [loading, setLoading] = useState(true);
-  const [toast, setToast] = useState<{
-    message: string;
-    type: "success" | "info" | "error";
-  } | null>(null);
+  const globalToast = useToastStore();
 
   // --- Estados de Formularios y Modales ---
   const [expandedProducts, setExpandedProducts] = useState<
@@ -128,13 +126,7 @@ export default function LotesPage() {
     useState<ProductoConStock | null>(null);
   const [selectedLote, setSelectedLote] = useState<LoteInventario | null>(null);
 
-  const showToastMsg = (
-    message: string,
-    type: "success" | "info" | "error" = "success",
-  ) => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
-  };
+  // showToastMsg is centralized via globalToast
 
   const fetchInventory = async () => {
     try {
@@ -184,9 +176,9 @@ export default function LotesPage() {
       setProductos(populated);
     } catch (err) {
       console.error("Error loading inventory:", err);
-      showToastMsg(
+      globalToast.error(
         "Error al cargar el inventario de la base de datos.",
-        "error",
+        { title: "ERROR" }
       );
     } finally {
       setLoading(false);
@@ -231,7 +223,7 @@ export default function LotesPage() {
     minStockNum: number,
   ) => {
     if (!name || isNaN(priceNum) || isNaN(minStockNum)) {
-      showToastMsg("Por favor, llena los campos requeridos.", "error");
+      globalToast.error("Por favor, llena los campos requeridos.", { title: "ERROR DE VALIDACIÓN" });
       return;
     }
 
@@ -244,13 +236,13 @@ export default function LotesPage() {
         id_categoria: id_categoria,
       });
       setShowAddProductModal(false);
-      showToastMsg("¡Producto registrado con éxito!", "success");
+      globalToast.success("¡Producto registrado con éxito!", { title: "PRODUCTO REGISTRADO" });
       await fetchInventory();
     } catch (err) {
       console.error(err);
-      showToastMsg(
+      globalToast.error(
         err instanceof Error ? err.message : "Error al registrar el producto.",
-        "error",
+        { title: "ERROR" }
       );
     }
   };
@@ -268,15 +260,15 @@ export default function LotesPage() {
     if (selectedProduct) {
       try {
         await productsApi.delete(selectedProduct.id_producto);
-        showToastMsg("Producto eliminado permanentemente.", "info");
+        globalToast.info("Producto eliminado permanentemente.", { title: "PRODUCTO ELIMINADO" });
         setActiveModal(null);
         setSelectedProduct(null);
         await fetchInventory();
       } catch (err) {
         console.error(err);
-        showToastMsg(
+        globalToast.error(
           err instanceof Error ? err.message : "Error al eliminar el producto.",
-          "error",
+          { title: "ERROR" }
         );
       }
     }
@@ -301,7 +293,7 @@ export default function LotesPage() {
       isNaN(priceNum) ||
       isNaN(minStockNum)
     ) {
-      showToastMsg("Por favor, llena los campos requeridos.", "error");
+      globalToast.error("Por favor, llena los campos requeridos.", { title: "ERROR DE VALIDACIÓN" });
       return;
     }
 
@@ -314,13 +306,13 @@ export default function LotesPage() {
         id_categoria: id_categoria,
       });
       setShowEditProductModal(false);
-      showToastMsg("¡Producto actualizado con éxito!", "success");
+      globalToast.success("¡Producto actualizado con éxito!", { title: "PRODUCTO ACTUALIZADO" });
       await fetchInventory();
     } catch (err) {
       console.error(err);
-      showToastMsg(
+      globalToast.error(
         err instanceof Error ? err.message : "Error al actualizar el producto.",
-        "error",
+        { title: "ERROR" }
       );
     }
   };
@@ -337,7 +329,7 @@ export default function LotesPage() {
     expiry: string,
   ) => {
     if (!code || isNaN(qtyNum) || qtyNum <= 0) {
-      showToastMsg("Ingresa código de lote y cantidad válidos.", "error");
+      globalToast.error("Ingresa código de lote y cantidad válidos.", { title: "ERROR DE VALIDACIÓN" });
       return;
     }
 
@@ -345,7 +337,7 @@ export default function LotesPage() {
       (p) => p.id_producto === selectedProductIdForLote,
     );
     if (!targetProduct) {
-      showToastMsg("Producto no encontrado.", "error");
+      globalToast.error("Producto no encontrado.", { title: "ERROR" });
       return;
     }
 
@@ -358,13 +350,13 @@ export default function LotesPage() {
         cantidad_inicial: qtyNum,
       });
       setShowAddLoteModal(false);
-      showToastMsg(`Lote registrado para: ${targetProduct.nombre}`, "success");
+      globalToast.success(`Lote registrado para: ${targetProduct.nombre}`, { title: "LOTE REGISTRADO" });
       await fetchInventory();
     } catch (err) {
       console.error(err);
-      showToastMsg(
+      globalToast.error(
         err instanceof Error ? err.message : "Error al registrar el lote.",
-        "error",
+        { title: "ERROR" }
       );
     }
   };
@@ -382,9 +374,9 @@ export default function LotesPage() {
     expiry: string,
   ) => {
     if (!selectedLoteForEdit || !code || isNaN(qtyNum) || qtyNum < 0) {
-      showToastMsg(
+      globalToast.error(
         "Por favor, llena los campos requeridos correctamente.",
-        "error",
+        { title: "ERROR DE VALIDACIÓN" }
       );
       return;
     }
@@ -399,13 +391,13 @@ export default function LotesPage() {
         cantidad_inicial: qtyNum,
       });
       setShowEditLoteModal(false);
-      showToastMsg("¡Lote actualizado con éxito!", "success");
+      globalToast.success("¡Lote actualizado con éxito!", { title: "LOTE ACTUALIZADO" });
       await fetchInventory();
     } catch (err) {
       console.error(err);
-      showToastMsg(
+      globalToast.error(
         err instanceof Error ? err.message : "Error al actualizar el lote.",
-        "error",
+        { title: "ERROR" }
       );
     }
   };
@@ -425,16 +417,16 @@ export default function LotesPage() {
     if (selectedProduct && selectedLote) {
       try {
         await lotesApi.delete(selectedLote.id_lote);
-        showToastMsg("Lote dado de baja exitosamente.", "success");
+        globalToast.success("Lote dado de baja exitosamente.", { title: "LOTE DADO DE BAJA" });
         setActiveModal(null);
         setSelectedLote(null);
         setSelectedProduct(null);
         await fetchInventory();
       } catch (err) {
         console.error(err);
-        showToastMsg(
+        globalToast.error(
           err instanceof Error ? err.message : "Error al eliminar el lote.",
-          "error",
+          { title: "ERROR" }
         );
       }
     }
@@ -448,37 +440,7 @@ export default function LotesPage() {
         <Topbar />
 
         <main className="p-4 md:p-6">
-          {/* Toast Notification */}
-          {toast && (
-            <div className="fixed top-5 right-5 z-100 animate-scale-up">
-              <div
-                className={`flex items-center gap-3 px-5 py-4 rounded-xl shadow-lg border backdrop-blur-md ${
-                  toast.type === "success"
-                    ? "bg-[#eafaf1]/95 text-[#00a365] border-[#00a365]/30"
-                    : toast.type === "error"
-                      ? "bg-red-50/95 text-red-700 border-red-200"
-                      : "bg-blue-50/95 text-blue-700 border-blue-200"
-                }`}
-              >
-                {toast.type === "success" && (
-                  <CheckCircle2 className="w-5 h-5 shrink-0" />
-                )}
-                {toast.type === "error" && (
-                  <AlertTriangle className="w-5 h-5 shrink-0" />
-                )}
-                {toast.type === "info" && (
-                  <Clock className="w-5 h-5 shrink-0" />
-                )}
-                <span className="text-sm font-semibold">{toast.message}</span>
-                <button
-                  onClick={() => setToast(null)}
-                  className="ml-2 hover:opacity-70 cursor-pointer"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          )}
+          {/* Toast Notification centralized */}
 
           {/* TAB 3: INVENTARIO POR LOTES */}
           <div className="space-y-6 animate-fade-in">
