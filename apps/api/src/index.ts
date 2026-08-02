@@ -20,7 +20,8 @@ app.use(
   cors({
     origin: ["http://localhost:3000", process.env.FRONTEND_URL!],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "x-timezone"],
+    exposedHeaders: ["Content-Disposition"],
     credentials: true,
   })
 );

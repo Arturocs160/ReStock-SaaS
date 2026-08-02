@@ -13,38 +13,28 @@ import {
 } from "lucide-react";
 import { ProductoConStock } from "../../types/inventario";
 
-import { productsApi } from "../../lib/api";
+import { productsApi, comprasApi } from "../../lib/api";
+import { useToastStore } from "../../store/toastStore";
 
 export function PurchasePlanningPanel() {
   const [catalog, setCatalog] = useState<ProductoConStock[]>([]);
+  const [suggestions, setSuggestions] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [shoppingList, setShoppingList] = useState<
     { product: ProductoConStock; quantity: number }[]
   >([]);
-  const [toastMessage, setToastMessage] = useState<{
-    text: string;
-    type: "success" | "error";
-  } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  // Helper para mostrar notificaciones
-  const showToast = (
-    message: string,
-    type: "success" | "error" = "success",
-  ) => {
-    setToastMessage({ text: message, type });
-    setTimeout(() => {
-      setToastMessage(null);
-    }, 4000);
-  };
+  const globalToast = useToastStore();
 
   useEffect(() => {
-    productsApi
-      .getPosCatalog()
-      .then((data) => {
-        const mapped = (data || []).map((p) => ({
+    Promise.all([
+      productsApi.getPosCatalog(),
+      comprasApi.getSugerencias(),
+    ])
+      .then(([catalogData, suggestionsData]) => {
+        const mapped = (catalogData || []).map((p) => ({
           ...p,
           stock_actual: p.stock_actual !== undefined ? p.stock_actual : (p.lotes || []).reduce(
             (sum, l) => sum + (l.cantidad_actual || 0),
@@ -52,10 +42,11 @@ export function PurchasePlanningPanel() {
           ),
         }));
         setCatalog(mapped);
+        setSuggestions(suggestionsData || []);
       })
       .catch((err) => {
-        console.error("Error cargando catálogo", err);
-        showToast("Error cargando catálogo", "error");
+        console.error("Error cargando catálogo y sugerencias", err);
+        globalToast.error("Error cargando datos de reabastecimiento", { title: "ERROR" });
       })
       .finally(() => setIsLoading(false));
   }, []);
@@ -76,10 +67,6 @@ export function PurchasePlanningPanel() {
     );
   }, [searchTerm, catalog]);
 
-  const lowStockProducts = useMemo(() => {
-    return catalog.filter((p) => p.stock_actual < p.stock_minimo_sugerido);
-  }, [catalog]);
-
   const handleAdd = (product: ProductoConStock, quantity = 5) => {
     if (
       !shoppingList.find(
@@ -87,7 +74,7 @@ export function PurchasePlanningPanel() {
       )
     ) {
       setShoppingList([...shoppingList, { product, quantity }]);
-      showToast(`${product.nombre} añadido a la lista`);
+      globalToast.success(`${product.nombre} añadido a la lista`, { title: "LISTA DE COMPRAS" });
     }
   };
 
@@ -105,23 +92,34 @@ export function PurchasePlanningPanel() {
     );
   };
 
+  const handleSetQuantity = (id_producto: string, quantity: number) => {
+    setShoppingList((prev) =>
+      prev.map((item) => {
+        if (item.product.id_producto === id_producto) {
+          return { ...item, quantity };
+        }
+        return item;
+      }),
+    );
+  };
+
   const handleRemoveProduct = (id_producto: string) => {
     setShoppingList((prev) =>
       prev.filter((item) => item.product.id_producto !== id_producto),
     );
-    showToast("Producto removido de la lista de compras");
+    globalToast.info("Producto removido de la lista de compras", { title: "LISTA DE COMPRAS" });
   };
 
   const handleClearList = () => {
     if (shoppingList.length > 0) {
       setShoppingList([]);
-      showToast("Lista de compras vaciada");
+      globalToast.info("Lista de compras vaciada", { title: "LISTA DE COMPRAS" });
     }
   };
 
   const handleExecutePurchase = async () => {
     if (shoppingList.length === 0) {
-      showToast("La lista de compras está vacía.", "error");
+      globalToast.error("La lista de compras está vacía.", { title: "ERROR" });
       return;
     }
 
@@ -139,6 +137,7 @@ export function PurchasePlanningPanel() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "x-timezone": Intl.DateTimeFormat().resolvedOptions().timeZone,
         },
         credentials: "include",
         body: JSON.stringify(payload),
@@ -156,7 +155,7 @@ export function PurchasePlanningPanel() {
           } else {
             errorMessage = errorData.error || errorData.message || errorMessage;
           }
-        } catch (e) {}
+        } catch (e) { }
         throw new Error(errorMessage);
       }
 
@@ -166,11 +165,21 @@ export function PurchasePlanningPanel() {
       const a = document.createElement("a");
       a.href = url;
 
-      // Obtener el nombre del archivo de los headers si es posible, o usar un default
+      // Obtener el nombre del archivo de los headers si es posible, o usar un default formateado con fecha y hora
       const contentDisposition = response.headers.get("Content-Disposition");
-      let filename = "lista-reabastecimiento.pdf";
+      let filename = "";
       if (contentDisposition && contentDisposition.includes("filename=")) {
         filename = contentDisposition.split("filename=")[1].replace(/"/g, "");
+      } else {
+        const now = new Date();
+        const fecha = now.toLocaleDateString("es-MX", { day: "2-digit", month: "2-digit", year: "numeric" }).replace(/\//g, "-");
+        let horas = now.getHours();
+        const minutos = String(now.getMinutes()).padStart(2, "0");
+        const ampm = horas >= 12 ? "PM" : "AM";
+        horas = horas % 12;
+        horas = horas ? horas : 12;
+        const horasStr = String(horas).padStart(2, "0");
+        filename = `lista-reabastecimiento_${fecha}_${horasStr}-${minutos}_${ampm}.pdf`;
       }
 
       a.download = filename;
@@ -181,13 +190,13 @@ export function PurchasePlanningPanel() {
 
       // Vaciar carrito y notificar
       setShoppingList([]);
-      showToast("Orden registrada y PDF descargado correctamente.", "success");
+      globalToast.success("Orden registrada y PDF descargado correctamente.", { title: "ORDEN REGISTRADA" });
     } catch (error: any) {
       console.error(error);
-      showToast(
+      globalToast.error(
         error.message ||
-          "Error al registrar la orden. Por favor intente más tarde.",
-        "error",
+        "Error al registrar la orden. Por favor intente más tarde.",
+        { title: "ERROR" }
       );
     } finally {
       setIsSubmitting(false);
@@ -206,21 +215,7 @@ export function PurchasePlanningPanel() {
 
   return (
     <div className="flex flex-col lg:flex-row gap-6 mt-6 relative">
-      {/* Toast Notification */}
-      {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-bottom-5 fade-in duration-300">
-          <div
-            className={`px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 text-sm font-medium text-white ${toastMessage.type === "error" ? "bg-red-600" : "bg-gray-900"}`}
-          >
-            {toastMessage.type === "success" ? (
-              <CheckCircle className="w-4 h-4 text-green-400" />
-            ) : (
-              <AlertTriangle className="w-4 h-4 text-white" />
-            )}
-            {toastMessage.text}
-          </div>
-        </div>
-      )}
+      {/* Toast Notification centralized */}
 
       {/* Main Content: Search & Results */}
       <div className="flex-1 space-y-8">
@@ -233,17 +228,17 @@ export function PurchasePlanningPanel() {
             {isLoading ? (
               <span className="text-sm text-gray-500">Cargando...</span>
             ) : (
-              lowStockProducts.length > 0 && (
+              suggestions.length > 0 && (
                 <span className="flex items-center gap-1.5 bg-red-50 text-red-700 text-xs font-bold px-2.5 py-1 rounded-full border border-red-100">
                   <AlertTriangle className="w-3.5 h-3.5" />
-                  {lowStockProducts.length} críticos
+                  {suggestions.length} críticos
                 </span>
               )
             )}
           </div>
 
           <div className="p-0 sm:p-5">
-            {lowStockProducts.length === 0 ? (
+            {suggestions.length === 0 ? (
               <div className="text-center py-10 px-4">
                 <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-green-50 mb-4">
                   <CheckCircle className="h-7 w-7 text-green-500" />
@@ -271,6 +266,9 @@ export function PurchasePlanningPanel() {
                       <th className="px-4 py-3 font-medium text-center">
                         Mínimo
                       </th>
+                      <th className="px-4 py-3 font-medium text-center">
+                        Ventas (7d)
+                      </th>
                       <th className="px-4 py-3 font-medium text-center text-red-600">
                         Déficit
                       </th>
@@ -283,10 +281,15 @@ export function PurchasePlanningPanel() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
-                    {lowStockProducts.map((product) => {
-                      const deficit =
-                        product.stock_minimo_sugerido - product.stock_actual;
-                      const suggestedQuantity = Math.ceil(deficit / 5) * 5;
+                    {suggestions.map((sug) => {
+                      const product = catalog.find(
+                        (p) => p.id_producto === sug.id_producto,
+                      );
+                      if (!product) return null;
+
+                      const deficit = sug.deficit;
+                      const suggestedQuantity = sug.cantidad_sugerida;
+                      const ventas7d = sug.ventas_ultimos_7_dias;
                       const cartItem = shoppingList.find(
                         (item) =>
                           item.product.id_producto === product.id_producto,
@@ -312,6 +315,9 @@ export function PurchasePlanningPanel() {
                           <td className="px-4 py-3 text-center text-gray-500">
                             {product.stock_minimo_sugerido}
                           </td>
+                          <td className="px-4 py-3 text-center text-gray-500">
+                            {ventas7d} uds.
+                          </td>
                           <td className="px-4 py-3 text-center font-bold text-red-600">
                             -{deficit}
                           </td>
@@ -325,10 +331,9 @@ export function PurchasePlanningPanel() {
                               }
                               disabled={isInList}
                               className={`inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all
-                                ${
-                                  isInList
-                                    ? "bg-amber-50 text-amber-700 border border-amber-200 cursor-default"
-                                    : "bg-[#00a365] text-white hover:bg-[#008c54] hover:shadow-md active:scale-[0.97]"
+                                ${isInList
+                                  ? "bg-amber-50 text-amber-700 border border-amber-200 cursor-default"
+                                  : "bg-[#00a365] text-white hover:bg-[#008c54] hover:shadow-md active:scale-[0.97]"
                                 }`}
                             >
                               {isInList ? (
@@ -425,10 +430,9 @@ export function PurchasePlanningPanel() {
                             onClick={() => handleAdd(product, 5)}
                             disabled={isInList}
                             className={`w-full py-2.5 px-4 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2
-                              ${
-                                isInList
-                                  ? "bg-amber-50 text-amber-700 border border-amber-200 cursor-default"
-                                  : "bg-[#00a365] text-white hover:bg-[#008c54] hover:shadow-md active:scale-[0.98]"
+                              ${isInList
+                                ? "bg-amber-50 text-amber-700 border border-amber-200 cursor-default"
+                                : "bg-[#00a365] text-white hover:bg-[#008c54] hover:shadow-md active:scale-[0.98]"
                               }`}
                           >
                             {isInList ? (
@@ -542,9 +546,21 @@ export function PurchasePlanningPanel() {
                         >
                           <Minus className="w-3.5 h-3.5" />
                         </button>
-                        <span className="w-8 text-center text-sm font-medium text-gray-800">
-                          {item.quantity}
-                        </span>
+                        <input
+                          type="number"
+                          min="1"
+                          value={item.quantity || ""}
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value, 10);
+                            handleSetQuantity(item.product.id_producto, isNaN(val) ? 0 : val);
+                          }}
+                          onBlur={() => {
+                            if (item.quantity < 1) {
+                              handleSetQuantity(item.product.id_producto, 1);
+                            }
+                          }}
+                          className="w-12 text-center text-sm font-medium text-gray-800 bg-transparent focus:outline-none focus:ring-1 focus:ring-[#00a365]/30 rounded [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        />
                         <button
                           onClick={() =>
                             handleUpdateQuantity(item.product.id_producto, 1)
