@@ -23,12 +23,17 @@ export default function LoteItem({ lote, producto }: Props) {
       return { text: "Sin caducidad", className: "bg-gray-100 text-gray-700" };
     }
 
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
-    const caducidad = new Date(fechaCaducidad);
-    caducidad.setHours(0, 0, 0, 0);
+    // Normalización de la fecha actual a media noche UTC
+    const today = new Date();
+    const hoyUTC = new Date(
+      Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()),
+    );
 
-    const diffTime = caducidad.getTime() - hoy.getTime();
+    // Parseo seguro de fecha evitando desfases de zona horaria local
+    const [year, month, day] = fechaCaducidad.split("T")[0].split("-").map(Number);
+    const expiry = new Date(Date.UTC(year, month - 1, day));
+
+    const diffTime = expiry.getTime() - hoyUTC.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
     if (diffDays < 0) {
