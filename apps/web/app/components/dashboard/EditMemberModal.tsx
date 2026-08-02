@@ -35,7 +35,7 @@ export function EditMemberModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fade-in">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in">
       <div className="bg-white dark:bg-[#0f0f0f] border border-gray-100 dark:border-gray-900 rounded-[20px] w-full max-w-md overflow-hidden relative shadow-xl">
         {/* Header */}
         <div className="flex items-start justify-between p-6 pb-2">

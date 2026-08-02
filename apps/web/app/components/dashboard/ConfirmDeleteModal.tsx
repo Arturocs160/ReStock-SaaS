@@ -49,7 +49,7 @@ export function ConfirmDeleteModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
       <div className="bg-white dark:bg-[#0f0f0f] border border-gray-150 dark:border-gray-800 rounded-[24px] w-full max-w-md overflow-hidden relative shadow-2xl transition-all scale-100">
         {/* Close Button */}
         <button
