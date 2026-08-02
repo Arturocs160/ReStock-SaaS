@@ -85,6 +85,10 @@ export const productsApi = {
   getPosCatalog: () => apiFetch<ProductoConStock[]>("/products/pos/catalog"),
 };
 
+export const comprasApi = {
+  getSugerencias: () => apiFetch<any[]>("/compras/sugerencias"),
+};
+
 export const lotesApi = {
   getByProduct: (productId: string) =>
     apiFetch<LoteInventario[]>(`/lote/product/${productId}`),
