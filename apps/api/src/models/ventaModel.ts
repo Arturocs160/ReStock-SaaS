@@ -95,7 +95,8 @@ export async function createVentaTransactionModel(
   }
 }
 
-export async function getVentasMetricasModel(id_negocio: string) {
+export async function getVentasMetricasModel(id_negocio: string, userId?: string) {
+  const params = userId ? [id_negocio, userId] : [id_negocio];
   const res = await pool.query(
     `
       SELECT
@@ -107,17 +108,29 @@ export async function getVentasMetricasModel(id_negocio: string) {
         )::float AS ticket_promedio
       FROM public.venta v
       LEFT JOIN public.detalle_va_venta d ON d.id_venta = v.id_venta
-      WHERE v.id_negocio = $1;
+      WHERE v.id_negocio = $1
+        ${userId ? "AND v.userid = $2" : ""};
       `,
-    [id_negocio]
+    params
   );
 
   return res.rows[0];
 }
 
-export async function getVentasHistorialModel(id_negocio: string, q?: string) {
+export async function getVentasHistorialModel(id_negocio: string, q?: string, userId?: string) {
   const search = q?.trim();
-  const params = search ? [id_negocio, `%${search}%`] : [id_negocio];
+  const params: any[] = [id_negocio];
+  let searchParamIndex = 0;
+  let userIdParamIndex = 0;
+
+  if (search) {
+    params.push(`%${search}%`);
+    searchParamIndex = params.length;
+  }
+  if (userId) {
+    params.push(userId);
+    userIdParamIndex = params.length;
+  }
 
   const res = await pool.query(
     `
@@ -144,14 +157,15 @@ export async function getVentasHistorialModel(id_negocio: string, q?: string) {
       INNER JOIN public.producto p ON p.id_producto = l.id_producto
       WHERE v.id_negocio = $1
         AND p.id_negocio = $1
+        ${userIdParamIndex ? `AND v.userid = $${userIdParamIndex}` : ""}
         ${
-          search
+          searchParamIndex
             ? `AND (
-                v.id_venta::text ILIKE $2
-                OR u.name ILIKE $2
-                OR u.email ILIKE $2
-                OR p.nombre ILIKE $2
-                OR p.codigo_barras ILIKE $2
+                v.id_venta::text ILIKE $${searchParamIndex}
+                OR u.name ILIKE $${searchParamIndex}
+                OR u.email ILIKE $${searchParamIndex}
+                OR p.nombre ILIKE $${searchParamIndex}
+                OR p.codigo_barras ILIKE $${searchParamIndex}
               )`
             : ""
         }

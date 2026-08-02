@@ -46,7 +46,7 @@ describe("GET /ventas/metricas Route", () => {
       transacciones: 3,
       ticket_promedio: 100.1666666667,
     });
-    expect(ventaModel.getVentasMetricasModel).toHaveBeenCalledWith("negocio-A");
+    expect(ventaModel.getVentasMetricasModel).toHaveBeenCalledWith("negocio-A", undefined);
   });
 
   it("should return 401 when metrics request has no valid token", async () => {
@@ -56,6 +56,20 @@ describe("GET /ventas/metricas Route", () => {
 
     expect(response.status).toBe(401);
     expect(ventaModel.getVentasMetricasModel).not.toHaveBeenCalled();
+  });
+
+  it("should filter metrics by user ID if role is not admin (e.g., cashier)", async () => {
+    mockUser = { id: "cashier-456", id_negocio: "negocio-A", role: "cashier" };
+    (ventaModel.getVentasMetricasModel as jest.Mock).mockResolvedValue({
+      ingresos: "50",
+      transacciones: "1",
+      ticket_promedio: "50",
+    });
+
+    const response = await request(app).get("/ventas/metricas");
+
+    expect(response.status).toBe(200);
+    expect(ventaModel.getVentasMetricasModel).toHaveBeenCalledWith("negocio-A", "cashier-456");
   });
 });
 
@@ -93,7 +107,7 @@ describe("GET /ventas/historial Route", () => {
       })
     );
     expect(response.body.ventas[0].detalles).toHaveLength(2);
-    expect(ventaModel.getVentasHistorialModel).toHaveBeenCalledWith("negocio-A", undefined);
+    expect(ventaModel.getVentasHistorialModel).toHaveBeenCalledWith("negocio-A", undefined, undefined);
   });
 
   it("should apply search query after tenant isolation", async () => {
@@ -105,7 +119,7 @@ describe("GET /ventas/historial Route", () => {
 
     expect(response.status).toBe(200);
     expect(response.body.ventas[0].id_venta).toBe("venta-filtrada");
-    expect(ventaModel.getVentasHistorialModel).toHaveBeenCalledWith("negocio-A", "arroz");
+    expect(ventaModel.getVentasHistorialModel).toHaveBeenCalledWith("negocio-A", "arroz", undefined);
   });
 
   it("should isolate sales by the authenticated business", async () => {
@@ -118,7 +132,7 @@ describe("GET /ventas/historial Route", () => {
     expect(response.status).toBe(200);
     expect(response.body.ventas).toHaveLength(1);
     expect(response.body.ventas[0].id_negocio).toBe("negocio-A");
-    expect(ventaModel.getVentasHistorialModel).toHaveBeenCalledWith("negocio-A", undefined);
+    expect(ventaModel.getVentasHistorialModel).toHaveBeenCalledWith("negocio-A", undefined, undefined);
   });
 
   it("should return 401 when history request has no valid token", async () => {
@@ -128,6 +142,18 @@ describe("GET /ventas/historial Route", () => {
 
     expect(response.status).toBe(401);
     expect(ventaModel.getVentasHistorialModel).not.toHaveBeenCalled();
+  });
+
+  it("should filter history by user ID if role is not admin (e.g., cashier)", async () => {
+    mockUser = { id: "cashier-456", id_negocio: "negocio-A", role: "cashier" };
+    (ventaModel.getVentasHistorialModel as jest.Mock).mockResolvedValue([
+      createHistoryRow({ id_negocio: "negocio-A", userid: "cashier-456" }),
+    ]);
+
+    const response = await request(app).get("/ventas/historial");
+
+    expect(response.status).toBe(200);
+    expect(ventaModel.getVentasHistorialModel).toHaveBeenCalledWith("negocio-A", undefined, "cashier-456");
   });
 });
 

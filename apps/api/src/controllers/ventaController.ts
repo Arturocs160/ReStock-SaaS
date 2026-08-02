@@ -52,10 +52,11 @@ export async function getVentasMetricasController(req: Request, res: Response) {
     if (!id_negocio) {
       return res
         .status(401)
-        .json({ error: "No autorizado", message: "ID de negocio ausente en la sesiÃ³n." });
+        .json({ error: "No autorizado", message: "ID de negocio ausente en la sesión." });
     }
 
-    const metricas = await getVentasMetricasService(id_negocio);
+    const userId = req.user?.role !== "admin" ? req.user?.id : undefined;
+    const metricas = await getVentasMetricasService(id_negocio, userId);
     return res.status(200).json({ metricas });
   } catch (error: any) {
     logger.error({ err: error }, "Error al obtener metricas de ventas");
@@ -73,11 +74,12 @@ export async function getVentasHistorialController(req: Request, res: Response) 
     if (!id_negocio) {
       return res
         .status(401)
-        .json({ error: "No autorizado", message: "ID de negocio ausente en la sesiÃ³n." });
+        .json({ error: "No autorizado", message: "ID de negocio ausente en la sesión." });
     }
 
     const q = typeof req.query.q === "string" ? req.query.q : undefined;
-    const ventas = await getVentasHistorialService(id_negocio, q);
+    const userId = req.user?.role !== "admin" ? req.user?.id : undefined;
+    const ventas = await getVentasHistorialService(id_negocio, q, userId);
 
     return res.status(200).json({ ventas });
   } catch (error: any) {
