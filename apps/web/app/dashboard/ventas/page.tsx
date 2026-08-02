@@ -38,9 +38,16 @@ export default function VentasPage() {
       const populated: ProductoConStock[] = catalog.map((p) => {
         const lotes = (p.lotes || []).map((l: LoteInventario) => ({
           ...l,
+          fecha_ingreso: l.fecha_ingreso
+            ? l.fecha_ingreso.split("T")[0]
+            : "",
           fecha_caducidad: l.fecha_caducidad
             ? l.fecha_caducidad.split("T")[0]
             : null,
+          cantidad_actual:
+            l.cantidad_actual !== undefined
+              ? l.cantidad_actual
+              : l.cantidad_inicial,
         }));
 
         return {

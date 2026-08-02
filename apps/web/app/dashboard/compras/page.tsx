@@ -10,7 +10,7 @@ export default function ComprasPage() {
       <div className="flex-1 min-w-0">
         <Topbar />
 
-        <main className="p-4 md:p-6 max-w-7xl mx-auto">
+        <main className="p-4 md:p-6">
           <div className="mb-6">
             <h1 className="text-3xl font-bold text-gray-900">
               Planificación de Compras

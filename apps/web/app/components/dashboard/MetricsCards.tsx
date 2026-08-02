@@ -69,7 +69,7 @@ export function MetricsCards({ products }: { products: ProductoConStock[] }) {
       iconColor: "text-red-600",
       valueColor: "text-red-600",
       subtitleColor: "text-red-500",
-      href: "/dashboard/inventario",
+      href: "/dashboard/compras",
     },
     {
       title: "PRODUCTOS CADUCADOS",
@@ -80,7 +80,7 @@ export function MetricsCards({ products }: { products: ProductoConStock[] }) {
       iconColor: "text-red-600",
       valueColor: "text-red-600",
       subtitleColor: "text-red-500",
-      href: "/dashboard/inventario",
+      href: "/dashboard/vencimientos",
     },
   ];
 
