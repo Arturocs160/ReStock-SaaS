@@ -497,6 +497,21 @@ export default function LotesPage() {
               </button>
             </div>
 
+            {categories.length === 0 && !loading && (
+              <div className="flex items-center gap-3 p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30 rounded-2xl text-amber-800 dark:text-amber-300">
+                <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-500 shrink-0" />
+                <div className="text-sm">
+                  <span className="font-semibold">No tienes categorías registradas.</span> Te recomendamos registrar una categoría primero para poder clasificar tus productos correctamente.{" "}
+                  <a
+                    href="/dashboard/categorias"
+                    className="underline hover:text-amber-900 dark:hover:text-amber-250 font-semibold transition"
+                  >
+                    Ir a Categorías
+                  </a>
+                </div>
+              </div>
+            )}
+
             {/* Filtros de Inventario */}
             <Filters
               searchQuery={searchQuery}
