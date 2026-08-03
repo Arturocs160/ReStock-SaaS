@@ -14,7 +14,7 @@ export const invitationRepository = {
     const query = `
       SELECT *
       FROM public.invitacion
-      WHERE email_invitado = $1
+      WHERE LOWER(email_invitado) = LOWER($1)
         AND id_negocio = $2
         AND aceptada = false
         AND expiresat > NOW();
