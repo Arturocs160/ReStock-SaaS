@@ -44,7 +44,7 @@ export const auth = betterAuth({
   databaseHooks: {
     user: {
       create: {
-        after: handleUserCreation,
+        before: handleUserCreation,
       },
     },
   },
