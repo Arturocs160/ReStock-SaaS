@@ -261,7 +261,9 @@ describe("Compras Services", () => {
         });
       }
 
-      (comprasModel.getProductosReabastecimientoPorIdsModel as jest.Mock).mockResolvedValue(mockDatabaseProducts);
+      (comprasModel.getProductosReabastecimientoPorIdsModel as jest.Mock).mockResolvedValue(
+        mockDatabaseProducts
+      );
       (negocioModel.getNegocioByIdModel as jest.Mock).mockResolvedValue({
         id_negocio: "negocio-A",
         nombre: "Negocio con Muchos Productos",
