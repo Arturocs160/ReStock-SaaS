@@ -4,13 +4,19 @@ import {
   getVentasMetricasModel,
 } from "../models/ventaModel";
 import { CreateVentaInput } from "../schemas/ventaSchema";
+import { detectarYCrearAlertasService } from "./alertaServices";
 
 export async function createVentaService(
   id_negocio: string,
   userid: string,
   data: CreateVentaInput
 ) {
-  return await createVentaTransactionModel(id_negocio, userid, data.items);
+  const venta = await createVentaTransactionModel(id_negocio, userid, data.items);
+
+  // Detectar productos por debajo del stock mínimo tras el descuento de la venta
+  await detectarYCrearAlertasService(id_negocio);
+
+  return venta;
 }
 
 export async function getVentasMetricasService(id_negocio: string, userId?: string) {

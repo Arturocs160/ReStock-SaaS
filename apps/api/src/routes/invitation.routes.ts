@@ -78,7 +78,7 @@ router.post(
         `SELECT u.id, u.id_negocio, a.password AS password_hash
              FROM public."user" u
              LEFT JOIN public.account a ON a."userId" = u.id
-             WHERE u.email = $1
+             WHERE LOWER(u.email) = LOWER($1)
              LIMIT 1`,
         [email]
       );

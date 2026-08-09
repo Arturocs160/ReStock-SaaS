@@ -8,6 +8,7 @@ import {
   updateLoteModel,
   createMermaTransactionModel,
 } from "../models/loteModel";
+import { detectarYCrearAlertasService } from "./alertaServices";
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
@@ -121,5 +122,16 @@ export async function createMermaService(
   motivo: string,
   id_usuario: string
 ) {
-  return await createMermaTransactionModel(id_lote, id_negocio, cantidad, motivo, id_usuario);
+  const merma = await createMermaTransactionModel(
+    id_lote,
+    id_negocio,
+    cantidad,
+    motivo,
+    id_usuario
+  );
+
+  // Detectar productos por debajo del stock mínimo tras la merma
+  await detectarYCrearAlertasService(id_negocio);
+
+  return merma;
 }

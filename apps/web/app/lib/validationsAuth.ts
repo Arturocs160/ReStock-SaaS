@@ -3,7 +3,8 @@ import { z } from "zod";
 export const loginSchema = z.object({
   email: z
     .email("Correo electrónico inválido")
-    .min(1, "El correo electrónico es requerido"),
+    .min(1, "El correo electrónico es requerido")
+    .transform((val) => val.toLowerCase()),
   password: z
     .string()
     .min(8, "La contraseña debe tener al menos 8 caracteres")
@@ -34,7 +35,8 @@ export const registerSchema = z
       ),
     email: z
       .email("Correo electrónico inválido")
-      .min(1, "El correo electrónico es requerido"),
+      .min(1, "El correo electrónico es requerido")
+      .transform((val) => val.toLowerCase()),
     password: z
       .string()
       .min(8, "La contraseña debe tener al menos 8 caracteres")
@@ -61,7 +63,10 @@ export const invitationRegisterSchema = z
   .object({
     name: z.string().min(3, "El nombre debe tener al menos 3 caracteres"),
 
-    email: z.string().email("Correo electrónico inválido"),
+    email: z
+      .string()
+      .email("Correo electrónico inválido")
+      .transform((val) => val.toLowerCase()),
 
     password: z
       .string()

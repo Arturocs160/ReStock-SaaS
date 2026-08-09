@@ -107,7 +107,11 @@ describe("GET /ventas/historial Route", () => {
       })
     );
     expect(response.body.ventas[0].detalles).toHaveLength(2);
-    expect(ventaModel.getVentasHistorialModel).toHaveBeenCalledWith("negocio-A", undefined, undefined);
+    expect(ventaModel.getVentasHistorialModel).toHaveBeenCalledWith(
+      "negocio-A",
+      undefined,
+      undefined
+    );
   });
 
   it("should apply search query after tenant isolation", async () => {
@@ -119,7 +123,11 @@ describe("GET /ventas/historial Route", () => {
 
     expect(response.status).toBe(200);
     expect(response.body.ventas[0].id_venta).toBe("venta-filtrada");
-    expect(ventaModel.getVentasHistorialModel).toHaveBeenCalledWith("negocio-A", "arroz", undefined);
+    expect(ventaModel.getVentasHistorialModel).toHaveBeenCalledWith(
+      "negocio-A",
+      "arroz",
+      undefined
+    );
   });
 
   it("should isolate sales by the authenticated business", async () => {
@@ -132,7 +140,11 @@ describe("GET /ventas/historial Route", () => {
     expect(response.status).toBe(200);
     expect(response.body.ventas).toHaveLength(1);
     expect(response.body.ventas[0].id_negocio).toBe("negocio-A");
-    expect(ventaModel.getVentasHistorialModel).toHaveBeenCalledWith("negocio-A", undefined, undefined);
+    expect(ventaModel.getVentasHistorialModel).toHaveBeenCalledWith(
+      "negocio-A",
+      undefined,
+      undefined
+    );
   });
 
   it("should return 401 when history request has no valid token", async () => {
@@ -153,7 +165,11 @@ describe("GET /ventas/historial Route", () => {
     const response = await request(app).get("/ventas/historial");
 
     expect(response.status).toBe(200);
-    expect(ventaModel.getVentasHistorialModel).toHaveBeenCalledWith("negocio-A", undefined, "cashier-456");
+    expect(ventaModel.getVentasHistorialModel).toHaveBeenCalledWith(
+      "negocio-A",
+      undefined,
+      "cashier-456"
+    );
   });
 });
 

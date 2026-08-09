@@ -18,7 +18,6 @@ import { AddLoteModal } from "../../components/inventario/AddLoteModal";
 import { EditLoteModal } from "../../components/inventario/EditLoteModal";
 import { DeleteProductModal } from "../../components/inventario/DeleteProductModal";
 import { DeleteLoteModal } from "../../components/inventario/DeleteLoteModal";
-import { ReportMermaModal } from "../../components/inventario/ReportMermaModal";
 
 import {
   LoteInventario,
@@ -43,7 +42,11 @@ export const getExpirationStatus = (expiryDateStr: string | null) => {
       level: "ok" as const,
     };
   }
-  const expiry = new Date(expiryDateStr);
+
+  // Parseo seguro de fecha evitando desfases de zona horaria local
+  const [year, month, day] = expiryDateStr.split("T")[0].split("-").map(Number);
+  const expiry = new Date(Date.UTC(year, month - 1, day));
+
   const diffTime = expiry.getTime() - SIMULATED_TODAY.getTime();
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
@@ -51,32 +54,33 @@ export const getExpirationStatus = (expiryDateStr: string | null) => {
     return {
       label: `Caducado hace ${Math.abs(diffDays)}d`,
       color:
-        "bg-red-50 text-red-700 border border-red-200 dark:bg-red-950/30 dark:text-red-400 dark:border-red-900/50",
+        "bg-red-100 text-red-700 border border-red-200 dark:bg-red-950/30 dark:text-red-400 dark:border-red-900/50",
       level: "caducado" as const,
     };
-  } else if (diffDays <= 30) {
+  } else if (diffDays <= 10) {
     return {
-      label: `Caduca en ${diffDays}d`,
+      label: `Crítico (${diffDays}d)`,
       color:
-        "bg-orange-50 text-orange-700 border border-orange-200 dark:bg-orange-950/30 dark:text-orange-400 dark:border-orange-900/50",
-      level: "por_caducar" as const,
+        "bg-orange-100 text-orange-700 border border-orange-200 dark:bg-orange-950/30 dark:text-orange-400 dark:border-orange-900/50",
+      level: "critico" as const,
     };
-  } else if (diffDays <= 90) {
+  } else if (diffDays <= 20) {
     return {
-      label: `Caduca en ${diffDays}d`,
+      label: `Cercano (${diffDays}d)`,
       color:
-        "bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-900/30",
+        "bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-900/30",
       level: "cercano" as const,
     };
   } else {
     return {
       label: `Vigente (${diffDays}d)`,
       color:
-        "bg-green-50 text-green-700 border border-green-200 dark:bg-green-950/30 dark:text-green-400 dark:border-green-900/50",
-      level: "ok" as const,
+        "bg-emerald-100 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900/50",
+      level: "vigente" as const,
     };
   }
 };
+
 
 export default function LotesPage() {
   const { user } = useAuthStore();
@@ -121,7 +125,7 @@ export default function LotesPage() {
 
   // Estados para Modal de Confirmación de Eliminación
   const [activeModal, setActiveModal] = useState<
-    "deleteProduct" | "deleteLote" | "reportMerma" | null
+    "deleteProduct" | "deleteLote" | null
   >(null);
   const [selectedProduct, setSelectedProduct] =
     useState<ProductoConStock | null>(null);
@@ -433,39 +437,7 @@ export default function LotesPage() {
     }
   };
 
-  // Reportar Merma de un Lote Específico (Abre el modal de confirmación de merma)
-  const handleReportMerma = (productId: string, loteId: string, cantidad: number) => {
-    const targetProd = productos.find((p) => p.id_producto === productId);
-    const targetLote = targetProd?.lotes.find((l) => l.id_lote === loteId);
-    if (targetProd && targetLote) {
-      setSelectedProduct(targetProd);
-      setSelectedLote(targetLote);
-      setActiveModal("reportMerma");
-    }
-  };
-
-  const handleReportMermaConfirm = async () => {
-    if (selectedProduct && selectedLote) {
-      try {
-        await lotesApi.reportMerma(
-          selectedLote.id_lote,
-          selectedLote.cantidad_actual,
-          "merma_caducidad"
-        );
-        globalToast.success("Merma registrada exitosamente.", { title: "MERMA REGISTRADA" });
-        setActiveModal(null);
-        setSelectedLote(null);
-        setSelectedProduct(null);
-        await fetchInventory();
-      } catch (err) {
-        console.error(err);
-        globalToast.error(
-          err instanceof Error ? err.message : "Error al registrar la merma.",
-          { title: "ERROR" }
-        );
-      }
-    }
-  };
+  // Reportar Merma (ahora exclusivo de la pantalla de Vencimientos)
 
   return (
     <div className="flex min-h-screen bg-slate-50 text-gray-900">
@@ -497,6 +469,21 @@ export default function LotesPage() {
               </button>
             </div>
 
+            {categories.length === 0 && !loading && (
+              <div className="flex items-center gap-3 p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30 rounded-2xl text-amber-800 dark:text-amber-300">
+                <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-500 shrink-0" />
+                <div className="text-sm">
+                  <span className="font-semibold">No tienes categorías registradas.</span> Te recomendamos registrar una categoría primero para poder clasificar tus productos correctamente.{" "}
+                  <a
+                    href="/dashboard/categorias"
+                    className="underline hover:text-amber-900 dark:hover:text-amber-250 font-semibold transition"
+                  >
+                    Ir a Categorías
+                  </a>
+                </div>
+              </div>
+            )}
+
             {/* Filtros de Inventario */}
             <Filters
               searchQuery={searchQuery}
@@ -527,7 +514,6 @@ export default function LotesPage() {
                 onDeleteProduct={handleDeleteProduct}
                 onEditLote={openEditLoteModal}
                 onDeleteLote={handleDeleteLote}
-                onReportMerma={handleReportMerma}
               />
             )}
           </div>
@@ -596,18 +582,6 @@ export default function LotesPage() {
               loteCode={selectedLote.codigo_lote}
               productName={selectedProduct.nombre}
               onConfirm={handleDeleteLoteConfirm}
-            />
-          )}
-
-          {/* MODAL: REPORTAR MERMA */}
-          {activeModal === "reportMerma" && selectedLote && selectedProduct && (
-            <ReportMermaModal
-              isOpen={activeModal === "reportMerma"}
-              onClose={() => setActiveModal(null)}
-              loteCode={selectedLote.codigo_lote}
-              productName={selectedProduct.nombre}
-              cantidad={selectedLote.cantidad_actual}
-              onConfirm={handleReportMermaConfirm}
             />
           )}
         </main>

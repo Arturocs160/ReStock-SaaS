@@ -8,6 +8,7 @@ import {
   ProductoConStock,
 } from "../types/inventario";
 import { UsuarioTeam, InvitacionTeam } from "../types/team";
+import { Alerta, AlertasResponse } from "../types/alertas";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3010";
 
@@ -148,6 +149,15 @@ export const salesApi = {
     const ventas = res?.ventas || res?.historial || res?.data || res?.result || [];
     return { ventas };
   },
+};
+
+export const alertasApi = {
+  getAll: () => apiFetch<AlertasResponse>("/alertas"),
+  getPendientes: () => apiFetch<AlertasResponse>("/alertas/pendientes"),
+  resolve: (id: string) =>
+    apiFetch<{ alerta: Alerta }>(`/alertas/${id}/resolver`, {
+      method: "PATCH",
+    }),
 };
 
 export const teamApi = {
