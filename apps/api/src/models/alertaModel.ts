@@ -2,7 +2,7 @@ import pool from "../config/db";
 import { randomUUID } from "node:crypto";
 
 export const TIPO_ALERTA_STOCK_BAJO = {
-  id: "00000000-0000-4000-8000-000000000001",
+  id: "0c07ec4e-467a-4699-af51-7576797ee059",
   nombre: "stock_bajo",
   descripcion: "El stock del producto está por debajo del mínimo establecido.",
 };
