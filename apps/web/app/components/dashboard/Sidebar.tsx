@@ -19,6 +19,7 @@ import {
   X,
   Users,
   Tag,
+  Bell,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -160,6 +161,20 @@ export function Sidebar() {
                 >
                   <ShoppingCart size={18} />
                   Generar venta
+                </Link>
+
+                <Link
+                  href="/dashboard/alertas"
+                  className={`w-full flex items-center justify-between px-4 py-2 rounded-xl ${
+                    pathname === "/dashboard/alertas"
+                      ? "bg-[#DFF9E6] text-[#07B474]"
+                      : "text-gray-600 hover:bg-gray-50"
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <Bell size={18} />
+                    Alertas
+                  </span>
                 </Link>
 
                 <Link
