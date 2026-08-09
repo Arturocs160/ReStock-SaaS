@@ -16,6 +16,12 @@ CREATE TABLE public.tipo_alerta (
   CONSTRAINT tipo_alerta_pkey PRIMARY KEY (id_tipo_alerta)
 );
 
+-- Seed de tipos de alerta (idempotente)
+INSERT INTO public.tipo_alerta (id_tipo_alerta, nombre, descripcion)
+VALUES
+  ('00000000-0000-4000-8000-000000000001', 'stock_bajo', 'El stock del producto está por debajo del mínimo establecido.')
+ON CONFLICT (id_tipo_alerta) DO NOTHING;
+
 CREATE TABLE public.jwks (
   id text NOT NULL,
   "publicKey" text NOT NULL,
