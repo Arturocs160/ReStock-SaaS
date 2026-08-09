@@ -43,7 +43,11 @@ export const getExpirationStatus = (expiryDateStr: string | null) => {
       level: "ok" as const,
     };
   }
-  const expiry = new Date(expiryDateStr);
+
+  // Parseo seguro de fecha evitando desfases de zona horaria local
+  const [year, month, day] = expiryDateStr.split("T")[0].split("-").map(Number);
+  const expiry = new Date(Date.UTC(year, month - 1, day));
+
   const diffTime = expiry.getTime() - SIMULATED_TODAY.getTime();
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
@@ -51,32 +55,33 @@ export const getExpirationStatus = (expiryDateStr: string | null) => {
     return {
       label: `Caducado hace ${Math.abs(diffDays)}d`,
       color:
-        "bg-red-50 text-red-700 border border-red-200 dark:bg-red-950/30 dark:text-red-400 dark:border-red-900/50",
+        "bg-red-100 text-red-700 border border-red-200 dark:bg-red-950/30 dark:text-red-400 dark:border-red-900/50",
       level: "caducado" as const,
     };
-  } else if (diffDays <= 30) {
+  } else if (diffDays <= 10) {
     return {
-      label: `Caduca en ${diffDays}d`,
+      label: `Crítico (${diffDays}d)`,
       color:
-        "bg-orange-50 text-orange-700 border border-orange-200 dark:bg-orange-950/30 dark:text-orange-400 dark:border-orange-900/50",
-      level: "por_caducar" as const,
+        "bg-orange-100 text-orange-700 border border-orange-200 dark:bg-orange-950/30 dark:text-orange-400 dark:border-orange-900/50",
+      level: "critico" as const,
     };
-  } else if (diffDays <= 90) {
+  } else if (diffDays <= 20) {
     return {
-      label: `Caduca en ${diffDays}d`,
+      label: `Cercano (${diffDays}d)`,
       color:
-        "bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-900/30",
+        "bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-900/30",
       level: "cercano" as const,
     };
   } else {
     return {
       label: `Vigente (${diffDays}d)`,
       color:
-        "bg-green-50 text-green-700 border border-green-200 dark:bg-green-950/30 dark:text-green-400 dark:border-green-900/50",
-      level: "ok" as const,
+        "bg-emerald-100 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900/50",
+      level: "vigente" as const,
     };
   }
 };
+
 
 export default function LotesPage() {
   const { user } = useAuthStore();
