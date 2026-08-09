@@ -136,13 +136,22 @@ export function EditProductModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label className="text-xs font-bold text-gray-500 uppercase">
-                Categoría
+              <label className="text-xs font-bold text-gray-500 uppercase flex justify-between items-center">
+                <span>Categoría</span>
+                {categories.length === 0 && (
+                  <span className="text-[10px] text-amber-600 dark:text-amber-400 font-semibold normal-case">
+                    ⚠️ Ninguna registrada
+                  </span>
+                )}
               </label>
               <select
                 value={idCategoria}
                 onChange={(e) => setIdCategoria(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white dark:text-white cursor-pointer"
+                className={`w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 border ${
+                  categories.length === 0
+                    ? "border-amber-300 dark:border-amber-900/50"
+                    : "border-gray-200 dark:border-gray-800"
+                } rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white dark:text-white cursor-pointer`}
               >
                 <option value="">Sin categoría</option>
                 {categories.map((cat) => (
@@ -151,6 +160,18 @@ export function EditProductModal({
                   </option>
                 ))}
               </select>
+              {categories.length === 0 && (
+                <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-1 leading-tight">
+                  No tienes categorías. Te recomendamos{" "}
+                  <a
+                    href="/dashboard/categorias"
+                    className="underline hover:text-amber-750 dark:hover:text-amber-300 font-semibold transition"
+                  >
+                    crear una primero
+                  </a>
+                  .
+                </p>
+              )}
             </div>
 
             <div className="space-y-1">

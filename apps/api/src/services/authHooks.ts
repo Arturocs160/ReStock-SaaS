@@ -6,7 +6,10 @@ import { createAuthMiddleware } from "better-auth/api";
 import { signInSchema } from "@/schemas/authSchema";
 import { verifyPassword } from "@/utils/password";
 
-export async function handleUserCreation(user: User, context: any): Promise<void> {
+export async function handleUserCreation(
+  user: User,
+  context: any
+): Promise<{ data: Record<string, unknown> } | void> {
   if (!context || !context.request) return;
 
   const body = (await context.request.json().catch(() => ({}))) as { nombre?: string };
@@ -21,35 +24,23 @@ export async function handleUserCreation(user: User, context: any): Promise<void
 
   const idNegocio = randomUUID();
 
-  const client = await pool.connect();
-
   try {
-    await client.query("BEGIN");
-
     const insertNegocioQuery = `
             INSERT INTO public.negocio (id_negocio, nombre, subdominio, activo)
             VALUES ($1, $2, $3, $4);
         `;
-    await client.query(insertNegocioQuery, [idNegocio, nombreNegocio, subdominio, true]);
+    await pool.query(insertNegocioQuery, [idNegocio, nombreNegocio, subdominio, true]);
 
-    const updateUserQuery = `
-            UPDATE public.user
-            SET id_negocio = $1, role = 'admin'
-            WHERE id = $2;
-        `;
-    await client.query(updateUserQuery, [idNegocio, user.id]);
-
-    await client.query("COMMIT");
-
-    // Mutate the user object so better-auth session creation picks up the new fields
-    (user as any).id_negocio = idNegocio;
-    (user as any).role = "admin";
+    return {
+      data: {
+        id_negocio: idNegocio,
+        role: "admin",
+      },
+    };
   } catch (error) {
     logger.error("Error en la transacción de registro automatizado:" + error);
 
     throw new Error("No se pudo completar el registro del negocio.");
-  } finally {
-    client.release();
   }
 }
 
@@ -83,7 +74,7 @@ export const beforeAuthMiddleware = createAuthMiddleware(async (ctx) => {
       `SELECT u.id, u.id_negocio, u.role, a.password AS password_hash
        FROM public."user" u
        LEFT JOIN public.account a ON a."userId" = u.id
-       WHERE u.email = $1
+       WHERE LOWER(u.email) = LOWER($1)
        LIMIT 1`,
       [email]
     );

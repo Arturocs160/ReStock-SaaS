@@ -7,7 +7,8 @@ export const signInSchema = z.object({
     })
     .email({
       message: "El formato del correo electrónico es inválido.",
-    }),
+    })
+    .transform((val) => val.toLowerCase()),
   password: z
     .string({
       message: "La contraseña es requerida.",
