@@ -92,16 +92,17 @@ function construirPdfListaReabastecimiento(
 
     // Dibujar icono de caja abierta (estilo Lucide Package) en color blanco
     doc.strokeColor("#ffffff").lineWidth(1.2).lineCap("round").lineJoin("round");
-    
+
     // Contorno del paquete
-    doc.moveTo(55, 31.5)
-       .lineTo(61, 35)
-       .lineTo(61, 41)
-       .lineTo(55, 44.5)
-       .lineTo(49, 41)
-       .lineTo(49, 35)
-       .closePath()
-       .stroke();
+    doc
+      .moveTo(55, 31.5)
+      .lineTo(61, 35)
+      .lineTo(61, 41)
+      .lineTo(55, 44.5)
+      .lineTo(49, 41)
+      .lineTo(49, 35)
+      .closePath()
+      .stroke();
 
     // Línea vertical central
     doc.moveTo(55, 44.5).lineTo(55, 38).stroke();
@@ -115,23 +116,61 @@ function construirPdfListaReabastecimiento(
 
     // Texto del logo al lado del isotipo
     doc.fillColor("#1e293b").font("Helvetica-Bold").fontSize(20).text("ReStock", 78, 25);
-    doc.fillColor("#64748b").font("Helvetica").fontSize(8).text("Gestión Inteligente de Inventarios", 78, 46);
+    doc
+      .fillColor("#64748b")
+      .font("Helvetica")
+      .fontSize(8)
+      .text("Gestión Inteligente de Inventarios", 78, 46);
 
     // Título del reporte (columna izquierda)
-    doc.fillColor("#0f172a").font("Helvetica-Bold").fontSize(16).text("Lista de Reabastecimiento", 40, 68);
+    doc
+      .fillColor("#0f172a")
+      .font("Helvetica-Bold")
+      .fontSize(16)
+      .text("Lista de Reabastecimiento", 40, 68);
 
     const now = new Date();
-    const fechaStr = now.toLocaleDateString("es-MX", { timeZone: timezone, day: "2-digit", month: "2-digit", year: "numeric" });
-    const horaStr = now.toLocaleTimeString("es-MX", { timeZone: timezone, hour: "2-digit", minute: "2-digit", hour12: true });
+    const fechaStr = now.toLocaleDateString("es-MX", {
+      timeZone: timezone,
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+    const horaStr = now.toLocaleTimeString("es-MX", {
+      timeZone: timezone,
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
 
     // Información de Negocio y Fecha (columna derecha alineada)
     const rightAlignX = doc.page.width - 240;
-    doc.fillColor("#1e293b").font("Helvetica-Bold").fontSize(11).text(nombreNegocio, rightAlignX, 28, { align: "right", width: 200 });
-    doc.fillColor("#475569").font("Helvetica-Bold").fontSize(8).text("REPORTE DE COMPRAS", rightAlignX, 44, { align: "right", width: 200 });
-    doc.fillColor("#64748b").font("Helvetica").fontSize(8).text(`Fecha de emisión: ${fechaStr} - ${horaStr}`, rightAlignX, 55, { align: "right", width: 200 });
+    doc
+      .fillColor("#1e293b")
+      .font("Helvetica-Bold")
+      .fontSize(11)
+      .text(nombreNegocio, rightAlignX, 28, { align: "right", width: 200 });
+    doc
+      .fillColor("#475569")
+      .font("Helvetica-Bold")
+      .fontSize(8)
+      .text("REPORTE DE COMPRAS", rightAlignX, 44, { align: "right", width: 200 });
+    doc
+      .fillColor("#64748b")
+      .font("Helvetica")
+      .fontSize(8)
+      .text(`Fecha de emisión: ${fechaStr} - ${horaStr}`, rightAlignX, 55, {
+        align: "right",
+        width: 200,
+      });
 
     // Línea divisoria elegante
-    doc.strokeColor("#e2e8f0").lineWidth(1).moveTo(40, 85).lineTo(doc.page.width - 40, 85).stroke();
+    doc
+      .strokeColor("#e2e8f0")
+      .lineWidth(1)
+      .moveTo(40, 85)
+      .lineTo(doc.page.width - 40, 85)
+      .stroke();
 
     // Configuración de la tabla
     const columnas = [
@@ -203,7 +242,12 @@ function construirPdfListaReabastecimiento(
 
       // Línea divisoria muy tenue justo al final de la fila
       const lineY = y + rowHeight;
-      doc.strokeColor("#e2e8f0").lineWidth(0.5).moveTo(inicioX, lineY).lineTo(inicioX + anchoTabla, lineY).stroke();
+      doc
+        .strokeColor("#e2e8f0")
+        .lineWidth(0.5)
+        .moveTo(inicioX, lineY)
+        .lineTo(inicioX + anchoTabla, lineY)
+        .stroke();
 
       y += rowHeight;
     }
@@ -222,34 +266,49 @@ function construirPdfListaReabastecimiento(
 
     // Textos de resumen centrados verticalmente
     const summaryTextY = y + (32 - fontSize) / 2;
-    doc.fillColor("#1e293b").font("Helvetica-Bold").fontSize(fontSize).text(`Total de productos a reabastecer: ${filas.length}`, inicioX + 15, summaryTextY);
-    
+    doc
+      .fillColor("#1e293b")
+      .font("Helvetica-Bold")
+      .fontSize(fontSize)
+      .text(`Total de productos a reabastecer: ${filas.length}`, inicioX + 15, summaryTextY);
+
     const totalCantidadOrdenar = filas.reduce((sum, f) => sum + f.cantidad_ordenar, 0);
-    doc.fillColor("#00a365").font("Helvetica-Bold").fontSize(fontSize).text(`Total de unidades a ordenar: ${totalCantidadOrdenar}`, inicioX + anchoTabla - 230, summaryTextY, { align: "right", width: 215 });
+    doc
+      .fillColor("#00a365")
+      .font("Helvetica-Bold")
+      .fontSize(fontSize)
+      .text(
+        `Total de unidades a ordenar: ${totalCantidadOrdenar}`,
+        inicioX + anchoTabla - 230,
+        summaryTextY,
+        { align: "right", width: 215 }
+      );
 
     // Numeración de páginas
     const paginas = doc.bufferedPageRange();
     for (let i = 0; i < paginas.count; i++) {
       doc.switchToPage(i);
-      
+
       // Evitar que la escritura en el margen inferior dispare páginas nuevas
       const oldMargin = doc.page.margins.bottom;
       doc.page.margins.bottom = 0;
-      
+
       // Footer Izquierdo
-      doc.fillColor("#94a3b8").font("Helvetica").fontSize(8).text(
-        "Generado automáticamente por ReStock - Control de Inventarios Inteligente",
-        40,
-        doc.page.height - 25
-      );
+      doc
+        .fillColor("#94a3b8")
+        .font("Helvetica")
+        .fontSize(8)
+        .text(
+          "Generado automáticamente por ReStock - Control de Inventarios Inteligente",
+          40,
+          doc.page.height - 25
+        );
 
       // Footer Derecho (Paginación)
-      doc.text(
-        `Página ${i + 1} de ${paginas.count}`,
-        doc.page.width - 240,
-        doc.page.height - 25,
-        { align: "right", width: 200 }
-      );
+      doc.text(`Página ${i + 1} de ${paginas.count}`, doc.page.width - 240, doc.page.height - 25, {
+        align: "right",
+        width: 200,
+      });
 
       doc.page.margins.bottom = oldMargin;
     }

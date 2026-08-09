@@ -164,3 +164,64 @@ export async function sendInvitationEmail({
     html: html,
   });
 }
+
+export async function sendLowStockAlertsEmail({
+  to,
+  negocioNombre,
+  productos,
+}: {
+  to: string[];
+  negocioNombre: string;
+  productos: {
+    nombre: string;
+    stock_actual: number;
+    stock_minimo_sugerido: number;
+  }[];
+}): Promise<void> {
+  if (productos.length === 0 || to.length === 0) return;
+
+  const rowsHtml = productos
+    .map(
+      (p) => `
+      <tr>
+        <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155;">${p.nombre}</td>
+        <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #dc2626; text-align: center; font-weight: 700;">${p.stock_actual}</td>
+        <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #475569; text-align: center;">${p.stock_minimo_sugerido}</td>
+      </tr>
+    `
+    )
+    .join("");
+
+  const html = getEmailWrapper(
+    "Alerta de stock bajo - ReStock",
+    `
+    <h2 style="margin: 0 0 8px 0; font-size: 20px; font-weight: 700; color: #0f172a;">Alerta de stock bajo</h2>
+    <p style="margin: 0 0 8px 0; font-size: 14px; line-height: 1.6; color: #475569;">
+      <strong>${negocioNombre}</strong> tiene ${productos.length} ${
+        productos.length === 1 ? "producto por debajo" : "productos por debajo"
+      } del stock mínimo establecido:
+    </p>
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; margin: 20px 0;">
+      <tr style="background-color: #f8fafc;">
+        <th style="padding: 10px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; text-align: left;">Producto</th>
+        <th style="padding: 10px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; text-align: center;">Stock actual</th>
+        <th style="padding: 10px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; text-align: center;">Mínimo</th>
+      </tr>
+      ${rowsHtml}
+    </table>
+    <p style="margin: 0 0 24px 0; font-size: 13px; line-height: 1.6; color: #64748b;">
+      Te recomendamos revisar el inventario y realizar un pedido de reposición para evitar quiebres de existencias.
+    </p>
+    `
+  );
+
+  await resend.emails.send({
+    from: "ReStock <notifications@restock.website>",
+    to: to,
+    subject: `Alerta de stock bajo en ${negocioNombre} (${productos.length} producto${
+      productos.length === 1 ? "" : "s"
+    })`,
+    text: `Hay ${productos.length} producto(s) por debajo del stock mínimo en ${negocioNombre}. Revisa el panel de alertas de ReStock.`,
+    html,
+  });
+}

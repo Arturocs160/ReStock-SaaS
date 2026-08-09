@@ -68,11 +68,10 @@ export function ProductRow({
         </td>
         <td className="px-6 py-4 whitespace-nowrap">
           <span
-            className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap ${
-              isLowStock
-                ? "bg-red-50 text-red-700 border border-red-100 dark:bg-red-950/20 dark:text-red-400"
-                : "bg-[#eafaf1] text-[#00a365] border border-[#00a365]/20 dark:bg-[#00a365]/10"
-            }`}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap ${isLowStock
+              ? "bg-red-50 text-red-700 border border-red-100 dark:bg-red-950/20 dark:text-red-400"
+              : "bg-[#eafaf1] text-[#00a365] border border-[#00a365]/20 dark:bg-[#00a365]/10"
+              }`}
           >
             <span
               className={`w-1.5 h-1.5 rounded-full ${isLowStock ? "bg-red-500" : "bg-[#00a365]"}`}
@@ -117,7 +116,7 @@ export function ProductRow({
               </h4>
               {producto.lotes.length > 0 ? (
                 <div className="border border-gray-100 dark:border-gray-800 rounded-xl overflow-x-auto bg-white dark:bg-[#0c0c0c]">
-                  <table className="w-full min-w-[650px] text-left text-xs">
+                  <table className="w-full min-w-162.5 text-left text-xs">
                     <thead className="bg-gray-50 dark:bg-gray-900/80 text-[10px] uppercase font-bold text-gray-400">
                       <tr>
                         <th className="px-4 py-2.5">Código Lote</th>
@@ -156,13 +155,13 @@ export function ProductRow({
                             <td className="px-4 py-2.5 text-gray-500 whitespace-nowrap">
                               {l.fecha_caducidad
                                 ? new Date(
-                                    l.fecha_caducidad,
-                                  ).toLocaleDateString("es-MX", {
-                                    year: "numeric",
-                                    month: "short",
-                                    day: "2-digit",
-                                    timeZone: "UTC",
-                                  })
+                                  l.fecha_caducidad,
+                                ).toLocaleDateString("es-MX", {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "2-digit",
+                                  timeZone: "UTC",
+                                })
                                 : "Sin caducidad"}
                             </td>
                             <td className="px-4 py-2.5 text-gray-500 whitespace-nowrap">
@@ -181,7 +180,7 @@ export function ProductRow({
                             <td className="px-4 py-2.5 text-right space-x-1 whitespace-nowrap">
                               {expStatus.level === "caducado" && (
                                 <button
-                                  onClick={() => onReportMerma(l.id_lote, l.cantidad_actual)}
+                                  onClick={() => onDeleteLote(l.id_lote)}
                                   className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-xs transition inline-block cursor-pointer font-semibold shadow-sm"
                                   title="Dar de baja por Merma"
                                 >

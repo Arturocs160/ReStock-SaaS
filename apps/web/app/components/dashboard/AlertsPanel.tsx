@@ -139,12 +139,20 @@ export function AlertsPanel({ products }: { products: ProductoConStock[] }) {
                   ). Te sugerimos realizar un pedido de reposición pronto.
                 </p>
 
-                <Link
-                  href="/dashboard/inventario"
-                  className="text-red-600 text-xs font-semibold mt-2 inline-block hover:underline"
-                >
-                  Ir al inventario →
-                </Link>
+                <div className="flex flex-wrap gap-4 mt-2">
+                  <Link
+                    href="/dashboard/alertas"
+                    className="text-red-600 text-xs font-semibold inline-block hover:underline"
+                  >
+                    Ver alertas de stock bajo →
+                  </Link>
+                  <Link
+                    href="/dashboard/inventario"
+                    className="text-red-600 text-xs font-semibold inline-block hover:underline"
+                  >
+                    Ir al inventario →
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
